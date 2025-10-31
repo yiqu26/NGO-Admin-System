@@ -4,6 +4,10 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    host: true, // 允許外部訪問
+    allowedHosts: ['.ngrok-free.app', '.ngrok.io', '.ngrok.app'] // 允許 ngrok 域名
+  },
   build: {
     // 代碼分割配置
     rollupOptions: {
