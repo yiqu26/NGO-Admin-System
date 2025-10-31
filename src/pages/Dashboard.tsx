@@ -188,8 +188,12 @@ const Dashboard: React.FC = () => {
       // 載入活動資料
       try {
         const activityResponse = await activityService.getActivities();
-        const activities = activityResponse.activities || [];
-        
+        const activities = Array.isArray(activityResponse?.activities)
+          ? activityResponse.activities
+          : Array.isArray(activityResponse)
+            ? activityResponse
+            : [];
+
         // 所有人（包含主管）都只看自己相關的活動，避免互相干擾
         const userActivities = activities.filter(activity => activity.workerId === workerId);
         
