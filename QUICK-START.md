@@ -17,7 +17,7 @@ copy .env.example .env.development
 # 2. .NET 後端配置
 cd ..\NGO-Admin-System-WebAPI
 copy appsettings.example.json appsettings.json
-# 編輯 appsettings.json，填入你的資料庫連線字串
+# 編輯 appsettings.json，填入資料庫連線字串
 ```
 
 **安裝依賴**
@@ -257,7 +257,7 @@ scripts\啟動展示系統.bat
 
 ## 🎉 啟動成功！
 
-啟動後你可以：
+啟動後可進行：
 - ✅ 使用 React 後台管理個案、活動、物資
 - ✅ 測試不同角色的權限差異
 - ✅ 查看 Dashboard 統計圖表

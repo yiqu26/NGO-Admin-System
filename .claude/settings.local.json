@@ -39,7 +39,8 @@
       "Bash(taskkill:*)",
       "Bash(test:*)",
       "Bash(cat:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []

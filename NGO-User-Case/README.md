@@ -74,9 +74,9 @@ dotnet run --project NGOPlatformWeb
 - 選擇「外部」用戶類型
 - 填寫必要資訊：
   - 應用程式名稱：`NGO 平台`
-  - 使用者支援電子郵件：你的 Gmail
+  - 使用者支援電子郵件：開發者的 Gmail
   - 授權網域：`localhost`（開發用）
-  - 開發人員聯絡資訊：你的 Gmail
+  - 開發人員聯絡資訊：開發者的 Gmail
 
 **4. 建立 OAuth 2.0 憑證**
 - 選擇「API 和服務」→「憑證」
@@ -89,8 +89,8 @@ dotnet run --project NGOPlatformWeb
   ```
 - 複製產生的 `Client ID` 和 `Client Secret`
 
-> 💡 **使用 Ngrok 時的額外設定**  
-> 如果你需要在 Ngrok 環境下測試 Google 登入，還需要將 Ngrok URL 加入重新導向 URI：
+> 💡 **使用 Ngrok 時的額外設定**
+> 如需在 Ngrok 環境下測試 Google 登入，還需要將 Ngrok URL 加入重新導向 URI：
 > ```
 > https://your-ngrok-url.ngrok-free.app/signin-google
 > ```
@@ -128,7 +128,7 @@ choco install ngrok
 
 **2. 註冊 Ngrok 帳號**
 - 前往 [Ngrok 官網](https://ngrok.com/) 註冊免費帳號
-- 登入後到 Dashboard 取得你的 AuthToken
+- 登入後到 Dashboard 取得 AuthToken
 
 **3. 設定 AuthToken**
 ```bash
@@ -137,7 +137,7 @@ ngrok config add-authtoken your-authtoken-here
 
 **4. 啟動 Ngrok 隧道**
 ```bash
-# 假設你的應用程式運行在 localhost:5000
+# 假設應用程式運行在 localhost:5000
 ngrok http 5000
 
 # 或指定特定域名（付費功能）

@@ -31,7 +31,7 @@ ngrok start --all --config ngrok-config.yml
 **設定步驟**：
 1. 註冊 ngrok 帳號：https://ngrok.com
 2. 取得 authtoken：https://dashboard.ngrok.com/get-started/your-authtoken
-3. 替換 `YOUR_AUTHTOKEN_HERE` 為你的 authtoken
+3. 替換 `YOUR_AUTHTOKEN_HERE` 為實際的 authtoken
 4. 儲存文件
 
 **支援的 tunnel 類型**：
@@ -130,7 +130,7 @@ curl -X POST "http://localhost:5264/api/Worker" \
 **步驟**：
 1. 編輯 `ngrok-config.yml`
 2. 找到 `authtoken: YOUR_AUTHTOKEN_HERE`
-3. 替換為你的 authtoken
+3. 替換為實際的 authtoken
 4. 儲存
 
 **範例**：

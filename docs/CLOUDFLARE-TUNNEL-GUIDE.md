@@ -48,7 +48,7 @@ scripts\啟動展示系統-Cloudflare.bat
 
 ### 預期結果
 
-腳本執行後，你會看到 **6 個命令視窗**：
+腳本執行後會看到 **6 個命令視窗**：
 
 1. **【NGO】後端 WebAPI (localhost:5264)** - 後端服務
 2. **【NGO】前端 React (localhost:5173)** - React 管理後台
@@ -68,13 +68,13 @@ scripts\啟動展示系統-Cloudflare.bat
 +--------------------------------------------------------------------------------------------+
 ```
 
-**這就是你的公開網址！**
+**這就是公開網址！**
 
 ---
 
 ## 📝 手動啟動步驟
 
-如果你想更了解運作原理，或需要客製化設定，可以手動啟動：
+如需更了解運作原理，或需要客製化設定，可以手動啟動：
 
 ### 步驟 1：安裝 Cloudflared
 
@@ -120,7 +120,7 @@ dotnet run
 cloudflared tunnel --url http://localhost:5264
 ```
 
-等待幾秒鐘，你會看到公開網址：
+等待幾秒鐘會看到公開網址：
 ```
 https://virtue-football-hunting-possible.trycloudflare.com
 ```
@@ -136,7 +136,7 @@ https://virtue-football-hunting-possible.trycloudflare.com
 
 ```env
 # .env.cloudflare
-VITE_API_BASE_URL=https://你的後端網址.trycloudflare.com/api
+VITE_API_BASE_URL=https://實際後端網址.trycloudflare.com/api
 ```
 
 3. 重新啟動 React 前端（使用 cloudflare 模式）：
@@ -156,7 +156,7 @@ npm run dev -- --mode cloudflare
 cloudflared tunnel --url http://localhost:5173
 ```
 
-你會看到前端公開網址：
+會看到前端公開網址：
 ```
 https://iron-publisher-encouraging-change.trycloudflare.com
 ```
@@ -276,7 +276,7 @@ A:
 
 ### 效能考量
 
-- Cloudflare Tunnel 使用你的本地網路上傳頻寬
+- Cloudflare Tunnel 使用本地網路上傳頻寬
 - 建議使用穩定的網路連線
 - 如果網路不穩，可能會有延遲
 
@@ -390,7 +390,7 @@ server: {
 
 ### 自訂網域
 
-可以將 Cloudflare Tunnel 連接到你的自訂網域。
+可以將 Cloudflare Tunnel 連接到自訂網域。
 
 ### 配置文件
 
@@ -432,9 +432,9 @@ server: {
 
 ## 🎉 總結
 
-使用 Cloudflare Tunnel，你可以：
+使用 Cloudflare Tunnel 可以：
 
-- ✅ 免費公開展示你的專案
+- ✅ 免費公開展示專案
 - ✅ 沒有煩人的警告頁面
 - ✅ 獲得穩定的公開網址
 - ✅ 提供專業的展示體驗

@@ -387,7 +387,7 @@ Vercel (前端) → Render (後端) → ngrok → 本地 SQL Server
 
 <div align="center">
 
-**選擇適合你的文檔，開始使用 NGO 系統！** 📖
+**選擇適合的文檔，開始使用 NGO 系統！** 📖
 
 </div>
 
