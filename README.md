@@ -124,29 +124,3 @@ React 前端  MVC 前端
 └── README.md
 ```
 
-## 📸 系統截圖
-
-### Dashboard 儀表板
-[待補充]
-
-### 案件管理
-[待補充]
-
-## 🤝 貢獻
-
-歡迎提交 Issue 或 Pull Request！
-
-## 📄 授權
-
-MIT License
-
-## 👨‍💻 開發者
-
-- **GitHub**: [你的 GitHub]
-- **Email**: [你的 Email]
-
----
-
-**⭐ 如果喜歡這個專案，請給個 Star！**
-
-> 詳細文檔請參考 [README-PROFESSIONAL.md](README-PROFESSIONAL.md)
