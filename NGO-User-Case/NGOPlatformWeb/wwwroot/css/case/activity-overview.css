@@ -1,0 +1,266 @@
+﻿.header-activity {
+    background: linear-gradient(90deg, #fbb37f, #f28c45);
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+    .header-activity h3 {
+        color: #fff;
+        font-weight: 800;
+        font-size: 2rem;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .header-activity p {
+        color: #fff;
+        font-size: 1rem;
+        margin-top: .5rem;
+    }
+
+/* 搜尋框 */
+.search-box {
+    border-radius: 30px;
+    padding: .6rem 1rem;
+    box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    border: 1px solid #ccc;
+    width: 250px;
+    margin-top: 40px;
+}
+
+/* 篩選按鈕 */
+.btn-outline-success, .btn-outline-secondary {
+    border-radius: 50px;
+    font-weight: bold;
+    transition: all 0.3s;
+    margin-top:40px;
+}
+
+    .btn-outline-success:hover, .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+/* 卡片樣式 */
+.card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+    .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f28c45;
+}
+
+.card-text {
+    font-size: 0.9rem;
+}
+
+.btn-join {
+    background: linear-gradient(45deg, #fbb37f, #f28c45);
+    border: none;
+    border-radius: 24px;
+    padding: 0.35rem 1rem; /* 縮小左右內距 */
+    font-size: 0.85rem; /* 字再小一點 */
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.3s;
+    min-width: 100px; /* 限制一個比較窄的最小寬度 */
+    max-width: 120px; /* 防止過寬 */
+    text-align: center;
+    text-decoration: none;
+}
+
+/* 取消報名按鈕 - 使用最高優先級 */
+.activity-card-vertical .activity-actions .btn-join.btn-cancel,
+.btn-join.btn-cancel {
+    background: #dc3545 !important;
+    background-image: none !important;
+    border: 2px solid #fff !important;
+    color: #fff !important;
+}
+
+.activity-card-vertical .activity-actions .btn-join.btn-cancel:hover,
+.btn-join.btn-cancel:hover {
+    background: #c82333 !important;
+    background-image: none !important;
+    border: 2px solid #fff !important;
+}
+
+    /* 半透明遮罩 */
+    .activity-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.45); /* 深色遮罩，透明度可調 */
+    }
+
+.activity-hero {
+    position: relative;
+    height: 300px; /* 自己調整高度 */
+    background: url('/images/activityback2.jpg') center center / cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #fff;
+    overflow: hidden;
+}
+
+    /* 文字內容在遮罩上層 */
+    .activity-hero .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .activity-hero h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+    }
+
+    .activity-hero p {
+        font-size: 1.2rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+.activity-card-vertical {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+    .activity-card-vertical:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+
+    /* 圖片區塊 */
+    .activity-card-vertical .activity-img {
+        width: 100%;
+        height: 180px;
+        overflow: hidden;
+    }
+
+        .activity-card-vertical .activity-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    /* 文字內容區 */
+    .activity-card-vertical .activity-info {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+        .activity-card-vertical .activity-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #f28c45;
+            margin-bottom: 8px;
+        }
+
+        .activity-card-vertical .activity-info p {
+            margin: 2px 0;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .activity-card-vertical .activity-info .desc {
+            color: #777;
+            margin-bottom: 8px;
+        }
+
+    /* 按鈕區 */
+    .activity-card-vertical .activity-actions {
+        margin-top: auto; /* 撐到底部 */
+        text-align: right;
+    }
+
+    .activity-card-vertical .btn-join {
+        display: inline-block;
+        background: linear-gradient(45deg, #fbb37f, #f28c45);
+        border: none;
+        border-radius: 20px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        color: #fff;
+        font-weight: 600;
+        transition: background 0.3s ease;
+    }
+
+        .activity-card-vertical .btn-join:hover {
+            background: linear-gradient(45deg, #f28c45, #f56a0f);
+        }
+
+.filter-btn {
+    display: inline-block;
+    text-decoration: none;
+    border: 1px solid #f28c45; /* 邊框珊瑚橘 */
+    background-color: #fff;
+    color: #f28c45; /* 文字珊瑚橘 */
+    border-radius: 50px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: pointer;
+    margin-top: 10px;
+    line-height: 1.2;
+}
+
+    /* 滑鼠移上去時 */
+    .filter-btn:hover {
+        background-color: #f28c45; /* 背景珊瑚橘 */
+        color: #fff; /* 文字白 */
+        border-color: #f28c45; /* 邊框也跟著珊瑚橘 */
+    }
+
+    /* 被選取的狀態 */
+    .filter-btn.active {
+        background-color: #f28c45;
+        color: #fff;
+        border-color: #f28c45;
+        box-shadow: none;
+    }
+
+/* 覆寫 Bootstrap 的 btn-outline-success 為珊瑚橘 */
+.btn-outline-success {
+    border-color: #f28c45 !important;
+    color: #f28c45 !important;
+    background-color: #fff !important;
+}
+
+    .btn-outline-success:hover,
+    .btn-outline-success.active,
+    .btn-outline-success:focus {
+        background-color: #f28c45 !important;
+        color: #fff !important;
+        border-color: #f28c45 !important;
+    }
+.search-box:focus {
+    border-color: #f28c45; /* 邊框改珊瑚橘 */
+    box-shadow: 0 0 5px rgba(242, 140, 69, 0.6); /* 外框光暈珊瑚橘 */
+    outline: none; /* 移除預設藍色外框 */
+}
+.btn-filter:focus,
+.btn-filter:active {
+    outline: none !important;
+    border-color: #f28c45 !important;
+    box-shadow: 0 0 5px rgba(242,140,69,0.6) !important; /* 橘色光暈 */
+}

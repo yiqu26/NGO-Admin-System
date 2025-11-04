@@ -1,0 +1,133 @@
+/* =================================
+   輪播圖組件樣式
+   ================================= */
+
+/* 主要輪播圖區域 */
+.hero-carousel {
+    position: relative;
+    height: 70vh;
+    min-height: 500px;
+    overflow: hidden;
+}
+
+.carousel-slide {
+    position: relative;
+    height: 70vh;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+}
+
+.carousel-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: var(--z-background);
+}
+
+.carousel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 100%);
+    z-index: var(--z-content);
+}
+
+.carousel-content {
+    position: relative;
+    z-index: var(--z-overlay);
+    color: var(--bg-white);
+    text-align: center;
+    width: 100%;
+}
+
+.carousel-title {
+    font-size: var(--font-5xl);
+    font-weight: var(--font-bold);
+    margin-bottom: var(--spacing-lg);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.carousel-description {
+    font-size: var(--font-xl);
+    margin-bottom: var(--spacing-xl);
+    line-height: var(--line-height-relaxed);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.carousel-buttons .btn {
+    padding: 12px 30px;
+    font-size: var(--font-lg);
+    border-radius: 25px;
+    transition: all var(--transition-base);
+    margin: 0 var(--spacing-sm);
+}
+
+.carousel-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* 動畫效果 */
+.animate-up {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: slideUp 0.8s ease-out forwards;
+}
+
+.delay-1 { animation-delay: 0.2s; }
+.delay-2 { animation-delay: 0.4s; }
+
+@keyframes slideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 輪播淡入效果 */
+.carousel-fade .carousel-item {
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    transform: none;
+}
+
+.carousel-fade .carousel-item.active { opacity: 1; }
+.carousel-fade .carousel-item-next,
+.carousel-fade .carousel-item-prev { opacity: 0; }
+.carousel-fade .carousel-item-next.carousel-item-start,
+.carousel-fade .carousel-item-prev.carousel-item-end { opacity: 1; }
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .hero-carousel {
+        height: 50vh;
+        min-height: 400px;
+    }
+
+    .carousel-slide {
+        height: 50vh;
+        min-height: 400px;
+    }
+
+    .carousel-title {
+        font-size: var(--font-3xl);
+    }
+    
+    .carousel-description {
+        font-size: var(--font-md);
+    }
+    
+    .carousel-buttons {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+}

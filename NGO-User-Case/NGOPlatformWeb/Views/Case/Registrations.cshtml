@@ -1,0 +1,219 @@
+<!-- 個案活動參與紀錄頁面 - 顯示個案所有活動參與歷史 -->
+@model NGOPlatformWeb.Models.ViewModels.ActivityRegistrations.CaseActivityRegistrationsViewModel
+@{
+    ViewData["Title"] = "活動參與紀錄";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile/profile-shared.css" />
+    <link rel="stylesheet" href="~/css/activities/activity-records.css" />
+}
+
+<div class="container py-5 case-page">
+    <!-- 頁面標題和返回按鈕 -->
+    <div class="page-header mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="page-title">
+                    <i class="fas fa-calendar-check me-3"></i>活動參與紀錄
+                </h2>
+                <p class="page-subtitle">@Model.CaseName 的活動參與歷程</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a asp-action="CaseProfile" class="btn btn-outline-info">
+                    <i class="fas fa-arrow-left me-2"></i>返回個人資料
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計數據卡片區 -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card total-registrations-case">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@Model.TotalRegistrations</div>
+                    <div class="stat-label">總參與次數</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card active-registrations-case">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@Model.ActiveRegistrations</div>
+                    <div class="stat-label">有效報名</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card upcoming-activities-case">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@Model.Registrations.Count(r => r.IsUpcoming && r.IsActive)</div>
+                    <div class="stat-label">即將到來</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card completed-activities-case">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@Model.Registrations.Count(r => r.IsCompleted && r.IsActive)</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 活動列表區 -->
+    <div class="activities-section">
+        <div class="section-header mb-4">
+            <h4><i class="fas fa-list me-2"></i>活動列表</h4>
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="upcoming">即將到來</button>
+                <button class="filter-btn" data-filter="completed">已完成</button>
+                <button class="filter-btn" data-filter="cancelled">已取消</button>
+            </div>
+        </div>
+
+        @if (Model.Registrations.Any())
+        {
+            <div class="activities-grid">
+                @foreach (var registration in Model.Registrations)
+                {
+                    <div class="activity-card case-activity-card @(registration.IsUpcoming ? "upcoming" : registration.IsCompleted ? "completed" : "") @(registration.Status == "cancelled" ? "cancelled" : "")" 
+                         data-category="@(registration.IsUpcoming && registration.IsActive ? "upcoming" : registration.IsCompleted && registration.IsActive ? "completed" : registration.Status == "cancelled" ? "cancelled" : "all")">
+                        
+                        <div class="activity-image">
+                            <img src="@registration.ImageUrl" alt="@registration.ActivityName" />
+                            <div class="activity-status-badge @(registration.IsActive ? "status-active-case" : "status-cancelled-case")">
+                                @registration.StatusDisplay
+                            </div>
+                            <div class="case-badge">個案專屬</div>
+                        </div>
+                        
+                        <div class="activity-content">
+                            <div class="activity-header">
+                                <h5 class="activity-name">@registration.ActivityName</h5>
+                                <span class="activity-category case-category">@registration.CategoryDisplay</span>
+                            </div>
+                            
+                            <p class="activity-description">@registration.ActivityDescription</p>
+                            
+                            <div class="activity-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>@registration.Location</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>@registration.StartDate.ToString("yyyy/MM/dd")</span>
+                                    @if (registration.StartDate.Date != registration.EndDate.Date)
+                                    {
+                                        <span> - @registration.EndDate.ToString("yyyy/MM/dd")</span>
+                                    }
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>報名時間：@registration.RegisterTime.ToString("yyyy/MM/dd HH:mm")</span>
+                                </div>
+                                @if (registration.TargetAudience == "case")
+                                {
+                                    <div class="detail-item special-program">
+                                        <i class="fas fa-heart"></i>
+                                        <span>個案專屬活動</span>
+                                    </div>
+                                }
+                            </div>
+                            
+                            <div class="activity-footer">
+                                @if (registration.IsUpcoming && registration.IsActive)
+                                {
+                                    <span class="activity-time-badge upcoming-badge-case">
+                                        <i class="fas fa-hourglass-start"></i>即將開始
+                                    </span>
+                                }
+                                else if (registration.IsCompleted && registration.IsActive)
+                                {
+                                    <span class="activity-time-badge completed-badge-case">
+                                        <i class="fas fa-check-circle"></i>已完成
+                                    </span>
+                                }
+                                else if (registration.Status == "cancelled")
+                                {
+                                    <span class="activity-time-badge cancelled-badge-case">
+                                        <i class="fas fa-times-circle"></i>已取消
+                                    </span>
+                                }
+                                
+                                <a href="#" class="view-detail-btn case-detail-btn" data-activity-id="@registration.ActivityId">
+                                    查看詳情 <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state case-empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+                <h4>尚未參與任何活動</h4>
+                <p>開始探索為個案設計的專屬活動，獲得更多支持與成長機會！</p>
+                <a href="#" class="btn btn-info">
+                    <i class="fas fa-search me-2"></i>瀏覽個案活動
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 篩選功能
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const activityCards = document.querySelectorAll('.activity-card');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // 更新按鈕狀態
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            
+            // 篩選卡片
+            activityCards.forEach(card => {
+                if (filter === 'all') {
+                    card.classList.remove('hidden');
+                } else {
+                    const category = card.dataset.category;
+                    if (category === filter || (filter === 'all' && category !== 'cancelled')) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    });
+});
+</script>

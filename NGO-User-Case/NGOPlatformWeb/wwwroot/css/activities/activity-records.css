@@ -1,0 +1,589 @@
+/* ================================
+   NGO Platform - Activity Records
+   活動紀錄頁面專用樣式 (整合設計系統)
+   使用 design-tokens.css 變數系統
+   ================================ */
+
+/* 活動卡片網格 */
+.activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: var(--spacing-xl);
+}
+
+.activity-card {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-smooth);
+    position: relative;
+}
+
+.activity-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* 活動圖片區域 */
+.activity-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.activity-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-base);
+}
+
+.activity-card:hover .activity-image img {
+    transform: scale(1.05);
+}
+
+.activity-status-badge {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-sm);
+    font-weight: var(--font-semibold);
+    backdrop-filter: blur(10px);
+}
+
+/* 活動內容區域 */
+.activity-content {
+    padding: var(--spacing-lg);
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-md);
+}
+
+.activity-name {
+    color: var(--text-primary);
+    font-weight: var(--font-semibold);
+    margin: 0;
+    flex: 1;
+    line-height: var(--line-height-tight);
+    font-size: var(--font-lg);
+}
+
+/* 更新：使用 design tokens 替換硬編碼顏色值 */
+.activity-category {
+    background: var(--bg-muted);
+    color: var(--text-secondary);
+    padding: calc(var(--spacing-xs) / 2) var(--spacing-sm);
+    border-radius: var(--radius-md);
+    font-size: var(--font-xs);
+    font-weight: var(--font-medium);
+    margin-left: var(--spacing-md);
+    white-space: nowrap;
+}
+
+/* 更新：使用 design tokens 替換硬編碼值 */
+.activity-description {
+    color: var(--text-light);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-base);
+    line-height: var(--line-height-relaxed);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 活動詳細信息 - 更新使用 design tokens */
+.activity-details {
+    margin-bottom: var(--spacing-lg);
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-light);
+    font-size: var(--font-base);
+}
+
+.detail-item i {
+    width: 16px;
+    color: var(--info-color);
+    flex-shrink: 0;
+}
+
+/* Case主題的詳細項目 */
+.case-theme .detail-item i {
+    color: var(--success-light);
+}
+
+/* 活動底部 - 更新使用 design tokens */
+.activity-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-light);
+}
+
+.activity-time-badge {
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-xs);
+    font-weight: var(--font-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* 狀態徽章 - 更新使用 design tokens */
+.upcoming-badge {
+    background: rgba(255, 193, 7, 0.15); /* 基於 warning-color 的淺色版本 */
+    color: #856404; /* 保持原有深色，符合可讀性 */
+}
+
+.completed-badge {
+    background: rgba(40, 167, 69, 0.15); /* 基於 success-color 的淺色版本 */
+    color: #155724; /* 保持原有深色，符合可讀性 */
+}
+
+.cancelled-badge {
+    background: rgba(220, 53, 69, 0.15); /* 基於紅色系統的淺色版本 */
+    color: #721c24; /* 保持原有深色，符合可讀性 */
+}
+
+/* 更新：使用 design tokens 替換硬編碼值 */
+.view-detail-btn {
+    color: var(--info-color);
+    text-decoration: none;
+    font-weight: var(--font-medium);
+    transition: var(--transition-base);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.view-detail-btn:hover {
+    color: var(--primary-dark);
+}
+
+/* Case主題的查看詳情按鈕 */
+.case-theme .view-detail-btn {
+    color: var(--success-light);
+}
+
+.case-theme .view-detail-btn:hover {
+    color: var(--info-color);
+}
+
+/* 篩選相關 - 更新使用 design tokens */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.section-header h4 {
+    color: var(--text-primary);
+    font-weight: var(--font-semibold);
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* 篩選動畫 - 更新使用 design tokens */
+.activity-card {
+    transition: all var(--transition-base), opacity var(--transition-slow), transform var(--transition-slow);
+}
+
+.activity-card.hidden {
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+}
+
+/* 特殊活動類型標識 - 更新使用 design tokens */
+.activity-card.case-exclusive {
+    border-left: 4px solid var(--success-light);
+}
+
+.activity-card.case-exclusive::after {
+    content: "個案專屬";
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    background: rgba(32, 201, 151, 0.9); /* 保持原有背景色以維持視覺識別 */
+    color: var(--bg-white);
+    padding: calc(var(--spacing-xs) / 2) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: calc(var(--font-xs) * 0.9);
+    font-weight: var(--font-semibold);
+}
+
+/* 響應式設計 - 更新使用 design tokens */
+@media (max-width: 768px) {
+    .activities-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .activity-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+    
+    .activity-category {
+        margin-left: 0;
+    }
+    
+    .activity-footer {
+        flex-direction: column;
+        gap: var(--spacing-md);
+        align-items: flex-start;
+    }
+    
+    .activity-description {
+        -webkit-line-clamp: 3;
+    }
+}
+
+@media (max-width: 576px) {
+    .activities-grid {
+        gap: var(--spacing-md);
+    }
+    
+    .activity-content {
+        padding: var(--spacing-md);
+    }
+    
+    .activity-image {
+        height: 150px;
+    }
+    
+    .detail-item {
+        font-size: var(--font-xs);
+    }
+    
+    .activity-time-badge {
+        padding: calc(var(--spacing-xs) * 0.8) var(--spacing-xs);
+        font-size: calc(var(--font-xs) * 0.9);
+    }
+    
+    .view-detail-btn {
+        font-size: var(--font-base);
+    }
+}
+
+/* 加載動畫 - 使用 design tokens 的預定義動畫 */
+.activity-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.activity-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.activity-card:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.activity-card:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+/* Case專用樣式覆蓋 - 更新使用 design tokens */
+.case-page .page-header {
+    background: linear-gradient(135deg, rgba(224, 247, 250, 1) 0%, rgba(178, 235, 242, 1) 100%);
+}
+
+.case-page .page-title {
+    color: var(--primary-dark);
+}
+
+.case-page .page-subtitle {
+    color: var(--text-secondary);
+}
+
+/* Case專用統計卡片顏色 - 使用 design tokens */
+.case-page .total-registrations-case .stat-icon {
+    background: linear-gradient(135deg, var(--info-color), var(--primary-dark));
+}
+
+.case-page .active-registrations-case .stat-icon {
+    background: linear-gradient(135deg, var(--success-light), var(--info-color));
+}
+
+.case-page .upcoming-activities-case .stat-icon {
+    background: linear-gradient(135deg, var(--warning-color), var(--info-color));
+}
+
+.case-page .completed-activities-case .stat-icon {
+    background: linear-gradient(135deg, var(--info-dark), var(--info-color));
+}
+
+.case-page .stat-number {
+    color: var(--primary-dark) !important;
+}
+
+.case-page .stat-label {
+    color: var(--text-secondary) !important;
+}
+
+/* Case專用篩選按鈕 - 更新使用 design tokens */
+.case-page .filter-btn {
+    background: rgba(224, 247, 250, 1);
+    border-color: rgba(178, 235, 242, 1);
+    color: var(--primary-dark);
+}
+
+.case-page .filter-btn:hover,
+.case-page .filter-btn.active {
+    background: var(--info-color);
+    border-color: var(--info-color);
+    color: var(--bg-white);
+}
+
+/* Case專用活動卡片 - 更新使用 design tokens */
+.case-page .activity-card {
+    border-left: 4px solid var(--info-color);
+}
+
+.case-page .activity-card:hover {
+    border-left-color: var(--primary-dark);
+}
+
+.case-page .status-active {
+    background: rgba(23, 162, 184, 0.9); /* 保持原有視覺識別 */
+    color: var(--bg-white);
+}
+
+.case-page .activity-category {
+    background: rgba(224, 247, 250, 1);
+    color: var(--primary-dark);
+}
+
+.case-page .detail-item i {
+    color: var(--info-color);
+}
+
+.case-page .view-detail-btn {
+    color: var(--info-color);
+}
+
+.case-page .view-detail-btn:hover {
+    color: var(--primary-dark);
+}
+
+/* Case專用時間徽章 - 更新使用類似色彩系統 */
+.case-page .upcoming-badge {
+    background: rgba(255, 248, 225, 1);
+    color: #e65100; /* 保持原有深色以確保可讀性 */
+}
+
+.case-page .completed-badge {
+    background: rgba(224, 242, 241, 1);
+    color: #00695c; /* 保持原有深色以確保可讀性 */
+}
+
+.case-page .cancelled-badge {
+    background: rgba(255, 235, 238, 1);
+    color: #c62828; /* 保持原有深色以確保可讀性 */
+}
+
+/* Case專用空狀態 - 更新使用 design tokens */
+.case-page .empty-state {
+    background: linear-gradient(145deg, rgba(224, 247, 250, 1), rgba(178, 235, 242, 1));
+    border: 2px dashed var(--info-color);
+}
+
+.case-page .empty-state .empty-icon {
+    color: var(--info-color);
+}
+
+.case-page .empty-state h4 {
+    color: var(--primary-dark);
+}
+
+/* Case專用個案徽章 - 更新使用 design tokens */
+.case-page .activity-card.case-exclusive::after {
+    content: "個案專屬";
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    background: rgba(111, 66, 193, 0.9); /* 保持原有背景色以維持視覺識別 */
+    color: var(--bg-white);
+    padding: calc(var(--spacing-xs) * 0.6) var(--spacing-xs);
+    border-radius: var(--radius-md);
+    font-size: calc(var(--font-xs) * 0.9);
+    font-weight: var(--font-semibold);
+}
+
+/* 印刷樣式 - 更新使用 design tokens */
+@media print {
+    .activity-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid var(--border-light);
+    }
+    
+    .activity-image {
+        height: 150px;
+    }
+    
+    .view-detail-btn {
+        display: none;
+    }
+}
+
+/* ============================================
+   設計系統整合註釋
+   ============================================
+   
+   主要變更說明：
+   
+   1. 顏色系統整合：
+      - 將所有硬編碼顏色值替換為 design tokens
+      - 文字顏色：使用 --text-primary, --text-secondary, --text-light
+      - 背景顏色：使用 --bg-white, --bg-muted, --bg-light  
+      - 功能顏色：使用 --info-color, --success-light, --warning-color
+   
+   2. 間距系統標準化：
+      - 統一使用 --spacing-xs, --spacing-sm, --spacing-md, --spacing-lg, --spacing-xl
+      - 提供一致的視覺節奏和間距比例
+   
+   3. 字體系統優化：
+      - 字體大小：使用 --font-xs, --font-sm, --font-base, --font-lg
+      - 字體權重：使用 --font-normal, --font-medium, --font-semibold
+      - 行高：使用 --line-height-tight, --line-height-normal, --line-height-relaxed
+   
+   4. 圓角和陰影標準化：
+      - 圓角：使用 --radius-sm, --radius-md, --radius-lg
+      - 陰影：使用 --shadow-md, --shadow-hover, --shadow-sm
+   
+   5. 過渡動畫統一：
+      - 使用 --transition-base, --transition-slow, --transition-smooth
+      - 提供一致的交互體驗
+   
+   6. 特殊處理說明：
+      - 某些顏色值（如狀態徽章背景色）保持原有數值以維持視覺識別性
+      - 在響應式設計中繼續使用 design tokens 確保一致性
+      - 加載動畫重用 design tokens 中的預定義動畫
+   
+   ============================================ */
+
+/* 統計卡片強制樣式 - 僅保留必要的override */
+.stat-card {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    height: 100% !important;
+}
+
+.stat-icon {
+    flex-shrink: 0 !important;
+}
+
+.stat-content {
+    flex: 1 !important;
+}
+
+/* 頁面標題區域按鈕樣式 - 適配淺色背景的設計 */
+.page-header .btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: 2px solid transparent !important;
+    color: white !important;
+    border-radius: 12px !important;
+    padding: 0.7rem 1.4rem !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+}
+
+.page-header .btn:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
+    color: white !important;
+}
+
+.page-header .btn:active {
+    transform: translateY(-1px) !important;
+    transition-duration: 0.1s !important;
+}
+
+.page-header .btn i {
+    transition: color 0.3s ease !important;
+    color: white !important;
+}
+
+.page-header .btn:hover i {
+    color: white !important;
+}
+
+/* 確保按鈕在所有背景下都可見 */
+.page-header .btn:focus {
+    outline: 3px solid rgba(102, 126, 234, 0.5) !important;
+    outline-offset: 2px !important;
+}
+
+/* 確保與其他 outline 按鈕不衝突 */
+.page-header .btn-outline-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-color: transparent !important;
+    color: white !important;
+}
+
+.page-header .btn-outline-primary:hover,
+.page-header .btn-outline-primary:focus {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%) !important;
+    border-color: transparent !important;
+    color: white !important;
+}
+
+/* 活動紀錄頁面容器設定 - 與深色主題配合 */
+body .container.py-5 {
+    background: transparent !important;
+    background-image: none !important;
+    min-height: auto !important;
+    margin: 0 auto !important;
+    max-width: 1140px !important;
+    padding: 3rem 1rem !important;
+}
+
+body .container.py-5::before {
+    display: none !important;
+    content: none !important;
+}
+
+/* 確保不受其他背景影響，使用透明背景讓深色主題生效 */
+body {
+    background: transparent !important;
+}
+
+/* 特別針對活動紀錄頁面 - 使用透明背景 */
+[data-title="活動報名紀錄"] .container.py-5,
+.container.py-5:has(.page-header) {
+    background: transparent !important;
+    background-image: none !important;
+}
