@@ -33,25 +33,11 @@ dotnet restore
 
 ---
 
-### 選項 A：使用自動化腳本（推薦）
-
-**展示模式（含公開網址）**
-```batch
-雙擊執行： scripts\啟動展示系統-Cloudflare.bat
-```
-✅ 自動啟動前端、後端和 Cloudflare Tunnel
-✅ 取得公開網址供他人訪問
-
-**本地開發模式**
-需要手動開啟三個終端機（見下方）
-
----
-
-### 選項 B：手動啟動（3 個終端機）
+### 啟動步驟（3 個終端機）
 
 #### 🔴 終端機 1 - 後端 API（必須先啟動）
 ```batch
-cd C:\Users\lanli\source\repos\NGO-Admin-System-WebAPI
+cd NGO-Admin-System-WebAPI
 dotnet run
 ```
 **等待看到**：`Now listening on: http://localhost:5264`
@@ -60,7 +46,7 @@ dotnet run
 
 #### 🟢 終端機 2 - 前端 React
 ```batch
-cd C:\Users\lanli\source\repos\NGO-Admin-System
+cd NGO-Admin-System
 npm run dev
 ```
 **等待看到**：`Local: http://localhost:5173/`
@@ -69,7 +55,7 @@ npm run dev
 
 #### 🔵 終端機 3 - MVC 前台（選用）
 ```batch
-cd C:\Users\lanli\source\repos\NGO-User-Case\NGOPlatformWeb
+cd NGO-User-Case/NGOPlatformWeb
 dotnet run
 ```
 
@@ -77,19 +63,11 @@ dotnet run
 
 ## 🔗 訪問系統
 
-### 本地訪問
 | 服務 | 網址 |
 |------|------|
 | React 後台 | http://localhost:5173 |
 | WebAPI | http://localhost:5264 |
 | MVC 前台 | http://localhost:5066 |
-
-### 公開訪問（使用 ngrok）
-執行 `scripts\啟動展示系統.bat` 後：
-1. 開啟瀏覽器訪問 http://localhost:4040
-2. 查看 ngrok 提供的公開網址
-3. 前端網址（5173）- 給面試官看
-4. 後端網址（5264）- 供前端呼叫 API
 
 ---
 
@@ -121,7 +99,6 @@ Email: staff@ngo.org
 - [ ] 確認資料庫 `NGOPlatformDb` 存在
 - [ ] 已安裝 .NET 8.0 SDK
 - [ ] 已安裝 Node.js 和 npm
-- [ ] （展示模式）已安裝並設定 ngrok
 
 ---
 
@@ -130,7 +107,7 @@ Email: staff@ngo.org
 ### 問題 1: WebAPI 啟動失敗
 ```
 解決：確認 SQL Server 正在運行
-檢查：開啟 SSMS 確認可連線到 YUNYUE\SQLEXPRESS
+檢查：開啟 SSMS 確認可連線到資料庫伺服器
 ```
 
 ### 問題 2: React 無法連接 API
@@ -165,8 +142,6 @@ Email: staff@ngo.org
 3. React 前端 (localhost:5173)
    ↓
 4. (選用) MVC 前台 (localhost:5066)
-   ↓
-5. (展示用) ngrok tunnels
 ```
 
 ---
@@ -198,36 +173,15 @@ Email: staff@ngo.org
 
 ## 💡 快速提示
 
-### 提示 1: 最快啟動
-如果只是要測試系統，使用自動化腳本最快：
-```batch
-scripts\啟動展示系統.bat
-```
-
-### 提示 2: 停止服務
+### 提示 1: 停止服務
 在終端機按 `Ctrl + C` 停止服務
 
-### 提示 3: 重新啟動
+### 提示 2: 重新啟動
 如果遇到問題，關閉所有終端機，重新按順序啟動
 
-### 提示 4: 查看日誌
+### 提示 3: 查看日誌
 - WebAPI：終端機會顯示 API 請求日誌
 - React：瀏覽器 Console (F12) 顯示前端日誌
-
----
-
-## 📚 需要更多資訊？
-
-### 詳細指南
-- [本地開發環境啟動指南](docs/本地開發環境啟動指南.md)
-- [展示系統使用說明](docs/展示系統使用說明.md)
-- [測試帳號列表](docs/測試帳號列表.md)
-
-### 部署相關
-- [部署指南-免費方案](docs/部署指南-免費方案.md)
-
-### 工作總結
-- [工作總結與下次啟動指南](docs/工作總結與下次啟動指南.md)
 
 ---
 
@@ -247,12 +201,6 @@ scripts\啟動展示系統.bat
 內容： API 位址、功能開關、檔案上傳限制
 ```
 
-**ngrok 配置**
-```
-位置： config\ngrok-config.yml
-內容： authtoken、tunnel 設定
-```
-
 ---
 
 ## 🎉 啟動成功！
@@ -261,22 +209,6 @@ scripts\啟動展示系統.bat
 - ✅ 使用 React 後台管理個案、活動、物資
 - ✅ 測試不同角色的權限差異
 - ✅ 查看 Dashboard 統計圖表
-- ✅ 使用 ngrok 分享給面試官
-
----
-
-## 📞 下一步
-
-### 本地開發
-繼續開發功能，測試各模組
-
-### 展示準備
-1. 執行展示腳本
-2. 取得 ngrok 網址
-3. 準備展示內容（5-10 分鐘）
-
-### 正式部署
-參考 [部署指南](docs/部署指南-免費方案.md) 部署到 Vercel + Render
 
 ---
 
@@ -296,18 +228,12 @@ scripts\啟動展示系統.bat
 
 ```batch
 # 後端
-cd C:\Users\lanli\source\repos\NGO-Admin-System-WebAPI
+cd NGO-Admin-System-WebAPI
 dotnet run
 
 # 前端
-cd C:\Users\lanli\source\repos\NGO-Admin-System
+cd NGO-Admin-System
 npm run dev
-
-# 展示模式
-scripts\啟動展示系統.bat
-
-# 查看 ngrok
-http://localhost:4040
 ```
 
 ---

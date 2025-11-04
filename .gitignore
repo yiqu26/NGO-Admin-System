@@ -166,6 +166,8 @@ docs/測試帳號列表.md
 docs/測試帳號與登入指南.md
 docs/NGROK-問題排查指南.md
 docs/部署指南-免費方案.md
+docs/CLOUDFLARE-TUNNEL-GUIDE.md
+docs/QUICK-DEMO-REFERENCE.md
 
 # 舊備份資料夾
 scripts/old-ngrok-backup/

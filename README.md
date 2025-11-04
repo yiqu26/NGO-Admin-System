@@ -43,7 +43,6 @@
 - Node.js 18+
 - .NET SDK 8.0 或 9.0
 - SQL Server 2019+
-- Cloudflared (用於公開展示，選用)
 
 ### 本地開發啟動
 
@@ -70,23 +69,6 @@ cd NGO-Admin-System
 npm run dev
 # 運行於 http://localhost:5173
 ```
-
-### 🌐 公開展示（使用 Cloudflare Tunnel）
-
-如需透過公開網址展示系統（例如給面試官），可使用啟動腳本：
-
-```bash
-# 使用一鍵啟動腳本
-scripts\啟動展示系統-Cloudflare.bat
-```
-
-這會自動啟動：
-- 後端 API + React 前端 + MVC 前端
-- 3 個 Cloudflare Tunnel（自動產生公開網址）
-
-詳細說明請參考 [CLOUDFLARE-TUNNEL-GUIDE.md](docs/CLOUDFLARE-TUNNEL-GUIDE.md)
-
----
 
 詳細安裝步驟請參考 [QUICK-START.md](QUICK-START.md)
 
