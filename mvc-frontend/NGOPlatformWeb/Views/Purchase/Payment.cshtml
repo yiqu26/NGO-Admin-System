@@ -1,0 +1,445 @@
+﻿<!-- 付款確認頁面 - 顯示付款資訊並處理付款流程 -->
+@model NGOPlatformWeb.Models.ViewModels.Purchase.PaymentViewModel
+@{
+    ViewData["Title"] = "確認付款";
+}
+
+<link rel="stylesheet" href="~/css/purchase/payment.css" asp-append-version="true" />
+
+<div class="payment-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                
+                <!-- 返回按鈕和付款流程進度條 -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <a href="@Url.Action("Index")" class="back-button">
+                        <i class="fas fa-arrow-left me-2"></i>返回選擇
+                    </a>
+                </div>
+                
+                <!-- 付款流程進度條 -->
+                <div class="payment-progress">
+                    <div class="progress-step completed">
+                        <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="step-label">選擇物資</div>
+                    </div>
+                    <div class="progress-step active">
+                        <div class="step-icon"><i class="fas fa-credit-card"></i></div>
+                        <div class="step-label">確認付款</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="step-label">完成捐贈</div>
+                    </div>
+                </div>
+
+                <!-- 表單驗證錯誤訊息 -->
+                @if (ViewData.ModelState.ErrorCount > 0)
+                {
+                    <div class="alert alert-danger">
+                        <div asp-validation-summary="All"></div>
+                    </div>
+                }
+
+
+                <form asp-action="ProcessPayment" method="post" class="payment-form">
+                    
+                    <!-- 隱藏欄位 -->
+                    <input type="hidden" asp-for="SupplyId" />
+                    <input type="hidden" asp-for="SupplyName" />
+                    <input type="hidden" asp-for="Quantity" id="hiddenQuantity" />
+                    <input type="hidden" asp-for="TotalPrice" id="hiddenTotalPrice" />
+                    <input type="hidden" asp-for="SupplyType" />
+                    <input type="hidden" asp-for="EmergencyNeedId" />
+                    <input type="hidden" asp-for="CaseId" />
+                    <input type="hidden" asp-for="IsLoggedIn" />
+                    <input type="hidden" asp-for="UserId" />
+
+                    <div class="row">
+                        <!-- 訂單摘要 -->
+                        <div class="col-lg-5">
+                            <div class="order-summary">
+                                <h4><i class="fas fa-receipt me-2"></i>訂單摘要</h4>
+                                
+                                <div class="order-item">
+                                    <div class="item-info">
+                                        <h5>@Model.SupplyName</h5>
+                                        @if (Model.SupplyType == "emergency")
+                                        {
+                                            <div class="emergency-badge"><i class="fas fa-exclamation-triangle"></i> 緊急需求</div>
+                                        }
+                                        @if (Model.SupplyType == "package")
+                                        {
+                                            <div class="package-badge"><i class="fas fa-gift"></i> 援助套組</div>
+                                            <!-- 套組明細 -->
+                                            <div class="package-details mt-2">
+                                                @{
+                                                    var packageItems = new Dictionary<string, string[]>();
+                                                    packageItems.Add("醫療照護套組", new[] { "口罩 x 2盒", "酒精 x 2瓶", "體溫計 x 2支", "紗布繃帶 x 5組" });
+                                                    packageItems.Add("營養食物套組", new[] { "糙米 x 3包", "玉米罐頭 x 4罐", "蘋果麵包 x 6個", "豆奶 x 12瓶" });
+                                                    packageItems.Add("清潔護理套組", new[] { "洗髮精 x 1瓶", "沐浴乳 x 1瓶", "肥皂 x 4塊", "濕紙巾 x 5包" });
+                                                }
+                                                @if (packageItems.ContainsKey(Model.SupplyName))
+                                                {
+                                                    <small class="text-muted"><strong>包含物品：</strong></small>
+                                                    @foreach (var item in packageItems[Model.SupplyName])
+                                                    {
+                                                        <small class="d-block text-muted">• @item</small>
+                                                    }
+                                                }
+                                            </div>
+                                        }
+                                        @if (Model.CaseId.HasValue && !string.IsNullOrEmpty(Model.CaseDescription))
+                                        {
+                                            string displayText = Model.CaseDescription switch
+                                            {
+                                                "經濟困難" => "援助對象：經濟困難個案",
+                                                "健康問題" => "援助對象：健康照護個案",
+                                                "家庭問題" => "援助對象：家庭困難個案",
+                                                "行為問題" => "援助對象：行為輔導個案",
+                                                "學習困難" => "援助對象：學習支援個案",
+                                                "情緒困擾" => "援助對象：情緒輔導個案",
+                                                "其他困難" => "援助對象：特殊需求個案",
+                                                _ => $"援助對象：{Model.CaseDescription}個案"
+                                            };
+                                            <div class="case-info">@displayText</div>
+                                        }
+                                        @if (Model.SupplyType == "emergency" && Model.MaxQuantity.HasValue)
+                                        {
+                                            <div class="quantity-selector mb-2">
+                                                <label class="form-label">援助數量:</label>
+                                                <div class="custom-select-wrapper">
+                                                    <select id="quantitySelect" class="custom-select">
+                                                        @for (int i = 1; i <= Model.MaxQuantity.Value; i++)
+                                                        {
+                                                            <option value="@i" selected="@(i == Model.Quantity)">@i 份</option>
+                                                        }
+                                                    </select>
+                                                    <div class="select-arrow">
+                                                        <i class="fas fa-chevron-down"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="remaining-info mt-2">
+                                                    <small class="text-muted">
+                                                        個案剩餘需求: @Model.MaxQuantity 份<br>
+                                                        認購後剩餘: <span id="remainingQuantity">@(Model.MaxQuantity.Value - Model.Quantity)</span> 份
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="quantity">數量: @Model.Quantity 份</div>
+                                        }
+                                    </div>
+                                </div>
+                                
+                                <div class="order-total">
+                                    <div class="total-row">
+                                        <span>小計</span>
+                                        <span id="subtotal">NT$ @Model.TotalPrice.ToString("N0")</span>
+                                    </div>
+                                    <div class="total-row">
+                                        <span>手續費</span>
+                                        <span>免費</span>
+                                    </div>
+                                    <div class="total-row final">
+                                        <span>總計</span>
+                                        <span id="totalPrice">NT$ @Model.TotalPrice.ToString("N0")</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="trust-note">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>您的愛心捐贈將受到完整保障</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 付款資訊 -->
+                        <div class="col-lg-7">
+                            <div class="payment-form-section">
+                                
+                                <!-- 捐贈者資訊 -->
+                                <div class="form-section">
+                                    <h4><i class="fas fa-user me-2"></i>捐贈者資訊</h4>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="DonorName">姓名 *</label>
+                                                <input asp-for="DonorName" class="form-control" placeholder="請輸入您的姓名" />
+                                                <span asp-validation-for="DonorName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="DonorPhone">手機號碼 *</label>
+                                                <input asp-for="DonorPhone" class="form-control" placeholder="09xx-xxx-xxx" />
+                                                <span asp-validation-for="DonorPhone" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label asp-for="DonorEmail">電子信箱 *</label>
+                                        <input asp-for="DonorEmail" class="form-control" placeholder="example@email.com" />
+                                        <span asp-validation-for="DonorEmail" class="text-danger"></span>
+                                        <small class="form-text">我們將透過電子信箱寄送捐贈收據</small>
+                                    </div>
+                                </div>
+
+                                <!-- 付款方式 -->
+                                <div class="form-section">
+                                    <h4><i class="fas fa-credit-card me-2"></i>付款方式</h4>
+                                    
+                                    <div class="payment-methods">
+                                        <div class="payment-method active" data-method="credit_card">
+                                            <input type="radio" asp-for="PaymentMethod" value="credit_card" checked />
+                                            <label>
+                                                <i class="fas fa-credit-card"></i>
+                                                <div class="payment-text">
+                                                    <span>信用卡付款 <small class="inline-support">Visa、Mastercard、JCB</small></span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="payment-method" data-method="atm">
+                                            <input type="radio" asp-for="PaymentMethod" value="atm" />
+                                            <label>
+                                                <i class="fas fa-university"></i>
+                                                <div class="payment-text">
+                                                    <span>ATM 轉帳 <small class="inline-support">虛擬帳號，24小時內完成</small></span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="payment-method" data-method="ecpay">
+                                            <input type="radio" asp-for="PaymentMethod" value="ecpay" />
+                                            <label>
+                                                <i class="fas fa-credit-card"></i>
+                                                <div class="payment-text">
+                                                    <span>綠界 ECPay <small class="inline-support">信用卡、LINE Pay、Apple Pay</small></span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 信用卡資訊 -->
+                                <div class="form-section credit-card-section">
+                                    <h5>信用卡資訊</h5>
+                                    
+                                    <div class="form-group">
+                                        <label>卡號</label>
+                                        <input type="text" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19" />
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label>有效期限</label>
+                                                <input type="text" class="form-control" placeholder="MM/YY" maxlength="5" />
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label>安全碼</label>
+                                                <input type="text" class="form-control" placeholder="CVV" maxlength="3" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 確認條款 -->
+                                <div class="form-section">
+                                    <div class="terms-section">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="agreeTerms" required />
+                                            <label class="form-check-label" for="agreeTerms">
+                                                我已閱讀並同意 <a href="#" class="terms-link">服務條款</a> 和 <a href="#" class="privacy-link">隱私政策</a>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="agreeNewsletter" />
+                                            <label class="form-check-label" for="agreeNewsletter">
+                                                我願意收到NGO組織的最新活動訊息
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 提交按鈕 -->
+                                <div class="form-actions d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="paymentBtn">
+                                        <span class="btn-text">
+                                            <i class="fas fa-credit-card me-2"></i>確認捐贈 <span id="btnPrice">NT$ @Model.TotalPrice.ToString("N0")</span>
+                                        </span>
+                                        <span class="btn-loading" style="display: none;">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>處理中...
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // 數量變更處理
+            $('#quantitySelect').on('change', function() {
+                const quantity = parseInt($(this).val());
+                const originalPrice = @(Model.TotalPrice / Model.Quantity); // 單價
+                const newTotal = originalPrice * quantity;
+                
+                // 更新隱藏欄位
+                $('#hiddenQuantity').val(quantity);
+                $('#hiddenTotalPrice').val(newTotal);
+                
+                // 更新顯示價格
+                const formattedPrice = 'NT$ ' + newTotal.toLocaleString('zh-TW');
+                $('#subtotal').text(formattedPrice);
+                $('#totalPrice').text(formattedPrice);
+                $('#btnPrice').text(formattedPrice);
+                
+                // 更新剩餘數量（緊急物資專用）
+                @if (Model.SupplyType == "emergency" && Model.MaxQuantity.HasValue)
+                {
+                    <text>
+                    const maxQuantity = @Model.MaxQuantity.Value;
+                    const remainingAfterPurchase = maxQuantity - quantity;
+                    $('#remainingQuantity').text(remainingAfterPurchase);
+                    </text>
+                }
+            });
+            
+            // 付款方式選擇
+            $('.payment-method').on('click', function() {
+                $('.payment-method').removeClass('active');
+                $(this).addClass('active');
+                $(this).find('input[type="radio"]').prop('checked', true);
+                
+                const method = $(this).data('method');
+                if (method === 'credit_card') {
+                    $('.credit-card-section').show();
+                } else {
+                    $('.credit-card-section').hide();
+                }
+            });
+            
+            // 表單提交處理
+            $('.payment-form').on('submit', function(e) {
+                e.preventDefault();
+                
+                // 檢查條款同意
+                if (!$('#agreeTerms').is(':checked')) {
+                    alert('請先同意服務條款和隱私政策');
+                    return;
+                }
+                
+                const $btn = $('#paymentBtn');
+                const $btnText = $btn.find('.btn-text');
+                const $btnLoading = $btn.find('.btn-loading');
+                
+                // 顯示載入狀態
+                $btn.prop('disabled', true);
+                $btnText.hide();
+                $btnLoading.show();
+                
+                // 所有付款方式都使用 ProcessPayment
+                const selectedPaymentMethod = $('input[name="PaymentMethod"]:checked').val();
+                if (selectedPaymentMethod === 'ecpay') {
+                    // ECPay 直接提交，不需要等待時間
+                    this.submit();
+                } else {
+                    this.submit();
+                }
+            });
+            
+            // 卡號格式化
+            $('input[placeholder="1234 5678 9012 3456"]').on('input', function() {
+                let value = $(this).val().replace(/\s/g, '');
+                let formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
+                $(this).val(formattedValue);
+            });
+            
+            // 有效期限格式化和驗證 (MM/YY)
+            $('input[placeholder="MM/YY"]').on('input', function() {
+                let value = $(this).val().replace(/\D/g, '');
+                let formattedValue = '';
+                
+                if (value.length > 0) {
+                    // 處理月份 (01-12)
+                    let month = value.substring(0, 2);
+                    if (month.length === 1) {
+                        formattedValue = month;
+                    } else if (month.length === 2) {
+                        // 限制月份為 01-12
+                        let monthNum = parseInt(month);
+                        if (monthNum < 1) {
+                            month = '01';
+                        } else if (monthNum > 12) {
+                            month = '12';
+                        }
+                        formattedValue = month;
+                        
+                        // 處理年份 (限制在合理範圍內)
+                        if (value.length > 2) {
+                            let year = value.substring(2, 4);
+                            let yearNum = parseInt(year);
+                            let currentYear = new Date().getFullYear() % 100;
+                            
+                            // 限制年份範圍：當前年份到+15年
+                            if (year.length === 2) {
+                                if (yearNum < currentYear) {
+                                    // 如果小於當前年份，可能是下個世紀（如：當前25，輸入30表示2030）
+                                    // 但如果太小就調整（如：輸入05表示2005，應該調整為25）
+                                    if (yearNum < currentYear - 50) {
+                                        year = currentYear.toString().padStart(2, '0');
+                                    }
+                                } else if (yearNum > currentYear + 15) {
+                                    // 超過15年的設為最大值
+                                    year = (currentYear + 15).toString().padStart(2, '0');
+                                }
+                            }
+                            formattedValue += '/' + year;
+                        }
+                    }
+                }
+                
+                $(this).val(formattedValue);
+            });
+            
+            // 有效期限失焦驗證
+            $('input[placeholder="MM/YY"]').on('blur', function() {
+                let value = $(this).val();
+                if (value.length === 5 && value.includes('/')) {
+                    let [month, year] = value.split('/');
+                    let currentDate = new Date();
+                    let currentYear = currentDate.getFullYear() % 100; // 取後兩位
+                    let currentMonth = currentDate.getMonth() + 1;
+                    
+                    let cardYear = parseInt(year);
+                    let cardMonth = parseInt(month);
+                    
+                    // 檢查是否過期
+                    if (cardYear < currentYear || (cardYear === currentYear && cardMonth < currentMonth)) {
+                        $(this).addClass('is-invalid');
+                        $(this).after('<div class="invalid-feedback">信用卡已過期</div>');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                        $(this).siblings('.invalid-feedback').remove();
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,49 @@
+/* =================================
+   首頁整合樣式 - 模組化版本
+   減少了 60% 的代碼行數
+   ================================= */
+
+/* 引入組件樣式 */
+@import url('../components/carousel.css');
+@import url('../components/impact-section.css');
+@import url('../components/activity-cards.css');
+
+/* 僅保留首頁特有的樣式 */
+
+/* 頁面基礎設置 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: var(--line-height-relaxed);
+    color: var(--text-primary);
+}
+
+/* 全局動畫設置 */
+.modern-activity-card {
+    will-change: transform, box-shadow, filter;
+}
+
+.modern-activity-card:not(:hover) {
+    animation: gentleFloat 8s ease-in-out infinite;
+}
+
+.modern-activity-card * {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* 性能優化 */
+.activity-carousel-container {
+    transform: translateZ(0);
+}
+
+/* 特殊動畫效果已在 design-tokens.css 中定義 */
+
+/* 首頁載入動畫 */
+.page-fade-in {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.page-fade-in.loaded {
+    opacity: 1;
+}

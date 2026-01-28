@@ -1,0 +1,566 @@
+﻿<!-- 一般使用者個人資料頁面 - 顯示基本資料、活動統計、認購統計 -->
+@model NGOPlatformWeb.Models.ViewModels.Profile.UserProfileViewModel
+@{
+    ViewData["Title"] = "個人資料";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile/profile-shared.css" />
+    <link rel="stylesheet" href="~/css/profile/profile-components.css" />
+    <link rel="stylesheet" href="~/css/profile/achievement-wall.css" />
+    <link rel="stylesheet" href="~/css/profile/profile-enhanced.css" />
+    <link rel="stylesheet" href="~/css/profile/profile-dark-theme.css" />
+    <style>
+        /* 直接覆蓋樣式，確保生效 */
+        .profile-page .field-row {
+            background: rgba(248, 250, 252, 0.4) !important;
+            border-radius: 8px !important;
+            margin-bottom: 0.5rem !important;
+            padding: 1rem 1.5rem !important;
+            border-bottom: 1px solid rgba(241, 245, 249, 0.6) !important;
+        }
+        
+        .profile-page .field-row:hover {
+            background: rgba(241, 245, 249, 0.7) !important;
+        }
+        
+        .profile-page .edit-btn {
+            background: linear-gradient(135deg, #007bff, #0056b3) !important;
+            color: white !important;
+            text-decoration: none !important;
+            border: none !important;
+            padding: 0.75rem 2rem !important;
+            border-radius: 12px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3) !important;
+        }
+        
+        .profile-page .edit-btn:hover {
+            background: linear-gradient(135deg, #0056b3, #004085) !important;
+            color: white !important;
+            text-decoration: none !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4) !important;
+        }
+    </style>
+}
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.BodyClass = "profile-page";
+}
+
+<div class="container py-5" style="margin-bottom: 3rem;">
+    <div class="row g-4">
+        <!-- 左側邊欄 - 顯示頭像、基本資訊、導航選單 -->
+        <div class="col-md-4">
+            <div class="profile-sidebar">
+                <!-- 使用者頭像區域 -->
+                <div class="profile-avatar">
+                    <img src="@(Model.ProfileImage ?? "/images/user-default-new.svg")" 
+                         alt="頭像" 
+                         id="profileImageDisplay" 
+                         onerror="this.src='/images/user-default-new.svg'" />
+                    <div class="avatar-overlay" onclick="document.getElementById('profileImageInput').click()">
+                        <i class="fas fa-camera"></i>
+                        <span>更換頭像</span>
+                    </div>
+                    <input type="file" id="profileImageInput" accept=".jpg,.jpeg,.png" style="display:none" onchange="uploadUserProfileImage(this)" />
+                </div>
+                
+                <!-- 基本資訊顯示 -->
+                <div class="profile-info">
+                    <h5>@Model.Name</h5>
+                    <p>@Model.Email</p>
+                </div>
+
+                <!-- 導航選單 -->
+                <nav class="profile-nav">
+                    <a href="#" class="nav-item active">
+                        <i class="fas fa-user"></i>個人資料
+                    </a>
+                    <a asp-controller="User" asp-action="Registrations" class="nav-item">
+                        <i class="fas fa-calendar-check"></i>活動紀錄
+                    </a>
+                    <a asp-controller="User" asp-action="PurchaseRecords" class="nav-item">
+                        <i class="fas fa-shopping-bag"></i>認購紀錄
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- 右側主要內容區 -->
+        <div class="col-md-8">
+            <!-- Google 用戶資料完善提醒 -->
+            @if (Model.IdentityNumber.StartsWith("TEMP"))
+            {
+                <div class="alert alert-info alert-dismissible fade show mb-4" role="alert" 
+                     style="border-left: 4px solid #4285f4; 
+                            background: linear-gradient(135deg, #e8f4fd, #ffffff); 
+                            border: 1px solid #e3f2fd; 
+                            border-radius: 12px; 
+                            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.1);
+                            padding: 20px;">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3 mt-1">
+                            <i class="fab fa-google" style="font-size: 1.8rem; color: #4285f4;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-info-circle me-2" style="color: #4285f4;"></i>
+                                <h5 class="alert-heading mb-0" style="color: #1a73e8; font-weight: 600;">完善您的個人資料</h5>
+                            </div>
+                            <p class="mb-3" style="color: #5f6368; line-height: 1.5;">您是透過 Google 帳號註冊的，為了更好的服務體驗，建議您完善以下資料：</p>
+                            <ul class="mb-3" style="color: #5f6368; line-height: 1.6;">
+                                <li class="mb-1">更新真實的身分證字號（目前為暫時編號）</li>
+                                <li class="mb-1">確認電話號碼是否正確</li>
+                                <li class="mb-1">設定平台專用密碼（可選）</li>
+                            </ul>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <small class="text-muted d-flex align-items-center">
+                                    <i class="fas fa-shield-alt me-2" style="color: #34a853;"></i>您的資料安全受到完整保護
+                                </small>
+                                <a asp-action="EditProfile" class="btn btn-primary" 
+                                   style="background: #1a73e8; 
+                                          border: none; 
+                                          border-radius: 8px; 
+                                          padding: 8px 20px; 
+                                          font-weight: 500;
+                                          box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+                                          transition: all 0.2s ease;">
+                                    <i class="fas fa-edit me-2"></i>立即完善
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" 
+                            style="position: absolute; top: 15px; right: 15px; opacity: 0.6;" 
+                            onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'"></button>
+                </div>
+            }
+            
+            <!-- 基本資料卡片 -->
+            <div class="profile-content">
+                <div class="content-header">
+                    <h4><i class="fas fa-id-card me-2"></i>基本資料</h4>
+                </div>
+
+                <!-- 資料欄位顯示區 -->
+                <div class="profile-fields">
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-user me-2"></i>姓名</div>
+                        <div class="field-value">@Model.Name</div>
+                    </div>
+                    
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-envelope me-2"></i>Email</div>
+                        <div class="field-value">@Model.Email</div>
+                    </div>
+                    
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-phone me-2"></i>電話</div>
+                        <div class="field-value">@Model.Phone</div>
+                    </div>
+                    
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-id-card me-2"></i>身分證字號</div>
+                        <div class="field-value">@Model.IdentityNumber</div>
+                    </div>
+                    
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-lock me-2"></i>密碼</div>
+                        <div class="field-value">
+                            <span class="password-dots">●●●●●●</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 編輯按鈕 -->
+                <div class="content-footer">
+                    <a asp-action="EditProfile" class="edit-btn">
+                        <i class="fas fa-edit me-2"></i>編輯資料
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 成就牆區域 -->
+            <div class="achievement-wall-card mt-4">
+                <div class="achievement-header">
+                    <h5><i class="fas fa-trophy me-2"></i>成就徽章</h5>
+                    <span class="achievement-count">@Model.Achievements.Count(a => a.IsEarned) / @Model.Achievements.Count</span>
+                </div>
+                
+                <!-- 成就網格 -->
+                <div class="achievements-grid" id="achievementsGrid">
+                    @if (Model.Achievements.Any())
+                    {
+                        // 將成就按照是否獲得排序：已獲得的在前，未獲得的在後
+                        var sortedAchievements = Model.Achievements
+                            .OrderByDescending(a => a.IsEarned)
+                            .ThenByDescending(a => a.EarnedAt ?? DateTime.MinValue)
+                            .ToList();
+                        
+                        @for (int i = 0; i < sortedAchievements.Count; i++)
+                        {
+                            var achievement = sortedAchievements[i];
+                            <div class="achievement-item @(achievement.IsEarned ? "earned" : "locked") @(achievement.IsNew ? "new-achievement" : "") @(i >= 6 ? "achievement-hidden" : "")">
+                                <!-- 成就圖標 -->
+                                <div class="achievement-icon @(achievement.Icon)-icon">
+                                    <i class="fas fa-@achievement.Icon"></i>
+                                </div>
+                                
+                                <!-- 成就資訊 -->
+                                <div class="achievement-info">
+                                    <h6 class="achievement-name">
+                                        @if (achievement.IsEarned)
+                                        {
+                                            @achievement.Name
+                                        }
+                                        else
+                                        {
+                                            <span>神秘成就</span>
+                                        }
+                                    </h6>
+                                    <p class="achievement-desc">
+                                        @if (achievement.IsEarned)
+                                        {
+                                            @achievement.Description
+                                        }
+                                        else
+                                        {
+                                            <span class="mystery-text">繼續參與活動來解鎖此成就</span>
+                                        }
+                                    </p>
+                                    @if (achievement.IsEarned && achievement.EarnedAt.HasValue)
+                                    {
+                                        <small class="earned-date">
+                                            <i class="fas fa-calendar-alt me-1"></i>
+                                            @achievement.EarnedAt.Value.ToString("yyyy/MM/dd")
+                                        </small>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="no-achievements">
+                            <i class="fas fa-star"></i>
+                            <p>開始參與活動來獲得成就徽章吧！</p>
+                        </div>
+                    }
+                </div>
+                
+                <!-- 展開/收起按鈕 -->
+                @if (Model.Achievements.Count > 6)
+                {
+                    var sortedAchievementsForCount = Model.Achievements
+                        .OrderByDescending(a => a.IsEarned)
+                        .ThenByDescending(a => a.EarnedAt ?? DateTime.MinValue)
+                        .ToList();
+                    <div class="achievement-toggle-section">
+                        <button type="button" class="achievement-toggle-btn" id="achievementToggleBtn">
+                            <span class="toggle-text">顯示更多成就</span>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                            <span class="hidden-count">還有 @(sortedAchievementsForCount.Count - 6) 個成就</span>
+                        </button>
+                    </div>
+                }
+            </div>
+            
+            <!-- 活動與認購總覽區 -->
+            <div class="row g-4 mt-4">
+                <!-- 活動報名總覽卡片 -->
+                <div class="col-md-6">
+                    <div class="overview-card activity-overview">
+                        <div class="overview-header">
+                            <h5><i class="fas fa-calendar-check me-2"></i>活動報名</h5>
+                            <a asp-action="Registrations" class="view-all-btn">查看全部</a>
+                        </div>
+                        
+                        <!-- 活動統計數據 -->
+                        <div class="overview-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">@Model.TotalActivitiesRegistered</div>
+                                <div class="stat-label">總報名次數</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">@Model.ActiveRegistrations</div>
+                                <div class="stat-label">進行中活動</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 最近活動清單 - 優化版 -->
+                        <div class="recent-items recent-activities-optimized">
+                            @if (Model.RecentActivities.Any())
+                            {
+                                @foreach (var activity in Model.RecentActivities)
+                                {
+                                    <div class="activity-item activity-item-optimized">
+                                        <!-- 使用背景圖替代img標籤，避免載入延遲 -->
+                                        <div class="activity-thumb-bg" 
+                                             style="background-image: url('@activity.ImageUrl')" 
+                                             loading="lazy"
+                                             data-src="@activity.ImageUrl">
+                                        </div>
+                                        <div class="activity-info">
+                                            <div class="activity-name">@activity.ActivityName</div>
+                                            <div class="activity-date">@activity.StartDate.ToString("yyyy/MM/dd")</div>
+                                            <span class="activity-status @(activity.Status == "registered" ? "status-active" : "status-cancelled")">
+                                                @(activity.Status == "registered" ? "已報名" : "已取消")
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <!-- 無活動時顯示 -->
+                                <div class="no-data">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <p>尚未參加任何活動</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 認購總覽卡片 -->
+                <div class="col-md-6">
+                    <div class="overview-card purchase-overview">
+                        <div class="overview-header">
+                            <h5><i class="fas fa-receipt me-2"></i>認購紀錄</h5>
+                            <a asp-action="PurchaseRecords" class="view-all-btn">查看全部</a>
+                        </div>
+                        
+                        <!-- 認購統計數據 -->
+                        <div class="overview-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">@Model.TotalPurchaseOrders</div>
+                                <div class="stat-label">認購次數</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">$@Model.TotalPurchaseAmount.ToString("N0")</div>
+                                <div class="stat-label">累計金額</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 最近認購清單 -->
+                        <div class="recent-items">
+                            @if (Model.RecentPurchases.Any())
+                            {
+                                @foreach (var purchase in Model.RecentPurchases)
+                                {
+                                    <div class="purchase-item">
+                                        <div class="purchase-info">
+                                            <div class="purchase-number">@purchase.OrderNumber</div>
+                                            <div class="purchase-date">@purchase.OrderDate.ToString("yyyy/MM/dd")</div>
+                                            <div class="purchase-amount">$@purchase.TotalPrice.ToString("N0")</div>
+                                            <span class="purchase-status @(purchase.Status == "已付款" ? "status-paid" : "status-pending")">
+                                                @purchase.Status
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="no-data">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <p>尚未進行任何認購</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/profile-common.js"></script>
+    <script>
+        // 頁面載入動畫
+        document.addEventListener('DOMContentLoaded', function() {
+            // 為所有卡片添加淡入動畫
+            const cards = document.querySelectorAll('.profile-sidebar, .profile-content, .overview-card, .achievement-wall-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+            
+            // 成就徽章動畫 - 優化版本，減少DOM查詢
+            const achievements = document.querySelectorAll('.achievement-item');
+            achievements.forEach((achievement, index) => {
+                setTimeout(() => {
+                    achievement.style.animation = 'slideInUp 0.5s ease forwards';
+                }, 1000 + (index * 100));
+            });
+            
+            // 活動清單效能優化
+            initializeActivityListOptimization();
+            
+            // 檢查是否有當前會話新獲得的成就
+            const newlyEarnedAchievements = '@TempData["NewlyEarnedAchievements"]';
+            if (newlyEarnedAchievements && newlyEarnedAchievements !== '') {
+                const achievementCodes = newlyEarnedAchievements.split(',');
+                setTimeout(() => {
+                    showNewAchievementToast(achievementCodes.length, achievementCodes);
+                }, 2000);
+            }
+        });
+        
+        // 新成就提示
+        function showNewAchievementToast(count, achievementCodes) {
+            // 成就名稱對應
+            const achievementNames = {
+                'first_registration': '初來乍到',
+                'first_completion': '初體驗',
+                'multi_category': '多元探索者',
+                'regular_participant': '熱心志工',
+                'case_helper': '溫暖陪伴'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = 'achievement-toast';
+            
+            let message = `恭喜獲得 ${count} 個新成就！`;
+            if (count === 1 && achievementCodes && achievementCodes.length > 0) {
+                const achievementName = achievementNames[achievementCodes[0]] || '特殊成就';
+                message = `恭喜獲得「${achievementName}」成就！`;
+            }
+            
+            toast.innerHTML = `
+                <i class="fas fa-trophy"></i>
+                <span>${message}</span>
+            `;
+            
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+                z-index: 1050;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-weight: 600;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.5s ease;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => document.body.removeChild(toast), 500);
+            }, 4000);
+        }
+        
+        // 統計數字計數動畫
+        function animateNumbers() {
+            const numbers = document.querySelectorAll('.stat-number');
+            numbers.forEach(num => {
+                const target = parseInt(num.textContent.replace(/[^0-9]/g, ''));
+                if (target > 0) {
+                    let current = 0;
+                    const increment = target / 30;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        if (num.textContent.includes('$')) {
+                            num.textContent = '$' + Math.floor(current).toLocaleString();
+                        } else {
+                            num.textContent = Math.floor(current);
+                        }
+                    }, 50);
+                }
+            });
+        }
+        
+        // 觀察器觸發數字動畫
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateNumbers();
+                    observer.disconnect();
+                }
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const statsSection = document.querySelector('.overview-card');
+            if (statsSection) observer.observe(statsSection);
+        });
+        
+        // ================================
+        // 成就展開/收起功能
+        // ================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('achievementToggleBtn');
+            const achievementsGrid = document.getElementById('achievementsGrid');
+            const toggleText = toggleBtn?.querySelector('.toggle-text');
+            const hiddenItems = document.querySelectorAll('.achievement-item.achievement-hidden');
+            
+            if (!toggleBtn) return;
+            
+            let isExpanded = false;
+            let isAnimating = false;
+            
+            toggleBtn.addEventListener('click', function() {
+                if (isAnimating) return;
+                
+                isAnimating = true;
+                isExpanded = !isExpanded;
+                
+                if (isExpanded) {
+                    achievementsGrid.classList.add('achievements-expanded');
+                    toggleBtn.classList.add('expanded');
+                    toggleText.textContent = '收起成就';
+                    hiddenItems.forEach(item => item.classList.add('show'));
+                } else {
+                    achievementsGrid.classList.remove('achievements-expanded');
+                    toggleBtn.classList.remove('expanded');
+                    toggleText.textContent = '顯示更多成就';
+                    hiddenItems.forEach(item => item.classList.remove('show'));
+                }
+                
+                setTimeout(() => { isAnimating = false; }, 300);
+            });
+        });
+    </script>
+    <script>
+        // User 專用的頭像上傳函數
+        function uploadUserProfileImage(input) {
+            return uploadProfileImage(
+                input,
+                '@Url.Action("UploadProfileImage", "User")',
+                'profileImageDisplay',
+                '.avatar-overlay'
+            );
+        }
+    </script>
+}
+

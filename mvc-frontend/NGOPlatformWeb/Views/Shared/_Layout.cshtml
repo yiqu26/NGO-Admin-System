@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NGOPlatformWeb</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/shared/design-tokens.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/shared/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/shared/navigation.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/shared/footer.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @await RenderSectionAsync("Styles", required: false)
+
+    <style>
+        /* 保護導航按鈕樣式，避免被頁面CSS覆蓋 */
+        nav.navbar .btn.btn-outline-dark:hover {
+            background-color: #212529 !important;
+            border-color: #212529 !important;
+            color: #fff !important;
+        }
+
+        nav.navbar .dropdown-toggle:hover {
+            background-color: #212529 !important;
+            border-color: #212529 !important;
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body class="@ViewBag.BodyClass">
+    <header>
+        @await Html.PartialAsync("_Navigation")
+    </header>
+
+    <!-- 移除固定container，讓每個頁面自己控制寬度 -->
+    <main role="main" class="pb-0">
+        @RenderBody()
+    </main>
+
+    @await Html.PartialAsync("_Footer")
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <!-- 現代化導航列 JavaScript -->
+    <script>
+        $(document).ready(function() {
+            // 滾動時導航列效果
+            let lastScrollTop = 0;
+            const navbar = $('.modern-navbar');
+            
+            $(window).scroll(function() {
+                const scrollTop = $(this).scrollTop();
+                
+                // 添加滾動效果類
+                if (scrollTop > 50) {
+                    navbar.addClass('scrolled');
+                } else {
+                    navbar.removeClass('scrolled');
+                }
+                
+                lastScrollTop = scrollTop;
+            });
+            
+            // 下拉菜單動畫增強
+            $('.dropdown').on('show.bs.dropdown', function () {
+                $(this).find('.dropdown-menu').addClass('show');
+            });
+            
+            // 移動端菜單關閉時的動畫
+            $('.navbar-toggler').on('click', function() {
+                const target = $($(this).data('bs-target'));
+                if (target.hasClass('show')) {
+                    target.removeClass('show');
+                }
+            });
+            
+            // 為按鈕添加點擊動畫效果
+            $('.social-worker-btn, .register-btn, .user-welcome-btn, .btn-outline-light-modern').on('click', function(e) {
+                const button = $(this);
+                button.addClass('clicked');
+                setTimeout(() => {
+                    button.removeClass('clicked');
+                }, 150);
+            });
+        });
+    </script>
+    
+    <!-- 點擊動畫CSS -->
+    <style>
+        .clicked {
+            transform: scale(0.95) !important;
+            transition: transform 0.1s ease !important;
+        }
+    </style>
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

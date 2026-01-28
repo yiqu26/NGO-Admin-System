@@ -1,0 +1,10 @@
+<svg width="256" height="256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="128" cy="128" r="125" fill="#d4edda" stroke="#c3e6cb" stroke-width="6"/>
+  
+  <!-- Person head -->
+  <circle cx="128" cy="100" r="30" fill="#28a745"/>
+  
+  <!-- Person body -->
+  <ellipse cx="128" cy="200" rx="50" ry="35" fill="#28a745"/>
+</svg>

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git restore:*)",
+      "Bash(rm:*)",
+      "Bash(git stash:*)",
+      "Bash(dotnet add package:*)",
+      "Bash(find:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(dotnet build)",
+      "Bash(dotnet build:*)"
+    ],
+    "deny": []
+  }
+}

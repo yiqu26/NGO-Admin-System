@@ -1,0 +1,193 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 確保main內容區域填滿剩餘空間 */
+main {
+  flex: 1;
+}
+
+
+.fixed-icon {
+    width: 1.25rem; /* 固定 icon 寬度，統一對齊 */
+    text-align: center; /* 置中 icon */
+    font-size: 1rem; /* 一致大小 */
+}
+
+.tag-buttons {
+    flex-grow: 1;
+    text-align: center;
+}
+
+/* 導航欄層級設定 */
+.navbar {
+    z-index: 1050 !important; /* 確保導航欄在最前面 */
+    position: relative;
+}
+
+.navbar-light .nav-link {
+    color: #5e4632; /* 深咖啡色 */
+    transition: color 0.2s ease;
+}
+
+    .navbar-light .nav-link:hover,
+    .navbar-light .nav-link.active {
+        color: #2e221a; /* 點擊或 hover 時更深更明顯 */
+        font-weight: bold;
+    }
+
+.navbar-light .btn-outline-dark {
+    border-color: #5e4632;
+    color: #5e4632;
+}
+
+    .navbar-light .btn-outline-dark:hover {
+        background-color: #5e4632;
+        color: white;
+    }
+
+.section-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 2.25rem;
+    margin: 3rem 0 2rem;
+}
+
+.selection-list {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2rem;
+    padding: 0 4rem;
+}
+
+.item-card {
+    display: flex;
+    gap: 1rem;
+    border: 1px solid #e0e0e0;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    background-color: #f9f9f9;
+    align-items: flex-start;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.2rem;
+}
+
+.item-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.item-meta {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 0.25rem;
+    line-height: 1.6;
+}
+
+.tag-emergency {
+    background-color: #d9534f;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+.tag-status.delivered {
+    background-color: #5cb85c;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+.item-meta {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 0.25rem;
+    line-height: 1.6;
+}
+
+.tag-emergency {
+    background-color: #d9534f;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+.record-summary {
+    text-align: center;
+    color: #666;
+    font-size: 1rem;
+    margin-top: -1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tab-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.tab-btn {
+    padding: 0.4rem 1.2rem;
+    border: 1px solid #5e4632;
+    background-color: transparent;
+    color: #5e4632;
+    font-weight: bold;
+    border-radius: 0.375rem; /* �� navbar �@�P�A�D���ꨤ */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .tab-btn:hover {
+        background-color: #5e4632;
+        color: white;
+    }
+
+    .tab-btn.active {
+        background-color: #5e4632;
+        color: white;
+    }
+

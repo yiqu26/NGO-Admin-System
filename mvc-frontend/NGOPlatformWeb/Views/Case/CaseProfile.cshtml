@@ -1,0 +1,224 @@
+﻿@model NGOPlatformWeb.Models.ViewModels.Profile.CaseProfileViewModel
+@{
+    ViewData["Title"] = "個案個人資料";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile/profile-shared.css" />
+    <link rel="stylesheet" href="~/css/profile/profile-components.css" />
+}
+
+<div class="container py-5 case-page">
+    <div class="row g-4">
+        <!-- 側邊資訊區 -->
+        <div class="col-md-4">
+            <div class="profile-sidebar">
+                <div class="profile-avatar">
+                    <img src="@Model.ProfileImage" alt="頭像" id="caseProfileImageDisplay" />
+                    <div class="avatar-overlay" onclick="document.getElementById('caseProfileImageInput').click()">
+                        <i class="fas fa-camera"></i>
+                        <span>更換頭像</span>
+                    </div>
+                    <input type="file" id="caseProfileImageInput" accept=".jpg,.jpeg,.png" style="display:none" onchange="uploadCaseProfileImage(this)" />
+                </div>
+                
+                <div class="profile-info">
+                    <h5>@Model.Name</h5>
+                    <p>@Model.Email</p>
+                    <span class="case-badge">個案身份</span>
+                </div>
+
+                <nav class="profile-nav">
+                    <a href="#" class="nav-item active">
+                        <i class="fas fa-user"></i>個人資料
+                    </a>
+                    <a asp-controller="Case" asp-action="CaseActivityList" class="nav-item">
+                        <i class="fas fa-calendar-check"></i>活動紀錄
+                    </a>
+                    <a asp-controller="Case" asp-action="CasePurchaseList" class="nav-item">
+                        <i class="fas fa-clipboard-list"></i>物資紀錄
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- 主要內容區 -->
+        <div class="col-md-8">
+            <!-- 基本資料卡片 -->
+            <div class="profile-content mb-4">
+                <div class="content-header">
+                    <h4><i class="fas fa-id-card me-2"></i>基本資料</h4>
+                </div>
+
+                <div class="profile-fields">
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-user me-2"></i>姓名</div>
+                        <div class="field-value">@Model.Name</div>
+                    </div>
+                    
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-envelope me-2"></i>Email</div>
+                        <div class="field-value">@Model.Email</div>
+                    </div>
+                    
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-phone me-2"></i>電話</div>
+                        <div class="field-value">@Model.Phone</div>
+                    </div>
+                    
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-id-card me-2"></i>身分證字號</div>
+                        <div class="field-value">@Model.IdentityNumber</div>
+                    </div>
+                    
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-birthday-cake me-2"></i>生日</div>
+                        <div class="field-value">@Model.Birthday?.ToString("yyyy-MM-dd")</div>
+                    </div>
+                    
+                    <div class="field-row">
+                        <div class="field-label"><i class="fas fa-map-marker-alt me-2"></i>地址</div>
+                        <div class="field-value">@Model.Address</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 密碼修改卡片 -->
+            <div class="profile-content">
+                <div class="content-header">
+                    <h4><i class="fas fa-lock me-2"></i>修改密碼</h4>
+                </div>
+
+                <div class="profile-fields">
+                    @if (ViewBag.SuccessMessage != null)
+                    {
+                        <div class="success-alert">
+                            <i class="fas fa-check-circle me-2"></i>@ViewBag.SuccessMessage
+                        </div>
+                    }
+
+                    <form asp-action="CaseProfile" method="post" enctype="multipart/form-data" class="password-form">
+                        <div class="form-group">
+                            <label asp-for="NewPassword" class="form-label">
+                                <i class="fas fa-key me-2"></i>新密碼
+                            </label>
+                            <input asp-for="NewPassword" class="form-control" type="password" placeholder="請輸入新密碼" />
+                            <span asp-validation-for="NewPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="ConfirmPassword" class="form-label">
+                                <i class="fas fa-check-double me-2"></i>確認密碼
+                            </label>
+                            <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="請再次輸入密碼" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="update-btn">
+                                <i class="fas fa-save me-2"></i>更新密碼
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- 活動與物資申請總覽區 -->
+            <div class="row g-4 mt-2">
+                <!-- 活動紀錄總覽 -->
+                <div class="col-md-6">
+                    <div class="overview-card case-activity-overview">
+                        <div class="overview-header">
+                            <h5><i class="fas fa-calendar-check me-2"></i>活動紀錄</h5>
+                            <a asp-action="Registrations" class="view-all-btn">查看全部</a>
+                        </div>
+                        
+                        <div class="overview-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">@Model.TotalActivitiesRegistered</div>
+                                <div class="stat-label">總參與次數</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">@Model.ActiveRegistrations</div>
+                                <div class="stat-label">進行中活動</div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-items">
+                            @if (Model.RecentActivities.Any())
+                            {
+                                @foreach (var activity in Model.RecentActivities)
+                                {
+                                    <div class="activity-item case-activity-item">
+                                        <img src="@activity.ImageUrl" alt="@activity.ActivityName" class="activity-thumb" />
+                                        <div class="activity-info">
+                                            <div class="activity-name">@activity.ActivityName</div>
+                                            <div class="activity-date">@activity.StartDate.ToString("yyyy/MM/dd")</div>
+                                            <span class="activity-status @(activity.Status == "registered" ? "status-active" : "status-cancelled")">
+                                                @(activity.Status == "registered" ? "已報名" : "已取消")
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="no-data">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <p>尚未參加任何活動</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 物資申請總覽 -->
+                <div class="col-md-6">
+                    <div class="overview-card case-application-overview">
+                        <div class="overview-header">
+                            <h5><i class="fas fa-boxes me-2"></i>物資申請</h5>
+                            <a asp-action="ApplicationRecords" class="view-all-btn">查看全部</a>
+                        </div>
+                        
+                        <div class="overview-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">@Model.TotalApplications</div>
+                                <div class="stat-label">申請次數</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">@Model.PendingApplications</div>
+                                <div class="stat-label">待處理</div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-items">
+                            <!-- 物資申請功能由其他組員實作，目前顯示空狀態 -->
+                            <div class="coming-soon">
+                                <i class="fas fa-tools"></i>
+                                <h6>功能開發中</h6>
+                                <p>物資申請功能正在開發中<br/>敬請期待！</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/profile-common.js"></script>
+    <script>
+        // Case 專用的頭像上傳函數
+        function uploadCaseProfileImage(input) {
+            return uploadProfileImage(
+                input,
+                '@Url.Action("UploadCaseProfileImage", "Case")',
+                'caseProfileImageDisplay',
+                '.avatar-overlay'
+            );
+        }
+    </script>
+}

@@ -1,0 +1,159 @@
+@{
+    ViewData["Title"] = "正在跳轉到付款頁面";
+    Layout = "_Layout";
+}
+<style>
+    
+    .main-content {
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 15px;
+    }
+    
+    .payment-box {
+        max-width: 500px;
+        width: 90%;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 40px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-sizing: border-box;
+    }
+    .loading {
+        margin: 20px 0;
+    }
+    .spinner {
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+    }
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="main-content">
+    <div class="payment-box">
+        <h2>正在為您跳轉到安全付款頁面</h2>
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>請稍候，系統正在處理您的付款請求...</p>
+            <p>將在 <span id="countdown">60</span> 秒後自動跳轉</p>
+            <button onclick="submitNow()" style="background: #fff; color: #333; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                立即跳轉
+            </button>
+        </div>
+        
+        <div id="ecpay-form">
+            @Html.Raw(ViewBag.PaymentForm)
+        </div>
+        
+    </div>
+</div>
+
+<script>
+        // 本地測試模式 - 可選擇模擬或真實測試
+        document.addEventListener('DOMContentLoaded', function() {
+            // 最後一次嘗試真實ECPay測試
+            if (false) {
+                let countdown = 3;
+                
+                // 更新頁面標題和倒數時間
+                document.getElementById('countdown').textContent = countdown;
+                const countdownElement = document.getElementById('countdown');
+                
+                // 顯示模擬測試提示
+                document.querySelector('h2').textContent = '付款處理中 - 模擬成功付款';
+                document.querySelector('p').textContent = '正在處理您的付款，請稍候...';
+                
+                const timer = setInterval(() => {
+                    countdown--;
+                    countdownElement.textContent = countdown;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        // 直接跳轉到成功頁面而不是提交到ECPay
+                        const clientBackUrl = '@ViewBag.DebugClientBackUrl';
+                        window.location.href = clientBackUrl;
+                    }
+                }, 1000);
+            } else {
+                // 正常的ECPay流程
+                let countdown = 60;
+                const countdownElement = document.getElementById('countdown');
+                
+                const timer = setInterval(() => {
+                    countdown--;
+                    countdownElement.textContent = countdown;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(timer);
+                        submitNow(); // 使用動態表單提交
+                    }
+                }, 1000);
+            }
+        });
+        
+        // 手動提交按鈕 - 直接創建表單繞過攔截
+        function submitNow() {
+            // 直接從 ViewBag 獲取表單內容並重新創建
+            const paymentFormHtml = `@Html.Raw(ViewBag.PaymentForm)`;
+            
+            if (!paymentFormHtml || paymentFormHtml.trim() === '') {
+                alert('付款表單數據為空，無法處理');
+                return;
+            }
+            
+            // 創建臨時容器來解析 HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = paymentFormHtml;
+            
+            // 獲取原始表單
+            const originalForm = tempDiv.querySelector('form');
+            if (!originalForm) {
+                alert('無法解析原始表單');
+                return;
+            }
+            
+            // 創建新表單
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5';
+            form.target = '_self';
+            
+            // 複製所有 input 元素
+            const inputs = originalForm.querySelectorAll('input[type="hidden"]');
+            
+            inputs.forEach(input => {
+                const newInput = document.createElement('input');
+                newInput.type = 'hidden';
+                newInput.name = input.name;
+                newInput.value = input.value;
+                form.appendChild(newInput);
+            });
+            
+            // 驗證關鍵參數是否存在
+            const merchantIdInput = form.querySelector('input[name="MerchantID"]');
+            const checkMacInput = form.querySelector('input[name="CheckMacValue"]');
+            
+            if (!merchantIdInput || !checkMacInput) {
+                alert('付款參數不完整，無法處理');
+                return;
+            }
+            
+            // 添加到頁面並提交
+            document.body.appendChild(form);
+            form.submit();
+        }
+</script>

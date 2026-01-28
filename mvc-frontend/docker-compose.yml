@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+    # Development container for ASP.NET Core application
+    devcontainer:
+        build:
+            context: .              # Build context is current directory
+            dockerfile: Dockerfile  # Use Dockerfile in current directory
+        volumes:
+            # Mount source code with cached consistency for better performance
+            - .:/workspace:cached
+            # Mount the Docker socket to allow Docker commands inside the container
+            # - /var/run/docker.sock:/var/run/docker-host.sock
+        ports:
+            # Expose HTTP and HTTPS ports for web application
+            - '5000:5000'  # HTTP port
+            - '5001:5001'  # HTTPS port
+        command: sleep infinity  # Keep container running for development
+        environment:
+            # Set ASP.NET Core environment to Development
+            - ASPNETCORE_ENVIRONMENT=Development
+            # Configure ASP.NET Core to listen on all interfaces
+            - ASPNETCORE_URLS=http://+:5000;https://+:5001
+            # Enable file watcher for hot reload in containers
+            - DOTNET_USE_POLLING_FILE_WATCHER=true
+    
+    # SQL Server database container
+    sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest  # Use official SQL Server 2022 image
+        container_name: ngo-sqlserver  # Fixed container name for consistent networking
+        environment:
+            # Accept End User License Agreement for SQL Server
+            - ACCEPT_EULA=Y
+            # Set SA (System Administrator) password
+            - SA_PASSWORD=P@sswords715981432
+        ports:
+            # Expose SQL Server port to host machine
+            - '1433:1433'  # Standard SQL Server port
+        volumes:
+            # Persist database data using named volume
+            - sqlserver_ngo_data:/var/opt/mssql
+        restart: unless-stopped  # Restart container unless manually stopped
+
+# Define named volumes for data persistence
+volumes:
+    # Volume for SQL Server data persistence
+    sqlserver_ngo_data:

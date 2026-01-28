@@ -1,0 +1,79 @@
+# Build artifacts (.NET)
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+**/bin/
+**/obj/
+
+# NuGet intermediate files
+*.nuget.*
+project.assets.json
+project.nuget.cache
+*.nuget.dgspec.json
+*.nuget.g.props
+*.nuget.g.targets
+*.g.props
+*.g.targets
+*.dgspec.json
+
+# User-specific files
+*.user
+*.suo
+*.vsp
+*.psess
+
+# IDE folders
+.vs/
+.vscode/
+.idea/
+
+# Dev containers
+.devcontainer/
+
+# Temporary files and logs
+*.log
+*.tmp
+*.cache
+*.bak
+*.orig
+*.rej
+*.tmp.*
+
+# dotnet SDK generated folders
+Generated\ Files/
+
+# Environment config and secrets
+.env
+.env.*
+*.secrets.json
+secrets.json
+appsettings.*.Development.json
+
+# Frontend artifacts (Node.js / Vite)
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+.npm/
+.pnpm-debug.log
+yarn.lock
+package-lock.json
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+desktop.ini
+
+# Linux / WSL backup files
+*~
+
+# Documentation and config files
+docs/
+.prettierrc
+
+# Claude CLI data
+NGOPlatformWeb/claudecliData/

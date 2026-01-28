@@ -1,0 +1,27 @@
+﻿# ===============================
+# Visual Studio / ASP.NET 專案常見排除
+# ===============================
+
+# VS 暫存資料夾與檔案
+.vs/
+*.user
+*.suo
+*.vsidx
+*.db
+*.log
+
+# 建置資料夾
+bin/
+obj/
+
+# NuGet 套件
+packages/
+
+# 本地環境設定
+appsettings.Development.json
+secrets.json
+
+# 系統或 macOS 雜項
+Thumbs.db
+Desktop.ini
+.DS_Store

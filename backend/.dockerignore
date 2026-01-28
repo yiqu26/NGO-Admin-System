@@ -1,0 +1,13 @@
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/*.user
+**/*.suo
+**/appsettings.json
+**/appsettings.Development.json
+**/Properties/launchSettings.json
+README.md
+.github

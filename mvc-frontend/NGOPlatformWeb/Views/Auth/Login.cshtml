@@ -1,0 +1,189 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>登入 - NGO 平台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="@Url.Content("~/css/auth/login.css")" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+    <!-- Lottie Animation -->
+    <script src="https://unpkg.com/@@dotlottie/player-component@@latest/dist/dotlottie-player.mjs" type="module"></script>
+    <script>
+        // 在頁面載入前檢查是否需要顯示動畫
+        const shouldShow = sessionStorage.getItem('showPlaneAnimation');
+        console.log('檢查動畫標記:', shouldShow);
+        
+        if (shouldShow === 'true') {
+            document.documentElement.style.setProperty('--initial-loading-display', 'flex');
+            document.documentElement.style.setProperty('--initial-content-opacity', '0');
+            console.log('設定為顯示動畫模式');
+        } else {
+            document.documentElement.style.setProperty('--initial-loading-display', 'none');
+            document.documentElement.style.setProperty('--initial-content-opacity', '1');
+            console.log('設定為正常顯示模式');
+        }
+    </script>
+</head>
+
+<body class="login-page">
+    <!-- Lottie Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-container">
+            <dotlottie-player 
+                src="https://lottie.host/6f8fd7f9-a149-4d2a-a15e-d54b64793df0/Vw9Cdzfb0k.lottie"
+                background="transparent"
+                speed="0.8"
+                style="width: 350px; height: 350px; will-change: transform;"
+                loop
+                autoplay>
+            </dotlottie-player>
+        </div>
+    </div>
+
+    <!-- 全屏垂直水平置中 -->
+    <div class="login-wrapper" id="mainContent">
+        <div class="card login-container">
+            <div class="row g-0">
+                <!-- 左圖-->
+                <div class="col-md-7 login-image"></div>
+
+                <!-- 右表單 -->
+                <div class="col-12 col-md-5 login-form-area">
+                    <nav aria-label="breadcrumb" class="mb-4">
+                        <ol class="breadcrumb p-0 bg-transparent mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="@Url.Action("Index", "Home")"
+                                    class="text-decoration-none d-inline-flex align-items-center">
+                                    <i class="fas fa-home me-1"></i>首頁
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active text-secondary" aria-current="page">
+                                <i class="fas fa-sign-in-alt me-1"></i>登入
+                            </li>
+                        </ol>
+                    </nav>
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="~/images/logo.png" width="48" alt="Logo" />
+                        <h2 class="h5 mb-0 fw-bold ms-2">恩舉</h2>
+                    </div>
+                    <h4 class="fw-bold mb-4">歡迎回來！</h4>
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Login" method="post">
+                        <!-- 帐号 -->
+                        <div class="mb-3">
+                            <label class="form-label">帳號：</label>
+                            <input type="email" name="email" class="form-control form-control-lg rounded-3"
+                                placeholder="請輸入帳號信箱" required />
+                        </div>
+
+                        <!-- 密碼 & 切換可見 -->
+                        <div class="mb-3">
+                            <label for="passwordInput" class="form-label">密碼：</label>
+                            <div class="input-group input-group-lg password-input-group">
+                                <input id="passwordInput" type="password" name="password" class="form-control rounded-2"
+                                    placeholder="請輸入密碼" required />
+                                <button class="btn" type="button" id="togglePassword">
+                                    <i class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 記住我 & 忘記密碼 -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="remember" name="remember" />
+                                <label class="form-check-label" for="remember">記住我</label>
+                            </div>
+                            <a href="@Url.Action("ForgotPassword", "Auth")" class="small">忘記密碼？</a>
+                        </div>
+
+                        <!-- 按鈕 -->
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">登入</button>
+                        
+                        <!-- 註冊連結 -->
+                        <div class="text-center mb-4">
+                            <span class="text-muted">還沒有帳號？</span>
+                            <a href="@Url.Action("Register", "Auth")" class="text-decoration-none fw-bold">
+                                <i class="fas fa-user-plus me-1"></i>立即註冊
+                            </a>
+                        </div>
+                        
+                        <div class="border-top my-4"></div>
+                    </form>
+                    
+                    <!-- Google 登入表單 -->
+                    <form asp-action="ExternalLogin" method="post">
+                        <input type="hidden" name="provider" value="Google" />
+                        <button type="submit"
+                            class="btn btn-dark btn-lg w-100 d-flex align-items-center justify-content-center gap-2">
+                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" />
+                            Google 登入
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="@Url.Content("~/js/login.js")"></script>
+    <script src="@Url.Content("~/js/auth-transitions.js")"></script>
+    <script>
+        // Loading animation control
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            // 只有從首頁點擊按鈕才顯示動畫
+            const shouldShowPlane = sessionStorage.getItem('showPlaneAnimation');
+            
+            if (shouldShowPlane === 'true') {
+                // 1.5秒後隱藏動畫並顯示主內容
+                setTimeout(function() {
+                    console.log('開始隱藏動畫並恢復頁面');
+                    
+                    // 隱藏loading overlay
+                    loadingOverlay.classList.add('hide');
+                    
+                    // 完全移除loading overlay的顯示
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                    }, 500);
+                    
+                    // 重新設置CSS變數為正常顯示
+                    document.documentElement.style.setProperty('--initial-content-opacity', '1');
+                    
+                    // 確保主內容完全可見和可點擊
+                    mainContent.style.opacity = '1';
+                    mainContent.style.pointerEvents = 'auto';
+                    mainContent.style.zIndex = 'auto';
+                    
+                    // 確保body也是可點擊的
+                    document.body.style.pointerEvents = 'auto';
+                    
+                    sessionStorage.removeItem('showPlaneAnimation');
+                }, 1500);
+            }
+            
+            // 清除頁面跳轉標記
+            sessionStorage.removeItem('skipLoadingAnimation');
+        });
+    </script>
+</body>
+
+</html>

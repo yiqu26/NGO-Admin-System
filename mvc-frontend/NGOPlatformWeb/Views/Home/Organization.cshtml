@@ -1,0 +1,141 @@
+﻿@{
+    ViewBag.Title = "組織介紹";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewData["Title"]</title>
+    <style>
+        .page-title {
+            background-color: #fbd0a2;
+            padding: 30px;
+            text-align: center;
+            font-size: 28px;
+            color: white;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+
+        .section-container {
+            display: flex;
+            background-color: #fffaf5;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            gap: 0; /* 無間距，看起來像一整塊 */
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .section-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+            /* 移除右邊欄的右邊框 */
+            .section-box:last-child {
+                border-right: none;
+            }
+
+        .section-title {
+            background-color: #fff2dc;
+            padding: 12px;
+            font-weight: bold;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .section-content {
+            padding: 12px;
+            height: 300px;
+            overflow-y: hidden;
+            background-color: #ffffff;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+            /* 滑鼠靠近時才顯示滾動條 */
+            .section-content:hover {
+                overflow-y: auto;
+            }
+
+            .section-content::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .section-content::-webkit-scrollbar-thumb {
+                background-color: rgba(0, 0, 0, 0.2);
+                border-radius: 4px;
+            }
+
+    </style>
+</head>
+<body>
+    <div class="caseshopping-hero mb-4">
+        <div class="hero-content">
+            <h1>組織介紹</h1>
+            <p>關於恩舉的點點滴滴</p>
+        </div>
+    </div>
+    <link rel="stylesheet" href="~/css/organization.css" />
+
+
+    <div class="section-container">
+        <!-- 左邊：組織創立年史 -->
+        <div class="section-box">
+            <div class="section-title">組織創立年史</div>
+            <div class="section-content">
+                <p>恩舉於 2022 年創立</p>
+                <p>起初是一群有著社工背景與公益熱忱的夥伴所發起的行動</p>
+                <p>那一年，恩舉在偏鄉走訪了許多家庭</p>
+                <p>發現許多孩童在經濟弱勢環境下成長</p>
+                <p>缺乏基本生活物資與心靈支持</p>
+                <p>這讓我們深刻體認到</p>
+                <p>「一個被關懷的孩子，能長出希望的翅膀」</p>
+                <p>從最初幾戶家庭的協助開始</p>
+                <p>恩舉逐步拓展服務規模</p>
+                <p>結合社會各界的力量，於線上建立資源媒合平台</p>
+                <p>讓社工可以快速掌握孩童需求</p>
+                <p>也讓社會大眾可以即時響應、提供物資</p>
+                <p>這是一段從零開始、用心陪伴的旅程
+                <p>恩舉也始終堅持：「每一份小小的善意，都能在他人的生命中留下光。」</p>
+                </p>
+            </div>
+        </div>
+
+        <!-- 右邊：組織創立目標與前景 -->
+        <div class="section-box">
+            <div class="section-title">組織創立目標與前景</div>
+            <div class="section-content">
+                <p>恩舉的目標很明確：讓每個需要幫助的孩子，</p>
+                <p>都能被看見、被支持、被好好長大。</p>
+                <p>在未來，我們希望能夠：</p>
+                <p>．擴大服務據點，觸及更多被社會忽略的角落</p>
+                <p>．強化數位平台功能，讓物資媒合更即時、更透明</p>
+                <p>．與學校、醫療、企業單位合作，建立更完整的關懷網絡</p>
+                <p>．提供教育與心理支持，協助孩子在身心發展上健全成長</p>
+                <br></br>
+                <p>我們相信，公益不是單打獨鬥，</p>
+                <p>而是每一個人願意多走一步的累積。</p>
+                <p>我們期待未來能有更多人加入這份行動，</p>
+                <p>一起為台灣的孩子，</p>
+                <p>打造一個更有希望的明天。</p>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+</html>
