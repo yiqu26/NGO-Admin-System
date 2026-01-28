@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true, // 允許外部訪問
-    allowedHosts: ['.ngrok-free.app', '.ngrok.io', '.ngrok.app', '.trycloudflare.com'] // 允許 ngrok 和 Cloudflare 域名
+    allowedHosts: ['.ngo-management-hub.com', '.trycloudflare.com', '.ngrok-free.app', '.ngrok.io', '.ngrok.app'] // 允許固定域名和 Cloudflare
   },
   build: {
     // 代碼分割配置

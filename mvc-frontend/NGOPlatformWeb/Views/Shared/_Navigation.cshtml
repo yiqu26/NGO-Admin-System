@@ -1,4 +1,9 @@
 ﻿@using System.Security.Claims
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+@{
+    var adminPanelUrl = Configuration["ExternalUrls:AdminPanelUrl"] ?? "https://admin.ngo-management-hub.com";
+}
 
 <nav class="navbar navbar-expand-lg modern-navbar">
     <div class="container-fluid">
@@ -10,7 +15,7 @@
             
             <!-- 桌面版社工管理按鈕 -->
             <a class="btn social-worker-btn d-none d-lg-inline-flex ms-3"
-               href="https://specifies-ocean-increase-rapid.trycloudflare.com" target="_blank">
+               href="@adminPanelUrl" target="_blank">
                 <i class="fas fa-user-shield me-2"></i>社工管理
             </a>
         </div>
@@ -25,7 +30,7 @@
         <div class="collapse navbar-collapse" id="navbarMain">
             <!-- 社工管理按鈕 - 現在在折疊菜單內，手機版也可見 -->
             <div class="d-lg-none mb-3">
-                <a class="btn social-worker-btn w-100" href="https://specifies-ocean-increase-rapid.trycloudflare.com" target="_blank">
+                <a class="btn social-worker-btn w-100" href="@adminPanelUrl" target="_blank">
                     <i class="fas fa-user-shield me-2"></i>社工管理系統
                 </a>
             </div>
