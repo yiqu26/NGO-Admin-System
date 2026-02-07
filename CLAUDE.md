@@ -1,6 +1,6 @@
 # NGO Management System - Claude 工作記錄
 
-> 最後更新: 2026-01-28
+> 最後更新: 2026-02-07
 
 ## 專案概述
 
@@ -79,6 +79,10 @@ NGO-Management-System/
 │   │   └── SupplyManagement/     # 物資、緊急需求、配送
 │   ├── Models/
 │   ├── Services/
+│   │   ├── OpenAIClientFactory.cs  # AI client 統一工廠 (OpenAI/Azure 雙 provider)
+│   │   ├── AzureOpenAIService.cs   # GPT 文案優化
+│   │   ├── WhisperService.cs       # OpenAI Whisper 語音轉文字
+│   │   └── FileStorageService.cs   # 檔案儲存 (Local/Azure Blob)
 │   └── appsettings.json
 │
 ├── frontend/                     # React 管理後台
@@ -121,9 +125,9 @@ NGO-Management-System/
 - [x] 物資管理 (庫存、低庫存警示)
 - [x] 行程管理
 - [x] 帳號權限管理 (管理員/督導/員工)
-- [x] 語音轉文字 (Azure Speech)
-- [x] AI 活動優化 (Azure OpenAI)
-- [x] AI 圖片生成 (DALL-E 3)
+- [x] 語音轉文字 (OpenAI Whisper / Azure Speech 雙 provider)
+- [x] AI 活動優化 (OpenAI Direct API / Azure OpenAI 雙 provider)
+- [x] AI 圖片生成 (DALL-E 3，支援 OpenAI / Azure 雙 provider)
 
 ### 用戶前台 (MVC)
 - [x] Google OAuth 登入
@@ -136,13 +140,60 @@ NGO-Management-System/
 
 ---
 
+## AI 功能架構 (2026-02-07 更新)
+
+### Provider 設定
+
+AI 功能支援 **OpenAI Direct API** 和 **Azure OpenAI** 雙 provider，透過 `appsettings.json` 的 `AI:Provider` 切換：
+
+| Provider | 設定值 | 需要填入 |
+|----------|--------|---------|
+| **OpenAI (預設)** | `"OpenAI"` | `AI:OpenAI:ApiKey` 一個值即可啟用全部功能 |
+| Azure | `"Azure"` | `AI:Azure:Endpoint` + `AI:Azure:ApiKey` |
+
+### 三項 AI 功能
+
+| 功能 | OpenAI 模型 | Azure 模型 | API Endpoint |
+|------|------------|------------|-------------|
+| GPT 文案優化 | gpt-4o-mini | gpt-4.1 (deployment) | `POST /api/ActivityAIOptimizer/optimize-description` |
+| DALL-E 圖片生成 | dall-e-3 | dall-e-3 (deployment) | `POST /api/ActivityImageGenerator/generate` |
+| Whisper 語音轉文字 | whisper-1 | Azure Speech SDK | `POST /api/CaseSpeechToText/transcribe` |
+
+### 關鍵服務
+
+| Service | DI 生命週期 | 說明 |
+|---------|-----------|------|
+| `OpenAIClientFactory` | Singleton | 統一建立 OpenAIClient，讀取 AI:Provider 決定 provider |
+| `AzureOpenAIService` | Scoped | GPT 文案優化，透過 factory 取得 client |
+| `WhisperService` | Scoped | 透過 HttpClient 呼叫 OpenAI Whisper API |
+| `IFileStorageService` | Scoped | Local (預設) 或 Azure Blob，音檔儲存到 `uploads/` |
+
+### 檔案儲存
+
+`FileStorage:Provider` 設定為 `"Local"` 時，音檔存到 `backend/uploads/case_audio/`，透過靜態檔案中介軟體提供 `/uploads` URL 存取。不需要 Azure Blob Storage。
+
+### 狀態確認 API
+
+- `GET /api/ActivityAIOptimizer/status` → `isAvailable: true/false`
+- `POST /api/ActivityImageGenerator/test-connection` → `success: true/false`
+- `GET /api/CaseSpeechToText/test-connection` → 顯示 provider 名稱
+
+### 注意事項
+
+- `appsettings.json` 已在 `.gitignore`，API Key 不會進 git
+- 舊版 `AzureOpenAI`、`AzureSpeech` config 區段保留向下相容
+- `Azure.AI.OpenAI` v1.0.0-beta.13 同時支援 OpenAI Direct 和 Azure，不需額外套件
+
+---
+
 ## 外部服務
 
 | 服務 | 用途 | 配置位置 |
 |------|------|----------|
-| Azure OpenAI | GPT-4、DALL-E 3 | backend/appsettings.json |
-| Azure Speech | 語音轉文字 | backend/appsettings.json |
-| Azure Blob | 圖片儲存 | backend/appsettings.json |
+| OpenAI API | GPT-4o-mini、DALL-E 3、Whisper | backend/appsettings.json `AI:OpenAI` |
+| Azure OpenAI (備選) | GPT-4、DALL-E 3 | backend/appsettings.json `AI:Azure` |
+| Azure Speech (備選) | 語音轉文字 | backend/appsettings.json `AI:AzureSpeech` |
+| Azure Blob (備選) | 圖片/音檔儲存 | backend/appsettings.json `FileStorage` |
 | Google OAuth | 第三方登入 | mvc-frontend/appsettings.json |
 | ECPay | 金流支付 | mvc-frontend/appsettings.json |
 | Cloudflare Tunnel | 公開展示 | 本機 cloudflared |
@@ -155,3 +206,4 @@ NGO-Management-System/
 2. **環境變數**: `.env.cloudflare` 用於公開展示，`.env.development` 用於本地開發
 3. **資料庫**: 使用本地 SQL Server (YUNYUE\SQLEXPRESS)
 4. **文檔**: `docs/` 目錄有完整的技術文檔
+5. **API Key 安全**: `appsettings.json` 已被 `.gitignore` 排除，敏感資訊不會進版控
