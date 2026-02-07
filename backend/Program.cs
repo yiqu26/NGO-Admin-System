@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using NGO_WebAPI_Backend.Models.Infrastructure;
 using NGO_WebAPI_Backend.Models.Shared;
 using NGO_WebAPI_Backend.Services;
@@ -39,12 +40,24 @@ builder.Services.AddScoped<ICaseService, CaseService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 // === 外部服務整合 ===
+// AI 服務 - OpenAI / Azure OpenAI 雙 provider 支援
+builder.Services.AddSingleton<OpenAIClientFactory>();
 builder.Services.AddScoped<AzureOpenAIService>();
 
-// TODO: 未來可加入的服務
-// builder.Services.AddScoped<IAzureStorageService, AzureStorageService>();
-// builder.Services.AddScoped<IEmailService, EmailService>();
-// builder.Services.AddScoped<INotificationService, NotificationService>();
+// OpenAI Whisper 語音轉文字
+builder.Services.AddHttpClient("WhisperAPI");
+builder.Services.AddScoped<WhisperService>();
+
+// 檔案儲存服務 - 根據配置決定使用 Local 或 Azure Blob
+var fileStorageProvider = builder.Configuration["FileStorage:Provider"] ?? "Local";
+if (fileStorageProvider.Equals("Azure", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddScoped<IFileStorageService, AzureBlobStorageService>();
+}
+else
+{
+    builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
+}
 
 # endregion
 
@@ -122,6 +135,19 @@ if (app.Environment.IsDevelopment())
 
 // 啟用 CORS
 app.UseCors("AllowAll");
+
+// 提供本地 uploads 目錄的靜態檔案存取
+var uploadsPath = Path.Combine(app.Environment.ContentRootPath,
+    app.Configuration["FileStorage:Local:BasePath"] ?? "uploads");
+if (!Directory.Exists(uploadsPath))
+{
+    Directory.CreateDirectory(uploadsPath);
+}
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = app.Configuration["FileStorage:Local:BaseUrl"] ?? "/uploads"
+});
 
 if (!app.Environment.IsDevelopment())
 {

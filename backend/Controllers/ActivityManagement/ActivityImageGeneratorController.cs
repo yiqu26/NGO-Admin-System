@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Azure;
 using Azure.AI.OpenAI;
 using System.Text.Json;
+using NGO_WebAPI_Backend.Services;
 
 namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
 {
@@ -9,48 +9,40 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
     [Route("api/[controller]")]
     public class ActivityImageGeneratorController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly OpenAIClientFactory _factory;
         private readonly ILogger<ActivityImageGeneratorController> _logger;
 
-        public ActivityImageGeneratorController(IConfiguration configuration, ILogger<ActivityImageGeneratorController> logger)
+        public ActivityImageGeneratorController(OpenAIClientFactory factory, ILogger<ActivityImageGeneratorController> logger)
         {
-            _configuration = configuration;
+            _factory = factory;
             _logger = logger;
         }
 
         [HttpPost("test-connection")]
-        public async Task<IActionResult> TestConnection()
+        public IActionResult TestConnection()
         {
             try
             {
-                _logger.LogInformation("開始測試 Azure OpenAI 連接");
+                _logger.LogInformation("開始測試 AI 圖片生成服務連接 (Provider: {Provider})", _factory.Provider);
 
-                // 獲取 Azure OpenAI 配置
-                var endpoint = _configuration["AzureOpenAI:Endpoint"];
-                var key = _configuration["AzureOpenAI:ApiKey"];
-                var deploymentName = _configuration["AzureOpenAI:DalleDeploymentName"];
-
-                if (string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(deploymentName))
+                if (!_factory.IsAvailable)
                 {
-                    _logger.LogError("Azure OpenAI 配置缺失");
-                    return StatusCode(500, new { success = false, message = "Azure OpenAI 配置缺失" });
+                    _logger.LogError("AI 服務配置缺失");
+                    return StatusCode(500, new { success = false, message = "AI 服務配置缺失，請檢查 API Key 設定" });
                 }
 
-                // 創建 Azure OpenAI 客戶端
-                var client = new OpenAIClient(new Uri(endpoint), new AzureKeyCredential(key));
-
-                _logger.LogInformation("Azure OpenAI 連接測試成功");
+                _logger.LogInformation("AI 圖片生成服務連接測試成功 (Provider: {Provider})", _factory.Provider);
 
                 return Ok(new
                 {
                     success = true,
-                    message = "Azure OpenAI 連接正常"
+                    message = $"AI 圖片生成服務連接正常 (Provider: {_factory.Provider})"
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Azure OpenAI 連接測試失敗");
-                return StatusCode(500, new { success = false, message = "Azure OpenAI 連接測試失敗" });
+                _logger.LogError(ex, "AI 圖片生成服務連接測試失敗");
+                return StatusCode(500, new { success = false, message = "AI 圖片生成服務連接測試失敗" });
             }
         }
 
@@ -59,40 +51,31 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
         {
             try
             {
-                _logger.LogInformation("開始生成圖片，描述: {Prompt}", request.Prompt);
+                _logger.LogInformation("開始生成圖片，描述: {Prompt}, Provider: {Provider}", request.Prompt, _factory.Provider);
 
-                // 驗證輸入
                 if (string.IsNullOrWhiteSpace(request.Prompt))
                 {
                     return BadRequest(new { success = false, message = "請提供圖片描述" });
                 }
 
-                // 獲取 Azure OpenAI 配置
-                var endpoint = _configuration["AzureOpenAI:Endpoint"];
-                var key = _configuration["AzureOpenAI:ApiKey"];
-                var deploymentName = _configuration["AzureOpenAI:DalleDeploymentName"];
-
-                if (string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(key) || string.IsNullOrEmpty(deploymentName))
+                if (!_factory.IsAvailable)
                 {
-                    _logger.LogError("Azure OpenAI 配置缺失");
-                    return StatusCode(500, new { success = false, message = "服務配置錯誤" });
+                    _logger.LogError("AI 服務配置缺失");
+                    return StatusCode(500, new { success = false, message = "AI 服務配置錯誤" });
                 }
 
-                // 創建 Azure OpenAI 客戶端
-                var client = new OpenAIClient(new Uri(endpoint), new AzureKeyCredential(key));
+                var imageModel = _factory.GetImageModel();
 
-                // 準備圖片生成選項
                 var imageGenerationOptions = new ImageGenerationOptions
                 {
                     Prompt = request.Prompt,
                     Size = ImageSize.Size1024x1024,
                     Quality = ImageGenerationQuality.Standard,
                     Style = ImageGenerationStyle.Natural,
-                    DeploymentName = deploymentName
+                    DeploymentName = imageModel
                 };
 
-                // 調用 DALL-E-3 生成圖片
-                var response = await client.GetImageGenerationsAsync(imageGenerationOptions);
+                var response = await _factory.Client!.GetImageGenerationsAsync(imageGenerationOptions);
 
                 if (response.Value.Data.Count == 0)
                 {
@@ -101,19 +84,14 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 }
 
                 var imageData = response.Value.Data[0];
-                
-                // 檢查返回的數據類型
-                _logger.LogInformation("圖片生成返回數據類型: {Type}", imageData.GetType().Name);
-                
+
                 string imageUrl;
-                
-                // 檢查是否有 Base64 數據
+
                 if (!string.IsNullOrEmpty(imageData.Base64Data))
                 {
                     imageUrl = $"data:image/png;base64,{imageData.Base64Data}";
                     _logger.LogInformation("使用 Base64 數據");
                 }
-                // 檢查是否有 URL
                 else if (!string.IsNullOrEmpty(imageData.Url?.AbsoluteUri))
                 {
                     imageUrl = imageData.Url.AbsoluteUri;
@@ -122,7 +100,6 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 else
                 {
                     _logger.LogWarning("圖片生成失敗，既沒有 Base64 數據也沒有 URL");
-                    _logger.LogWarning("圖片數據內容: {ImageData}", JsonSerializer.Serialize(imageData));
                     return StatusCode(500, new { success = false, message = "圖片生成失敗，無法獲取圖片數據" });
                 }
 
@@ -147,4 +124,4 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
     {
         public string Prompt { get; set; } = string.Empty;
     }
-} 
+}
