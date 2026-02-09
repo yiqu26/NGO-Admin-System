@@ -183,6 +183,30 @@ scripts/old-ngrok-backup/
 cloudflare-urls.txt
 
 # ============================================
+# Claude Code（AI 工具配置，不需進版控）
+# ============================================
+CLAUDE.md
+.claude/
+mvc-frontend/.claude/
+
+# ============================================
+# 個人文件
+# ============================================
+PROJECT-OVERVIEW.md
+nul
+docs/05-技術面試準備.md
+
+# ============================================
+# 安全性考量（帳號、測試資料）
+# ============================================
+docs/03-測試帳號.md
+config/create-staff-account.json
+config/create-supervisor-account.json
+config/create-test-account.json
+database/export-data.sql
+database/export-workers.sql
+
+# ============================================
 # 其他
 # ============================================
 *.swp
