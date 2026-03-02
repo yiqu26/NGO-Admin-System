@@ -192,6 +192,7 @@ cloudflare-urls.txt
 CLAUDE.md
 .claude/
 mvc-frontend/.claude/
+tmpclaude-*/
 
 # ============================================
 # 個人文件
