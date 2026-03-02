@@ -158,7 +158,7 @@ tunnels:
     proto: http
     addr: 5173
 
-  backend:
+  api:
     proto: http
     addr: 5264
 ```

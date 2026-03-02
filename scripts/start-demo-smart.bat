@@ -60,10 +60,10 @@ echo  [2/5] Starting Backend WebAPI...
 echo ================================================================
 echo.
 
-cd /d "%~dp0..\backend"
+cd /d "%~dp0..\api"
 start "Backend API (localhost:5264)" cmd /k "color 0B && echo ========================================= && echo   Backend WebAPI - http://localhost:5264 && echo ========================================= && echo. && dotnet run"
 
-echo  Starting backend service...
+echo  Starting API service...
 timeout /t 12 /nobreak >nul
 echo  [OK] Backend WebAPI started
 echo.

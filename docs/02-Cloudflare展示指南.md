@@ -116,7 +116,7 @@ scripts\啟動展示系統-完整版.bat
 
 開啟命令提示字元視窗 1：
 ```batch
-cd C:\Users\lanli\source\repos\NGO-Management-System\backend
+cd C:\Users\lanli\source\repos\NGO-Management-System\api
 dotnet run
 ```
 
@@ -253,7 +253,7 @@ npm run dev
 
 #### 3️⃣ 更新 MVC 前台配置（若有啟動 MVC）
 
-**檔案位置**：`NGO-Management-System/mvc-frontend/NGOPlatformWeb/appsettings.json`
+**檔案位置**：`NGO-Management-System/dotnet-web/NGOPlatformWeb/appsettings.json`
 
 **修改內容**：
 ```json
@@ -292,9 +292,9 @@ dotnet run
 [ ] 記錄後端 Tunnel 網址
 [ ] 記錄前端 Tunnel 網址
 [ ] 記錄 MVC Tunnel 網址（若有）
-[ ] 更新 frontend/.env.development 中的 VITE_API_BASE_URL
+[ ] 更新 react-admin/.env.development 中的 VITE_API_BASE_URL
 [ ] 重新啟動 React 前端（Ctrl+C → npm run dev）
-[ ] 更新 mvc-frontend/.../appsettings.json 中的 NgrokUrl（若有 MVC）
+[ ] 更新 dotnet-web/.../appsettings.json 中的 NgrokUrl（若有 MVC）
 [ ] 重新啟動 MVC 前台（Ctrl+C → dotnet run）（若有 MVC）
 [ ] 測試 React 前端可訪問
 [ ] 測試 React 登入功能

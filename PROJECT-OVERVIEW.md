@@ -692,7 +692,7 @@ builder.Services.AddCors(options =>
 
 ```bash
 # 終端機 1 - 後端 API
-cd backend
+cd api
 dotnet run
 # http://localhost:5264
 

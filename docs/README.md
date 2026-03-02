@@ -97,9 +97,9 @@
 
 ## 🏗️ 各子專案架構文檔
 
-- **[React 管理後台](../frontend/README.md)** - React 18 + Vite 員工系統
-- **[WebAPI 後端](../backend/README.md)** - ASP.NET Core 9 後端服務
-- **[MVC 用戶前台](../mvc-frontend/README.md)** - ASP.NET Core MVC 民眾/個案系統
+- **[React 管理後台](../react-admin/README.md)** - React 18 + Vite 員工系統
+- **[WebAPI 後端](../api/README.md)** - ASP.NET Core 9 後端服務
+- **[MVC 用戶前台](../dotnet-web/README.md)** - ASP.NET Core MVC 民眾/個案系統
 
 ---
 

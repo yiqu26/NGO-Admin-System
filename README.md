@@ -50,7 +50,7 @@
 
 ```bash
 # 終端機 1 - 啟動後端 API
-cd NGO-Management-System/backend
+cd NGO-Management-System/api
 dotnet run
 # 運行於 http://localhost:5264
 
