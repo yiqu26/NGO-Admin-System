@@ -1,0 +1,598 @@
+<!-- 使用者認購紀錄頁面 - 顯示所有物資捐贈歷史 -->
+@model NGOPlatformWeb.Models.ViewModels.Purchase.UserPurchaseRecordsViewModel
+@{
+    ViewData["Title"] = "我的認購紀錄";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile/profile-shared.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/purchase/purchase-records-standalone.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/profile/profile-dark-theme.css" />
+}
+
+@{
+    ViewBag.BodyClass = "profile-page";
+}
+
+<div class="container py-5">
+    <!-- 現代化頁面標題區域 -->
+    <div class="modern-header">
+        <div class="header-background">
+            <div class="header-pattern"></div>
+        </div>
+        <div class="header-content">
+            <div class="breadcrumb-modern">
+                <a asp-action="UserProfile" class="breadcrumb-item">
+                    <i class="fas fa-user me-1"></i>個人資料
+                </a>
+                <i class="fas fa-chevron-right breadcrumb-separator"></i>
+                <span class="breadcrumb-current">援助紀錄</span>
+            </div>
+            
+            <div class="header-main">
+                <div class="header-text">
+                    <h1 class="modern-title">
+                        <span class="title-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </span>
+                        我的援助紀錄
+                    </h1>
+                    <p class="modern-subtitle">感謝您的愛心，每一份捐助都在創造奇蹟</p>
+                </div>
+                <div class="header-actions">
+                    <a href="@Url.Action("Index", "Purchase")" class="modern-btn primary">
+                        <i class="fas fa-plus"></i>
+                        <span>提供援助</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 現代化統計儀表板 -->
+    <div class="stats-dashboard">
+        <div class="stats-grid">
+            <!-- 主要成就卡片 -->
+            <div class="achievement-card featured">
+                <div class="achievement-header">
+                    <div class="achievement-icon featured-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="achievement-badge">總計</div>
+                </div>
+                <div class="achievement-content">
+                    <div class="achievement-number">$@(Model.TotalDonated.ToString("N0"))</div>
+                    <div class="achievement-label">愛心捐助</div>
+                    <div class="achievement-subtitle">已幫助 @(Model.Orders.Count()) 個家庭</div>
+                </div>
+                <div class="achievement-decoration">
+                    <div class="decoration-circle"></div>
+                    <div class="decoration-line"></div>
+                </div>
+            </div>
+            
+            <!-- 次要統計卡片 -->
+            <div class="stat-card modern">
+                <div class="stat-icon blue">
+                    <i class="fas fa-heart-pulse"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@(Model.TotalOrders)</div>
+                    <div class="stat-label">援助次數</div>
+                </div>
+            </div>
+            
+            <div class="stat-card modern">
+                <div class="stat-icon green">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@(Model.Orders.Sum(o => o.TotalItems))</div>
+                    <div class="stat-label">援助物資</div>
+                </div>
+            </div>
+            
+            <div class="stat-card modern">
+                <div class="stat-icon orange">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@(Model.Orders.Count())</div>
+                    <div class="stat-label">受助家庭</div>
+                </div>
+            </div>
+            
+            <div class="stat-card modern">
+                <div class="stat-icon purple">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@(Model.Orders.Count(o => o.IsEmergencyOrder))</div>
+                    <div class="stat-label">緊急響應</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 愛心動態與成就區域 -->
+    <div class="love-activities-section" style="margin-bottom: 2rem;">
+        <div class="row g-4">
+            <!-- 最近動態時間軸 -->
+            <div class="col-md-7">
+                <div class="activity-timeline-card">
+                    <div class="timeline-header">
+                        <h4 class="timeline-title">
+                            <i class="fas fa-clock text-primary me-2"></i>
+                            最近動態
+                        </h4>
+                        <p class="timeline-subtitle">您的愛心足跡</p>
+                    </div>
+                    <div class="timeline-container">
+                        <div class="timeline-item">
+                            <div class="timeline-marker delivered">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">7月13日 22:31</div>
+                                <div class="timeline-action">您的緊急援助包已送達陳家</div>
+                                <div class="timeline-details">包含醫療用品、清潔用品等 8 件物資</div>
+                                <div class="timeline-status success">✓ 已送達</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker processing">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">7月13日 18:00</div>
+                                <div class="timeline-action">您捐助的組合包正在配送中</div>
+                                <div class="timeline-details">預計今晚送達林家，感謝您的愛心</div>
+                                <div class="timeline-status processing">🚚 配送中</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker donated">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">7月13日 14:11</div>
+                                <div class="timeline-action">感謝您提供愛心捐助</div>
+                                <div class="timeline-details">清潔用品組合 - 讓受助家庭保持健康衛生</div>
+                                <div class="timeline-status donated">💝 已捐贈</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker delivered">
+                                <i class="fas fa-smile"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">7月8日</div>
+                                <div class="timeline-action">收到受助者的感謝回饋</div>
+                                <div class="timeline-details">"謝謝您的物資，讓我們一家度過難關"</div>
+                                <div class="timeline-status feedback">💌 感謝回饋</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 成就徽章區域 -->
+            <div class="col-md-5">
+                <div class="achievement-badges-card">
+                    <div class="badges-header">
+                        <h4 class="badges-title">
+                            <i class="fas fa-award text-warning me-2"></i>
+                            愛心成就
+                        </h4>
+                        <p class="badges-subtitle">您獲得的榮譽徽章</p>
+                    </div>
+                    <div class="badges-container">
+                        <div class="badge-item earned">
+                            <div class="badge-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="badge-info">
+                                <div class="badge-name">愛心新手</div>
+                                <div class="badge-desc">完成首次捐贈</div>
+                            </div>
+                            <div class="badge-date">7月5日獲得</div>
+                        </div>
+                        
+                        <div class="badge-item earned">
+                            <div class="badge-icon">
+                                <i class="fas fa-hands-helping"></i>
+                            </div>
+                            <div class="badge-info">
+                                <div class="badge-name">持續善心</div>
+                                <div class="badge-desc">連續3個月捐贈</div>
+                            </div>
+                            <div class="badge-date">7月13日獲得</div>
+                        </div>
+                        
+                        <div class="badge-item earned">
+                            <div class="badge-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="badge-info">
+                                <div class="badge-name">緊急天使</div>
+                                <div class="badge-desc">響應緊急援助</div>
+                            </div>
+                            <div class="badge-date">7月10日獲得</div>
+                        </div>
+                        
+                        <div class="badge-item locked">
+                            <div class="badge-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="badge-info">
+                                <div class="badge-name">愛心達人</div>
+                                <div class="badge-desc">累計捐贈10次</div>
+                            </div>
+                            <div class="badge-progress">進度: 6/10</div>
+                        </div>
+                        
+                        <div class="badge-item locked">
+                            <div class="badge-icon">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div class="badge-info">
+                                <div class="badge-name">社區守護者</div>
+                                <div class="badge-desc">幫助20個家庭</div>
+                            </div>
+                            <div class="badge-progress">進度: 11/20</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 現代化紀錄列表 -->
+    <div class="records-section">
+        <div class="records-header">
+            <div class="header-info">
+                <h3 class="section-title">援助記錄</h3>
+                <p class="section-description">共 @(Model.Orders.Count()) 筆記錄</p>
+            </div>
+            <div class="filter-controls">
+                <div class="filter-tabs">
+                    <button class="tab-btn active" data-filter="all">
+                        <span>全部</span>
+                        <span class="tab-count">@(Model.Orders.Count(o => o.IsEmergencyOrder || o.OrderSource == "package"))</span>
+                    </button>
+                    <button class="tab-btn" data-filter="unpaid">
+                        <span>未付款</span>
+                        <span class="tab-count">@(Model.Orders.Count(o => (o.IsEmergencyOrder || o.OrderSource == "package") && (o.PaymentStatus == "待付款" || o.PaymentStatus == "付款失敗")))</span>
+                    </button>
+                    <button class="tab-btn" data-filter="emergency">
+                        <span>緊急援助</span>
+                        <span class="tab-count">@(Model.Orders.Count(o => o.IsEmergencyOrder))</span>
+                    </button>
+                    <button class="tab-btn" data-filter="package">
+                        <span>組合包</span>
+                        <span class="tab-count">@(Model.Orders.Count(o => o.OrderSource == "package"))</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Orders.Where(o => o.IsEmergencyOrder || o.OrderSource == "package").Any())
+        {
+            <div class="purchase-records">
+                @foreach (var order in Model.Orders.Where(o => o.IsEmergencyOrder || o.OrderSource == "package"))
+                {
+                    <div class="donation-story-card @(order.IsEmergencyOrder ? "emergency-type" : "package-type")" 
+                         data-type="@(order.IsEmergencyOrder ? "emergency" : "package")"
+                         data-payment-status="@order.PaymentStatus"
+                         data-order-id="@order.OrderId">
+                        
+                        <!-- 援助故事標題 -->
+                        <div class="story-header">
+                            <div class="story-timeline">
+                                <div class="story-date">@order.OrderDate.ToString("MM月dd日")</div>
+                                <div class="story-time">@order.OrderDate.ToString("HH:mm")</div>
+                            </div>
+                            <div class="story-content">
+                                <div class="story-title">
+                                    @if (order.IsEmergencyOrder)
+                                    {
+                                        <span class="story-icon emergency">🚨</span>
+                                        <text>您響應了緊急援助呼籲</text>
+                                    }
+                                    else
+                                    {
+                                        <span class="story-icon package">📦</span>
+                                        <text>您選擇了組合包援助方案</text>
+                                    }
+                                </div>
+                                <div class="story-description">
+                                    @if (order.IsEmergencyOrder)
+                                    {
+                                        <text>在關鍵時刻伸出援手，為急需幫助的家庭送去溫暖</text>
+                                    }
+                                    else
+                                    {
+                                        <text>透過精心搭配的物資組合，提供全面性的生活支援</text>
+                                    }
+                                </div>
+                            </div>
+                            <div class="story-amount">
+                                <div class="amount-label">援助金額</div>
+                                <div class="amount-value">$@(order.TotalPrice.ToString("N0"))</div>
+                                <div class="payment-info">
+                                    <div class="payment-method">
+                                        @{
+                                            string paymentMethod = order.PaymentMethod ?? "credit_card";
+                                            string paymentIcon = "";
+                                            string paymentText = "";
+                                            
+                                            switch (paymentMethod.ToLower())
+                                            {
+                                                case "credit_card":
+                                                    paymentIcon = "fas fa-credit-card";
+                                                    paymentText = "信用卡";
+                                                    break;
+                                                case "atm":
+                                                    paymentIcon = "fas fa-university";
+                                                    paymentText = "ATM轉帳";
+                                                    break;
+                                                case "ecpay":
+                                                    paymentIcon = "fas fa-mobile-alt";
+                                                    paymentText = "綠界支付";
+                                                    break;
+                                                case "line_pay":
+                                                    paymentIcon = "fab fa-line";
+                                                    paymentText = "LINE Pay";
+                                                    break;
+                                                case "apple_pay":
+                                                    paymentIcon = "fab fa-apple-pay";
+                                                    paymentText = "Apple Pay";
+                                                    break;
+                                                case "google_pay":
+                                                    paymentIcon = "fab fa-google-pay";
+                                                    paymentText = "Google Pay";
+                                                    break;
+                                                default:
+                                                    paymentIcon = "fas fa-credit-card";
+                                                    paymentText = "信用卡";
+                                                    break;
+                                            }
+                                        }
+                                        <i class="@paymentIcon"></i><span>@paymentText</span>
+                                    </div>
+                                    <div class="delivery-status">
+                                        @{
+                                            string statusIcon = "";
+                                            string statusText = "";
+                                            string statusClass = "";
+                                            
+                                            switch (order.PaymentStatus)
+                                            {
+                                                case "已付款":
+                                                    statusIcon = "✓";
+                                                    statusText = "已送達";
+                                                    statusClass = "success";
+                                                    break;
+                                                case "待付款":
+                                                    statusIcon = "⏳";
+                                                    statusText = "待付款";
+                                                    statusClass = "pending";
+                                                    break;
+                                                case "付款失敗":
+                                                    statusIcon = "❌";
+                                                    statusText = "付款失敗";
+                                                    statusClass = "failed";
+                                                    break;
+                                                default:
+                                                    statusIcon = "?";
+                                                    statusText = order.PaymentStatus ?? "未知";
+                                                    statusClass = "unknown";
+                                                    break;
+                                            }
+                                        }
+                                        <span class="status-@statusClass">@statusIcon @statusText</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 可展開的物資詳情 -->
+                        <div class="story-details collapsed">
+                            <div class="details-header">
+                                <button class="toggle-details-btn" onclick="toggleDetails(@order.OrderId)">
+                                    <span class="toggle-text">查看援助詳情</span>
+                                    <i class="fas fa-chevron-down toggle-icon"></i>
+                                </button>
+                            </div>
+                            <div class="details-content">
+                                <div class="supplies-grid">
+                                    @if (order.Items.Any())
+                                    {
+                                        @foreach (var item in order.Items)
+                                        {
+                                            <div class="supply-item">
+                                                <div class="supply-image">
+                                                    <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/user-default.png" : item.ImageUrl)" 
+                                                         alt="@item.SupplyName">
+                                                </div>
+                                                <div class="supply-info">
+                                                    <div class="supply-name">@item.SupplyName</div>
+                                                    <div class="supply-quantity">@item.Quantity 份</div>
+                                                </div>
+                                                <div class="supply-value">$@item.TotalPrice.ToString("N0")</div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="supply-item">
+                                            <div class="supply-info">
+                                                <div class="supply-name">援助物資</div>
+                                                <div class="supply-quantity">1 份</div>
+                                            </div>
+                                            <div class="supply-value">$@order.TotalPrice.ToString("N0")</div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 影響力足跡 -->
+                        <div class="impact-footer">
+                            <div class="impact-stats">
+                                <div class="impact-item">
+                                    <span class="impact-number">@order.TotalItems</span>
+                                    <span class="impact-label">件物資</span>
+                                </div>
+                                <div class="impact-item">
+                                    <span class="impact-number">1</span>
+                                    <span class="impact-label">個家庭</span>
+                                </div>
+                                <div class="impact-item">
+                                    <span class="impact-number">@((DateTime.Now - order.OrderDate).Days)</span>
+                                    <span class="impact-label">天前</span>
+                                </div>
+                            </div>
+                            <div class="quick-actions">
+                                @if (order.PaymentStatus == "待付款")
+                                {
+                                    <a href="@Url.Action("RetryPayment", "Purchase", new { orderId = order.OrderId })" 
+                                       class="action-btn primary">
+                                        <i class="fas fa-credit-card"></i>
+                                        <span>重新付款</span>
+                                    </a>
+                                }
+                                else if (order.PaymentStatus == "已付款")
+                                {
+                                    <button class="action-btn secondary" onclick="window.print()">
+                                        <i class="fas fa-download"></i>
+                                        <span>下載收據</span>
+                                    </button>
+                                }
+                                else if (order.PaymentStatus == "付款失敗")
+                                {
+                                    <a href="@Url.Action("RetryPayment", "Purchase", new { orderId = order.OrderId })" class="action-btn warning">
+                                        <i class="fas fa-redo"></i>
+                                        <span>重試付款</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <!-- 現代化空狀態 -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h4>還沒有認購紀錄</h4>
+                <p>
+                    您的愛心捐贈能為需要幫助的家庭帶來溫暖<br>
+                    一起加入愛心行列，用善意點亮希望！
+                </p>
+                <a href="@Url.Action("Index", "Purchase")" class="btn btn-primary btn-lg">
+                    <i class="fas fa-donate me-2"></i>開始認購
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- 感謝與影響力區塊 -->
+@if (Model.Orders.Any())
+{
+    <div class="container py-5">
+        <div class="gratitude-section">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="gratitude-content">
+                        <i class="fas fa-hands-helping gratitude-icon"></i>
+                        <h3 class="gratitude-title">感謝您的愛心</h3>
+                        <p class="gratitude-message">
+                            您的每一份捐贈都經過我們的專業配送，確保送達最需要的個案手中。
+                            您的善舉不僅提供了物質支援，更是傳遞了社會的溫暖與關懷。
+                        </p>
+                        <div class="contact-info">
+                            如有任何問題，歡迎隨時
+                            <a href="@Url.Action("Contact", "Home")" class="contact-link">聯絡我們</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="impact-stats">
+                        <div class="impact-item">
+                            <div class="impact-number">100%</div>
+                            <div class="impact-label">物資送達率</div>
+                        </div>
+                        <div class="impact-item">
+                            <div class="impact-number">24h</div>
+                            <div class="impact-label">緊急援助回應</div>
+                        </div>
+                        <div class="impact-item">
+                            <div class="impact-number">@(Model.Orders.Sum(o => o.TotalItems))+</div>
+                            <div class="impact-label">您的愛心物資</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 篩選功能
+            const filterTabs = document.querySelectorAll('.tab-btn');
+            const storyCards = document.querySelectorAll('.donation-story-card');
+            
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    filterTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.dataset.filter;
+                    
+                    storyCards.forEach(card => {
+                        const cardType = card.dataset.type;
+                        const paymentStatus = card.dataset.paymentStatus;
+                        
+                        if (filter === 'all') {
+                            card.style.display = 'block';
+                        } else if (filter === 'unpaid' && (paymentStatus === '待付款' || paymentStatus === '付款失敗')) {
+                            card.style.display = 'block';
+                        } else if (filter === 'emergency' && cardType === 'emergency') {
+                            card.style.display = 'block';
+                        } else if (filter === 'package' && cardType === 'package') {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+        
+        // 展開/收起詳情功能
+        function toggleDetails(orderId) {
+            const card = document.querySelector(`[data-order-id="${orderId}"]`);
+            const detailsSection = card.querySelector('.story-details');
+            const toggleText = card.querySelector('.toggle-text');
+            
+            if (detailsSection.classList.contains('collapsed')) {
+                detailsSection.classList.remove('collapsed');
+                toggleText.textContent = '收起詳情';
+            } else {
+                detailsSection.classList.add('collapsed');
+                toggleText.textContent = '查看援助詳情';
+            }
+        }
+    </script>
+}

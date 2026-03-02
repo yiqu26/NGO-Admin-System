@@ -1,0 +1,506 @@
+<!-- 使用者活動報名紀錄頁面 - 顯示所有活動參與歷史 -->
+@model NGOPlatformWeb.Models.ViewModels.ActivityRegistrations.UserActivityRegistrationsViewModel
+@{
+    ViewData["Title"] = "活動報名紀錄";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile/profile-shared.css" />
+    <link rel="stylesheet" href="~/css/activities/activity-records.css" />
+    <link rel="stylesheet" href="~/css/profile/profile-dark-theme.css" />
+    <style>
+        /* 民眾活動紀錄頁面 - 參照認購紀錄的現代化設計 */
+        
+        /* 頁面標題區域 - 現代化紫藍漸層設計 */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            backdrop-filter: blur(10px) !important;
+            border: none !important;
+            border-radius: 20px !important;
+            padding: 3rem 2rem !important;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3), 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+            color: white !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .page-header h2,
+        .page-header .breadcrumb-link {
+            color: white !important;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .page-header .breadcrumb-link:hover {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .page-header h2 {
+            font-weight: 700 !important;
+            font-size: 2.5rem !important;
+        }
+        
+        .page-header .page-subtitle {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-size: 1.1rem !important;
+            font-weight: 500 !important;
+            margin-top: 0.5rem !important;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+            letter-spacing: 0.3px !important;
+        }
+        
+        /* 統計卡片 - 超淡背景，深色ICON */
+        .gray-bg .stat-card.total-registrations {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+            color: #1e40af !important;
+        }
+        
+        .gray-bg .stat-card.active-registrations {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
+            color: #065f46 !important;
+        }
+        
+        .gray-bg .stat-card.upcoming-activities {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+            color: #92400e !important;
+        }
+        
+        .gray-bg .stat-card.completed-activities {
+            background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%) !important;
+            color: #6b21a8 !important;
+        }
+        
+        /* 覆蓋後面的舊樣式，只影響此頁面 */
+        .gray-bg .stat-card::before {
+            display: none !important;
+        }
+        
+        /* 圖標樣式 - 深色ICON搭配淡背景 */
+        .gray-bg .total-registrations .stat-icon {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+            color: white !important;
+        }
+        
+        .gray-bg .active-registrations .stat-icon {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: white !important;
+        }
+        
+        .gray-bg .upcoming-activities .stat-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+            color: white !important;
+        }
+        
+        .gray-bg .completed-activities .stat-icon {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+            color: white !important;
+        }
+        
+        .stat-card {
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+            border-radius: 16px !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px) !important;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15), 0 6px 16px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* 統計數字樣式 */
+        .stat-card .stat-number {
+            font-size: 2.5rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .stat-card .stat-label {
+            font-weight: 600 !important;
+            opacity: 0.9 !important;
+        }
+        
+        /* 活動卡片現代化設計 */
+        .activity-card {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 3px 8px rgba(0, 0, 0, 0.04) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .activity-card:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+        }
+        
+        /* 篩選按鈕現代化 */
+        .filter-tabs .btn {
+            border-radius: 12px !important;
+            font-weight: 500 !important;
+            padding: 0.7rem 1.5rem !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .filter-tabs .btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            color: white !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3) !important;
+        }
+        
+        /* 統計卡片左側色彩標識 */
+        .stat-card.total-registrations::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 16px 0 0 16px;
+        }
+        
+        .stat-card.active-registrations::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, #22c55e, #15803d);
+            border-radius: 16px 0 0 16px;
+        }
+        
+        .stat-card.upcoming-activities::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, #f97316, #c2410c);
+            border-radius: 16px 0 0 16px;
+        }
+        
+        .stat-card.completed-activities::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, #9333ea, #7e22ce);
+            border-radius: 16px 0 0 16px;
+        }
+        
+        /* 統計卡片圖標顏色調整 */
+        .total-registrations .stat-icon {
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+            color: white !important;
+        }
+        
+        .active-registrations .stat-icon {
+            background: linear-gradient(135deg, #22c55e, #15803d) !important;
+            color: white !important;
+        }
+        
+        .upcoming-activities .stat-icon {
+            background: linear-gradient(135deg, #f97316, #c2410c) !important;
+            color: white !important;
+        }
+        
+        .completed-activities .stat-icon {
+            background: linear-gradient(135deg, #9333ea, #7e22ce) !important;
+            color: white !important;
+        }
+        
+        /* 活動卡片 - 與整體主題一致的背景 */
+        .activity-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%) !important;
+            backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(226, 232, 240, 0.6) !important;
+            border-radius: 16px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .activity-card:hover {
+            box-shadow: 0 12px 40px rgba(30, 41, 59, 0.18) !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        /* 根據活動狀態添加左邊框 */
+        .activity-card.status-registered {
+            border-left: 4px solid #22c55e !important;
+        }
+        
+        .activity-card.status-cancelled {
+            border-left: 4px solid #ef4444 !important;
+        }
+        
+        .activity-card.status-completed {
+            border-left: 4px solid #9333ea !important;
+        }
+        
+        .activity-card.status-upcoming {
+            border-left: 4px solid #f97316 !important;
+        }
+        
+        /* 篩選按鈕區域 - 與整體主題一致 */
+        .filter-section {
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(226, 232, 240, 0.8) 100%) !important;
+            backdrop-filter: blur(8px) !important;
+            border: 1px solid rgba(226, 232, 240, 0.6) !important;
+            border-radius: 16px !important;
+            padding: 1.5rem !important;
+            margin-bottom: 2rem !important;
+            box-shadow: 0 4px 20px rgba(30, 41, 59, 0.08) !important;
+        }
+        
+        /* 活動列表容器 - 與整體主題一致 */
+        .activities-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%) !important;
+            backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(226, 232, 240, 0.6) !important;
+            border-radius: 20px !important;
+            padding: 2rem !important;
+            box-shadow: 0 8px 32px rgba(30, 41, 59, 0.12) !important;
+        }
+        
+        /* 確保所有卡片都有統一的圓角和陰影 */
+        .stat-card,
+        .activity-card,
+        .page-header,
+        .filter-section,
+        .activities-section {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        /* 統一背景設定 - 移除不一致的cornsilk背景 */
+        .gray-bg {
+            background: transparent !important;
+        }
+    </style>
+}
+
+@{
+    ViewBag.BodyClass = "profile-page";
+}
+
+<div class="container py-5 gray-bg">
+    <!-- 頁面標題和返回按鈕 -->
+    <div class="page-header mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="page-title">
+                    <i class="fas fa-calendar-check me-3"></i>活動報名紀錄
+                </h2>
+                <p class="page-subtitle">@Model.UserName 的活動參與歷程</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a asp-action="UserProfile" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>返回個人資料
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 統計數據卡片區 -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card total-registrations">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@Model.TotalRegistrations</div>
+                    <div class="stat-label">總報名次數</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card active-registrations">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@Model.ActiveRegistrations</div>
+                    <div class="stat-label">有效報名</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card upcoming-activities">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@Model.Registrations.Count(r => r.IsUpcoming && r.IsActive)</div>
+                    <div class="stat-label">即將到來</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card completed-activities">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">@Model.Registrations.Count(r => r.IsCompleted && r.IsActive)</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 活動列表區 -->
+    <div class="activities-section">
+        <div class="section-header mb-4">
+            <h4><i class="fas fa-list me-2"></i>活動列表</h4>
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="upcoming">即將到來</button>
+                <button class="filter-btn" data-filter="completed">已完成</button>
+                <button class="filter-btn" data-filter="cancelled">已取消</button>
+            </div>
+        </div>
+
+        @if (Model.Registrations.Any())
+        {
+            <div class="activities-grid">
+                @foreach (var registration in Model.Registrations)
+                {
+                    <div class="activity-card @(registration.IsUpcoming ? "upcoming" : registration.IsCompleted ? "completed" : "") @(registration.Status == "cancelled" ? "cancelled" : "")" 
+                         data-category="@(registration.IsUpcoming && registration.IsActive ? "upcoming" : registration.IsCompleted && registration.IsActive ? "completed" : registration.Status == "cancelled" ? "cancelled" : "all")">
+                        
+                        <div class="activity-image">
+                            <img src="@registration.ImageUrl" alt="@registration.ActivityName" />
+                            <div class="activity-status-badge @(registration.IsActive ? "status-active" : "status-cancelled")">
+                                @registration.StatusDisplay
+                            </div>
+                        </div>
+                        
+                        <div class="activity-content">
+                            <div class="activity-header">
+                                <h5 class="activity-name">@registration.ActivityName</h5>
+                                <span class="activity-category">@registration.CategoryDisplay</span>
+                            </div>
+                            
+                            <p class="activity-description">@registration.ActivityDescription</p>
+                            
+                            <div class="activity-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>@registration.Location</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>@registration.StartDate.ToString("yyyy/MM/dd")</span>
+                                    @if (registration.StartDate.Date != registration.EndDate.Date)
+                                    {
+                                        <span> - @registration.EndDate.ToString("yyyy/MM/dd")</span>
+                                    }
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>報名時間：@registration.RegisterTime.ToString("yyyy/MM/dd HH:mm")</span>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-footer">
+                                @if (registration.IsUpcoming && registration.IsActive)
+                                {
+                                    <span class="activity-time-badge upcoming-badge">
+                                        <i class="fas fa-hourglass-start"></i>即將開始
+                                    </span>
+                                }
+                                else if (registration.IsCompleted && registration.IsActive)
+                                {
+                                    <span class="activity-time-badge completed-badge">
+                                        <i class="fas fa-check-circle"></i>已完成
+                                    </span>
+                                }
+                                else if (registration.Status == "cancelled")
+                                {
+                                    <span class="activity-time-badge cancelled-badge">
+                                        <i class="fas fa-times-circle"></i>已取消
+                                    </span>
+                                }
+                                
+                                <a href="#" class="view-detail-btn" data-activity-id="@registration.ActivityId">
+                                    查看詳情 <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
+                <h4>尚未參與任何活動</h4>
+                <p>開始探索我們的活動，參與有意義的社會服務吧！</p>
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>瀏覽活動
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 篩選功能
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const activityCards = document.querySelectorAll('.activity-card');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // 更新按鈕狀態
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            
+            // 篩選卡片
+            activityCards.forEach(card => {
+                if (filter === 'all') {
+                    card.classList.remove('hidden');
+                } else {
+                    const category = card.dataset.category;
+                    if (category === filter || (filter === 'all' && category !== 'cancelled')) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    });
+});
+</script>

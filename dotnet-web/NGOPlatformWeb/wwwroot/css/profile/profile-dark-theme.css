@@ -1,0 +1,271 @@
+/* ================================
+   個人資料頁面 - 深色專業主題
+   Professional Dark Theme for Profile Pages
+   ================================ */
+
+/* 頁面背景應用 */
+body.profile-page {
+    background: var(--page-bg) !important;
+    min-height: 100vh;
+    margin: 0;
+    padding-bottom: 0 !important;
+}
+
+/* 確保主內容區域沒有底部間距 */
+body.profile-page main {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* 容器底部間距移除 */
+body.profile-page .container {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* 容器背景優化 */
+.profile-page .container {
+    background: transparent;
+}
+
+/* 側邊欄卡片樣式 */
+.profile-sidebar {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(226, 232, 240, 0.5);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    opacity: 0.8;
+}
+
+.profile-sidebar:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-2px);
+}
+
+/* 主要內容卡片 */
+.profile-content {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+}
+
+.profile-content:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+/* 成就牆卡片 */
+.achievement-wall-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement-wall-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--success-color) 0%, var(--primary-color) 50%, var(--info-color) 100%);
+    opacity: 0.7;
+}
+
+/* 總覽卡片 */
+.overview-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.95) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    position: relative;
+}
+
+.overview-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-1px);
+}
+
+/* 活動總覽特殊樣式 */
+.activity-overview::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+/* 認購總覽特殊樣式 */
+.purchase-overview::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, var(--success-color), var(--success-light));
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+/* 統計數字增強 */
+.stat-number {
+    color: var(--text-primary);
+    font-weight: var(--font-bold);
+    text-shadow: 0 1px 2px rgba(30, 41, 59, 0.1);
+}
+
+/* 按鈕樣式更新 */
+.edit-btn {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.edit-btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--secondary-dark));
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+/* 導航項目更新 */
+.profile-nav .nav-item {
+    transition: all var(--transition-base);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.profile-nav .nav-item:hover {
+    background: rgba(8, 145, 178, 0.08);
+    transform: translateX(3px);
+}
+
+.profile-nav .nav-item.active {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+/* 頭像區域增強 */
+.profile-avatar {
+    position: relative;
+}
+
+.profile-avatar img {
+    box-shadow: 0 8px 32px rgba(8, 145, 178, 0.2);
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    transition: all var(--transition-base);
+}
+
+.profile-avatar:hover img {
+    box-shadow: 0 12px 40px rgba(8, 145, 178, 0.3);
+    transform: scale(1.02);
+}
+
+/* 成就項目優化 */
+.achievement-item.earned {
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.08) 0%, rgba(8, 145, 178, 0.05) 100%);
+    border-color: rgba(5, 150, 105, 0.2);
+}
+
+.achievement-item.locked {
+    background: rgba(148, 163, 184, 0.05);
+    border-color: rgba(148, 163, 184, 0.2);
+}
+
+/* 活動項目優化 */
+.activity-item-optimized {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(226, 232, 240, 0.5);
+    transition: all var(--transition-fast);
+}
+
+.activity-item-optimized:hover {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(8, 145, 178, 0.2);
+    box-shadow: var(--shadow-sm);
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+    body.profile-page {
+        background: var(--page-bg-secondary) !important;
+    }
+    
+    .profile-sidebar,
+    .profile-content,
+    .achievement-wall-card,
+    .overview-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+    }
+}
+
+/* 深色主題細節優化 */
+.content-header h4,
+.achievement-header h5,
+.overview-header h5 {
+    color: var(--text-primary);
+    position: relative;
+}
+
+.content-header h4::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+    opacity: 0.7;
+}
+
+/* 滾動條樣式 */
+.profile-page ::-webkit-scrollbar {
+    width: 8px;
+}
+
+.profile-page ::-webkit-scrollbar-track {
+    background: rgba(226, 232, 240, 0.3);
+    border-radius: 4px;
+}
+
+.profile-page ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border-radius: 4px;
+    transition: background var(--transition-base);
+}
+
+.profile-page ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--secondary-dark));
+}

@@ -1,0 +1,51 @@
+=============================================================
+  NGO System - Cloudflare Tunnel URLs
+  Last Updated: (Fill in date/time when you start the system)
+=============================================================
+
+LOCAL ADDRESSES (Always the same):
+  Backend API:       http://localhost:5264
+  React Admin:       http://localhost:5173
+  MVC User Portal:   http://localhost:5066
+
+CLOUDFLARE PUBLIC URLS (Change every restart):
+
+  [Backend API - Port 5264]
+  URL: https://______________________.trycloudflare.com
+
+  [React Admin - Port 5173]
+  URL: https://=d155d06b-69f7-4dd3-96e4-7e499739682d.trycloudflare.com
+  ^ Share this to interviewer
+
+  [MVC Portal - Port 5066]
+  URL: https://______________________.trycloudflare.com
+  ^ Share this to interviewer
+
+=============================================================
+CONFIG UPDATES NEEDED:
+=============================================================
+
+1. React Config (react-admin\.env.development):
+   VITE_API_BASE_URL=https://[Backend-URL].trycloudflare.com/api
+
+2. MVC Config (dotnet-web\NGOPlatformWeb\appsettings.json):
+   "NgrokUrl": "https://[MVC-URL].trycloudflare.com"
+
+=============================================================
+TEST ACCOUNTS:
+=============================================================
+
+React Admin:
+  Admin:      admin@ngo.org / Admin123!
+  Supervisor: supervisor@ngo.org / Super123!
+  Staff:      staff@ngo.org / Staff123!
+
+MVC Portal:
+  User:       test.user@example.com / Test123!
+
+ECPay Test Card:
+  Card:       4311-9511-1111-1111
+  Expiry:     12/25
+  CVV:        222
+
+=============================================================

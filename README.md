@@ -55,12 +55,12 @@ dotnet run
 # 運行於 http://localhost:5264
 
 # 終端機 2 - 啟動 React 管理後台
-cd NGO-Management-System/frontend
+cd NGO-Management-System/react-admin
 npm run dev
 # 運行於 http://localhost:5173
 
 # 終端機 3 - 啟動 MVC 用戶前台（選用）
-cd NGO-Management-System/mvc-frontend/NGOPlatformWeb
+cd NGO-Management-System/dotnet-web/NGOPlatformWeb
 dotnet run
 # 運行於 http://localhost:5066
 ```
@@ -103,21 +103,21 @@ React 前端    MVC 前端
 ```
 NGO-Management-System/
 │
-├── 📂 frontend/                # React 管理後台（員工系統）
+├── 📂 react-admin/             # React 管理後台（員工系統）
 │   ├── src/                    # 原始碼
 │   ├── public/                 # 靜態資源
 │   ├── package.json
 │   ├── vite.config.ts
 │   └── README.md               # 前端說明文檔
 │
-├── 📂 backend/                 # .NET 9 後端 API
+├── 📂 api/                    # .NET 9 後端 API
 │   ├── Controllers/            # API 控制器
 │   ├── Models/                 # 資料模型
 │   ├── Services/               # 業務邏輯
 │   ├── appsettings.json
 │   └── README.md               # 後端說明文檔
 │
-├── 📂 mvc-frontend/            # MVC 用戶前台（民眾/個案系統）
+├── 📂 dotnet-web/             # MVC 用戶前台（民眾/個案系統）
 │   ├── NGOPlatformWeb/         # MVC 專案
 │   │   ├── Controllers/
 │   │   ├── Views/

@@ -1,0 +1,323 @@
+/* ================================
+   NGO Platform - Profile Components
+   個人資料頁面特定組件樣式
+   ================================ */
+
+/* 活動項目卡片 */
+.activity-item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    background: var(--bg-white);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    transition: background-color 0.15s ease;
+}
+
+.activity-item:hover {
+    background: var(--bg-light);
+}
+
+.activity-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    margin-right: var(--spacing-md);
+    flex-shrink: 0;
+}
+
+/* ================================
+   活動清單效能優化樣式
+   ================================ */
+
+/* 優化版活動項目 - 減少重繪和回流 */
+.activity-item-optimized {
+    will-change: transform; /* 提示瀏覽器即將變化的屬性 */
+    transform: translateZ(0); /* 啟用硬體加速 */
+    contain: layout style paint; /* 限制重繪範圍 */
+}
+
+/* 背景圖縮略圖 - 替代img標籤 */
+.activity-thumb-bg {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-sm);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-right: var(--spacing-md);
+    flex-shrink: 0;
+    /* 效能優化 */
+    transform: translateZ(0); /* 啟用硬體加速 */
+    will-change: background-image; /* 優化背景圖變化 */
+    contain: strict; /* 嚴格包含，避免影響其他元素 */
+    /* 預設佔位圖 */
+    background-color: var(--bg-light);
+    position: relative;
+}
+
+/* 圖片載入失敗時的佔位符 */
+.activity-thumb-bg::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23999' viewBox='0 0 24 24'%3E%3Cpath d='M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.3;
+}
+
+/* 最近活動區域整體優化 */
+.recent-activities-optimized {
+    /* 虛擬滾動優化 */
+    contain: layout style;
+    /* 減少重繪範圍 */
+    isolation: isolate;
+}
+
+/* 滾動條優化 */
+.recent-activities-optimized::-webkit-scrollbar {
+    width: 6px;
+}
+
+.recent-activities-optimized::-webkit-scrollbar-track {
+    background: var(--bg-light);
+    border-radius: 3px;
+}
+
+.recent-activities-optimized::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+.recent-activities-optimized::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+.activity-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.activity-date {
+    color: #6c757d;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.activity-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+/* 認購項目卡片 */
+.purchase-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: background-color 0.15s ease;
+}
+
+.purchase-item:hover {
+    background: #f8f9fa;
+}
+
+.purchase-info {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.purchase-number {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.purchase-date {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+.purchase-amount {
+    color: #28a745;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.purchase-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    grid-column: 2;
+    grid-row: 1 / 3;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* 活動總覽特殊樣式 */
+.activity-overview .stat-number {
+    color: #28a745;
+}
+
+.activity-overview .overview-header h5 {
+    color: #28a745;
+}
+
+.activity-overview .view-all-btn {
+    color: #28a745;
+}
+
+.activity-overview .view-all-btn:hover {
+    color: #1e7e34;
+}
+
+/* 認購總覽特殊樣式 */
+.purchase-overview .stat-number {
+    color: #6f42c1;
+}
+
+.purchase-overview .overview-header h5 {
+    color: #6f42c1;
+}
+
+.purchase-overview .view-all-btn {
+    color: #6f42c1;
+}
+
+.purchase-overview .view-all-btn:hover {
+    color: #5a2d91;
+}
+
+/* Case主題的活動總覽 */
+.case-theme .activity-overview .stat-number {
+    color: #20c997;
+}
+
+.case-theme .activity-overview .overview-header h5 {
+    color: #20c997;
+}
+
+.case-theme .activity-overview .view-all-btn {
+    color: #20c997;
+}
+
+.case-theme .activity-overview .view-all-btn:hover {
+    color: #17a2b8;
+}
+
+/* Case主題的認購總覽 */
+.case-theme .purchase-overview .stat-number {
+    color: #17a2b8;
+}
+
+.case-theme .purchase-overview .overview-header h5 {
+    color: #17a2b8;
+}
+
+.case-theme .purchase-overview .view-all-btn {
+    color: #17a2b8;
+}
+
+.case-theme .purchase-overview .view-all-btn:hover {
+    color: #138496;
+}
+
+/* Case活動項目特殊樣式 */
+.case-activity-item .activity-status.status-active {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+/* 響應式調整 */
+@media (max-width: 768px) {
+    .activity-item,
+    .purchase-item {
+        padding: 0.5rem;
+    }
+    
+    .activity-thumb {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .activity-name,
+    .purchase-number {
+        font-size: 0.8rem;
+    }
+    
+    .activity-date,
+    .purchase-date {
+        font-size: 0.75rem;
+    }
+    
+    .purchase-info {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+    }
+    
+    .purchase-status {
+        grid-column: 1;
+        grid-row: auto;
+        justify-self: start;
+        margin-top: 0.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .activity-item {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+    
+    .activity-thumb {
+        width: 100%;
+        height: 120px;
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .activity-info {
+        width: 100%;
+    }
+    
+    .activity-name {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: initial;
+    }
+    
+    .purchase-number {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: initial;
+    }
+}

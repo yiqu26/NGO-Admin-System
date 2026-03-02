@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: ngo-webapi
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        sync: false
+        # 這個值需要在 Render Dashboard 手動設定
+        # 格式：Server=YOUR_NGROK_URL;Database=NGOPlatformDb;...
+      - key: Jwt__Key
+        generateValue: true
+        # Render 會自動產生安全的 JWT 密鑰
+      - key: Jwt__Issuer
+        value: NGO_WebAPI
+      - key: Jwt__Audience
+        value: NGO_React_Frontend
+      - key: Jwt__ExpireMinutes
+        value: 60
+    healthCheckPath: /
+    autoDeploy: true

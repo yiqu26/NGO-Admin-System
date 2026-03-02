@@ -1,0 +1,364 @@
+/* =================================
+   影響力統計區域樣式
+   ================================= */
+
+.impact-section {
+    background: var(--bg-gradient);
+    position: relative;
+    overflow: hidden;
+}
+
+.impact-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="rgba(102,126,234,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+    opacity: 0.3;
+}
+
+.impact-section .section-title {
+    color: var(--text-primary);
+    font-size: var(--font-4xl);
+    font-weight: var(--font-bold);
+    margin-bottom: var(--spacing-md);
+    position: relative;
+    z-index: var(--z-background);
+}
+
+.impact-section .section-subtitle {
+    color: var(--text-secondary);
+    font-size: var(--font-xl);
+    margin-bottom: var(--spacing-xl);
+    position: relative;
+    z-index: var(--z-background);
+}
+
+.title-decoration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--spacing-xl);
+    position: relative;
+    z-index: var(--z-background);
+}
+
+.decoration-line {
+    width: 60px;
+    height: 2px;
+    background: var(--border-color);
+}
+
+.decoration-icon {
+    margin: 0 var(--spacing-md);
+    color: var(--primary-color);
+    font-size: var(--font-xl);
+    background: var(--primary-light);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-circle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 統計卡片 */
+.primary-card {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-base);
+    height: 100%;
+    position: relative;
+    border: 1px solid var(--border-light);
+    z-index: var(--z-background);
+}
+
+.primary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.primary-card .card-icon {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    width: 50px;
+    height: 50px;
+    background: var(--primary-light);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: var(--font-2xl);
+}
+
+.primary-card .card-content {
+    padding: var(--spacing-xl);
+    padding-top: var(--spacing-2xl);
+}
+
+.primary-card .impact-number {
+    font-size: var(--font-5xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+    line-height: var(--line-height-tight);
+}
+
+.primary-card .impact-label {
+    font-size: var(--font-lg);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+    font-weight: var(--font-semibold);
+}
+
+.primary-card .impact-description {
+    color: var(--text-muted);
+    font-size: var(--font-sm);
+    line-height: var(--line-height-normal);
+}
+
+.card-accent {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+}
+
+.case-accent { background: linear-gradient(90deg, var(--success-color), var(--success-light)); }
+.activity-accent { background: linear-gradient(90deg, var(--info-color), var(--info-dark)); }
+.volunteer-accent { background: linear-gradient(90deg, var(--warning-light), var(--warning-color)); }
+
+/* 簡潔品質展示區 */
+.compact-quality-section {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+.compact-achievements {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-xl);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.achievement-item {
+    text-align: center;
+    padding: var(--spacing-lg);
+    background: var(--bg-white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    border: 1px solid var(--border-color);
+}
+
+.achievement-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.12);
+}
+
+.achievement-item h6 {
+    color: var(--text-primary);
+    font-weight: var(--font-semibold);
+    margin: var(--spacing-md) 0 var(--spacing-xs);
+    font-size: var(--font-md);
+}
+
+.achievement-item p {
+    color: var(--text-light);
+    font-size: var(--font-xs);
+    margin: 0;
+    line-height: var(--line-height-normal);
+}
+
+/* 圓形進度条 */
+.circular-progress {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-md);
+    background: conic-gradient(from 0deg, var(--primary-color) 0% 95%, #e2e8f0 95% 100%);
+    border-radius: var(--radius-circle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.circular-progress-inner {
+    width: 60px;
+    height: 60px;
+    background: var(--bg-white);
+    border-radius: var(--radius-circle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.percentage-text {
+    font-weight: var(--font-bold);
+    font-size: var(--font-lg);
+    color: var(--primary-color);
+}
+
+/* 評分顯示 */
+.rating-display {
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.stars {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.stars i {
+    color: var(--warning-color);
+    font-size: var(--font-md);
+}
+
+.rating-number {
+    font-size: var(--font-2xl);
+    font-weight: var(--font-bold);
+    color: var(--primary-color);
+}
+
+/* 網絡視覺化 */
+.network-visual {
+    margin-bottom: var(--spacing-md);
+}
+
+.network-number {
+    font-size: var(--font-3xl);
+    font-weight: var(--font-bold);
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.network-label {
+    font-size: var(--font-xs);
+    color: var(--text-light);
+    font-weight: var(--font-medium);
+}
+
+/* 響應式設計 */
+@media (max-width: 992px) {
+    .compact-achievements {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-lg);
+    }
+    
+    .achievement-item {
+        padding: var(--spacing-md);
+    }
+    
+    .circular-progress {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .circular-progress-inner {
+        width: 52px;
+        height: 52px;
+    }
+}
+
+@media (max-width: 768px) {
+    .section-title {
+        font-size: var(--font-3xl);
+    }
+    
+    .impact-number {
+        font-size: var(--font-3xl);
+    }
+    
+    .compact-achievements {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .achievement-item {
+        padding: var(--spacing-md);
+    }
+    
+    .circular-progress {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .circular-progress-inner {
+        width: 52px;
+        height: 52px;
+    }
+    
+    .compact-quality-section {
+        padding: var(--spacing-lg) var(--spacing-md);
+        margin-top: var(--spacing-lg);
+    }
+}
+
+@media (max-width: 480px) {
+    .compact-achievements {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .achievement-item {
+        padding: var(--spacing-md);
+    }
+    
+    .circular-progress {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .circular-progress-inner {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .percentage-text {
+        font-size: var(--font-sm);
+    }
+    
+    .network-number {
+        font-size: var(--font-2xl);
+    }
+}
+
+/* 動畫效果 */
+.achievement-item {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.achievement-item:nth-child(1) { animation-delay: 0.2s; }
+.achievement-item:nth-child(2) { animation-delay: 0.4s; }
+.achievement-item:nth-child(3) { animation-delay: 0.6s; }
+
+/* 星星動畫 */
+.stars i {
+    animation: starTwinkle 2s ease-in-out infinite;
+}
+
+.stars i:nth-child(2) { animation-delay: 0.2s; }
+.stars i:nth-child(3) { animation-delay: 0.4s; }
+.stars i:nth-child(4) { animation-delay: 0.6s; }
+.stars i:nth-child(5) { animation-delay: 0.8s; }
+
+@keyframes starTwinkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}

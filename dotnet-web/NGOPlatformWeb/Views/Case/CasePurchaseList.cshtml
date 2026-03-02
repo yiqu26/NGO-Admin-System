@@ -1,0 +1,180 @@
+﻿@model NGOPlatformWeb.Models.ViewModels.SupplyRecordViewModel
+@{
+    ViewBag.BodyClass = "case-purchase-page";
+}
+<link href="~/css/case/case-purchase.css" rel="stylesheet" />
+
+<div class="top-card">
+    <div class="top-card-inner">
+        <div class="top-card-left">
+            <div class="top-icon">📦</div>
+            <div class="top-info">
+                <h2 class="top-title">物資申請紀錄</h2>
+                <p class="top-subtitle">李大仁 的物資申請歷程</p>
+            </div>
+        </div>
+        <div class="top-card-right">
+            <a href="/Account/Profile" class="back-btn">返回個人資料</a>
+        </div>
+    </div>
+</div>
+
+
+<div class="page-layout">
+    <!-- 左邊主要內容 -->
+    <div class="left-content">
+        <!-- 狀態卡片 -->
+        <div class="status-summary">
+            <button class="status-card active" data-tab="unreceived">
+                <div class="status-card-icon blue">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <div class="status-card-info">
+                    <div class="label">未領取</div>
+                    <div class="count">@Model.UnreceivedSupplies.Count 項</div>
+                </div>
+            </button>
+
+            <button class="status-card" data-tab="received">
+                <div class="status-card-icon green">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                </div>
+                <div class="status-card-info">
+                    <div class="label">已領取</div>
+                    <div class="count">@Model.ReceivedSupplies.Count(s => s.Status == "collected") 項</div>
+                </div>
+            </button>
+
+            <button class="status-card" data-tab="interview">
+                <div class="status-card-icon purple">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <div class="status-card-info">
+                    <div class="label">訪談物資</div>
+                    <div class="count">@Model.ReceivedSupplies.Count(s => s.Status == "訪談物資") 項</div>
+                </div>
+            </button>
+        </div>
+
+
+        <!-- 未領取清單 -->
+        <div class="list-wrapper" id="wrap-unreceived">
+            <div class="scroll-area">
+                <div class="selection-list">
+                    @foreach (var item in Model.UnreceivedSupplies)
+                    {
+                        <div class="item-card">
+                            <img src="@item.ImageUrl" alt="@item.Name" class="item-img" />
+                            <div class="item-info">
+                                <div class="item-name">@item.Name</div>
+                                <div class="item-meta">
+                                    <span>@item.Category</span>｜<span>數量：@item.Quantity</span>｜
+                                    <span>登記：@item.ApplyDate.ToString("yyyy/MM/dd")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- 已領取清單 -->
+        <div class="list-wrapper" id="wrap-received" style="display:none;">
+            <div class="scroll-area">
+                <div class="selection-list">
+                    @foreach (var item in Model.ReceivedSupplies.Where(s => s.Status == "collected"))
+                    {
+                        <div class="item-card">
+                            <img src="@item.ImageUrl" alt="@item.Name" class="item-img" />
+                            <div class="item-info">
+                                <div class="item-name">@item.Name</div>
+                                <div class="item-meta">
+                                    <span>@item.Category</span>｜<span>數量：@item.Quantity</span>｜
+                                    <span>領取時間：@item.PickupDate?.ToString("yyyy/MM/dd")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- 訪談物資清單 -->
+        <div class="list-wrapper" id="wrap-interview" style="display:none;">
+            <div class="scroll-area">
+                <div class="selection-list">
+                    @foreach (var item in Model.ReceivedSupplies.Where(s => s.Status == "訪談物資"))
+                    {
+                        <div class="item-card">
+                            <img src="@item.ImageUrl" alt="@item.Name" class="item-img" />
+                            <div class="item-info">
+                                <div class="item-name">@item.Name</div>
+                                <div class="item-meta">
+                                    <span>@item.Category</span>｜<span>數量：@item.Quantity</span>｜
+                                    <span>領取時間：@item.PickupDate?.ToString("yyyy/MM/dd")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右邊統計區塊 -->
+    <div class="right-content">
+        <div class="stats-panel">
+            <h3>📊 登記類別統計</h3>
+            <ul class="stats-list">
+                @foreach (var stat in Model.CategoryStats)
+                {
+                    <li>
+                        <div class="cat-title">
+                            @* 左邊的 emoji *@
+                            @if (stat.CategoryName == "食品")
+                            {
+                                @:<span class="emoji-icon">🍎</span>
+                            }
+                            else if (stat.CategoryName == "衣物")
+                            {
+                                @:<span class="emoji-icon">👕</span>
+                            }
+                            else if (stat.CategoryName == "清潔")
+                            {
+                                @:<span class="emoji-icon">🧽</span>
+                            }
+                            else
+                            {
+                                @:<span class="emoji-icon">📦</span>
+                            }
+                            @stat.CategoryName
+                        </div>
+                        <div class="cat-detail">
+                            登記 @stat.TotalQuantity 件（@stat.ItemCount 個品項）
+                        </div>
+
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div> <!-- ✅ 千萬記得關閉 page-layout 的 div -->
+
+<script>
+    const buttons = document.querySelectorAll(".status-card");
+    const wraps = {
+        unreceived: document.getElementById("wrap-unreceived"),
+        received: document.getElementById("wrap-received"),
+        interview: document.getElementById("wrap-interview")
+    };
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            buttons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            Object.values(wraps).forEach(w => w.style.display = "none");
+            const tabKey = btn.getAttribute("data-tab");
+            wraps[tabKey].style.display = "block";
+        });
+    });
+</script>

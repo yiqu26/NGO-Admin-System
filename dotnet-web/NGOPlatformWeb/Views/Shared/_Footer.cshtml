@@ -1,0 +1,113 @@
+﻿<footer class="modern-footer">
+    <div class="footer-wave">
+        <svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="footer-wave-shape"></path>
+            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="footer-wave-shape"></path>
+            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="footer-wave-shape"></path>
+        </svg>
+    </div>
+
+    <div class="footer-content">
+        <div class="container">
+            <div class="row g-4">
+                <!-- 品牌介紹 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-brand">
+                        <div class="brand-logo">
+                            <img src="~/images/logo.png" alt="恩舉 Logo" class="footer-logo">
+                            <h4>恩舉</h4>
+                        </div>
+                        <p class="brand-description">
+                            致力於連結需要幫助的人與願意伸出援手的人，透過物資認購、活動參與等方式，讓愛心不斷傳遞，為社會帶來正面影響。
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-link instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link line"><i class="fab fa-line"></i></a>
+                            <a href="#" class="social-link youtube"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 快速連結 -->
+                <div class="col-lg-2 col-md-3 col-sm-6">
+                    <div class="footer-section">
+                        <h6 class="footer-title">服務項目</h6>
+                        <ul class="footer-links">
+                            <li><a href="@Url.Action("Index", "Purchase")"><i class="fas fa-heart"></i>物資認購</a></li>
+                            <li><a href="@Url.Action("PublicIndex", "Activity")"><i class="fas fa-calendar-alt"></i>活動報名</a></li>
+                            <li><a href="@Url.Action("ShoppingIndex", "Case")"><i class="fas fa-hands-helping"></i>物資申請</a></li>
+                            <li><a href="https://case-management-system-roan.vercel.app/" target="_blank"><i class="fas fa-user-shield"></i>社工管理</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 關於我們 -->
+                <div class="col-lg-2 col-md-3 col-sm-6">
+                    <div class="footer-section">
+                        <h6 class="footer-title">關於我們</h6>
+                        <ul class="footer-links">
+                            <li><a href="@Url.Action("Organization", "Home")"><i class="fas fa-building"></i>組織介紹</a></li>
+                            <li><a href="@Url.Action("Contact", "Home")"><i class="fas fa-envelope"></i>聯絡我們</a></li>
+                            <li><a href="@Url.Action("Privacy", "Home")"><i class="fas fa-shield-alt"></i>隱私政策</a></li>
+                            <li><a href="#"><i class="fas fa-file-alt"></i>服務條款</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 聯繫資訊 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-section">
+                        <h6 class="footer-title">保持聯繫</h6>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>台北市中正區仁愛路二段100號</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span>(02) 2345-6789</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>info@engu.org.tw</span>
+                            </div>
+                        </div>
+
+                        <!-- 電子報訂閱 -->
+                        <div class="newsletter-section">
+                            <h6 class="newsletter-title">訂閱電子報</h6>
+                            <p class="newsletter-desc">獲取最新的物資需求和活動資訊</p>
+                            <form class="newsletter-form">
+                                <div class="input-group">
+                                    <input type="email" class="form-control newsletter-input" placeholder="請輸入您的電子信箱" required>
+                                    <button class="btn newsletter-btn" type="submit">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部版權 -->
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="copyright">&copy; 2025 恩舉 NGO 平台. 版權所有</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="footer-bottom-links">
+                        <a href="#">隱私政策</a>
+                        <a href="#">服務條款</a>
+                        <a href="#">網站地圖</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

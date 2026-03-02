@@ -1,0 +1,1947 @@
+/* ========================================
+   認購記錄頁面 - 獨立樣式檔案
+   完全不依賴其他CSS，強制套用設計
+   ======================================== */
+
+/* 現代化頁面標題區域 */
+.modern-header {
+    position: relative !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    margin-bottom: 2rem !important;
+    color: white !important;
+    padding: 2rem !important;
+}
+
+.header-background {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    opacity: 0.1 !important;
+}
+
+.header-content {
+    position: relative !important;
+    z-index: 2 !important;
+    padding: 0 !important;
+}
+
+.breadcrumb-modern {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1.5rem !important;
+    font-size: 14px !important;
+    opacity: 0.9 !important;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.breadcrumb-item:hover {
+    color: white !important;
+}
+
+.breadcrumb-separator {
+    opacity: 0.6 !important;
+    font-size: 12px !important;
+}
+
+.breadcrumb-current {
+    color: white !important;
+    font-weight: 500 !important;
+}
+
+.header-main {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    gap: 1.5rem !important;
+}
+
+.modern-title {
+    font-size: 48px !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    line-height: 1.1 !important;
+}
+
+.title-icon {
+    width: 60px !important;
+    height: 60px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 36px !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.modern-subtitle {
+    font-size: 18px !important;
+    opacity: 0.9 !important;
+    margin: 0.75rem 0 0 0 !important;
+    line-height: 1.6 !important;
+}
+
+.header-actions {
+    display: flex !important;
+    gap: 0.75rem !important;
+}
+
+.modern-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 15px !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+}
+
+.modern-btn.primary {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.modern-btn.primary:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* 現代化統計儀表板 */
+.stats-dashboard {
+    margin-bottom: 2rem !important;
+}
+
+.stats-grid {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr !important;
+    gap: 1.5rem !important;
+    margin-bottom: 2rem !important;
+    align-items: stretch !important;
+}
+
+.achievement-card.featured {
+    background: linear-gradient(135deg, #c0392b 0%, #8e44ad 100%) !important;
+    border-radius: 20px !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 8px 25px rgba(192, 57, 43, 0.25) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(192, 57, 43, 0.2) !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 1.5rem !important;
+    height: 120px !important;
+    min-height: 120px !important;
+    color: white !important;
+}
+
+.achievement-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    flex-shrink: 0 !important;
+}
+
+.achievement-content {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    text-align: left !important;
+}
+
+.achievement-decoration {
+    display: none !important;
+}
+
+.achievement-icon.featured-icon {
+    width: 36px !important;
+    height: 36px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 9px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    font-size: 16px !important;
+    flex-shrink: 0 !important;
+}
+
+.achievement-badge {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    padding: 0.25rem 0.75rem !important;
+    border-radius: 8px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.achievement-number {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    color: white !important;
+    line-height: 1 !important;
+    margin-bottom: 0.2rem !important;
+}
+
+.achievement-label {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    margin-bottom: 0.1rem !important;
+    line-height: 1.2 !important;
+}
+
+.achievement-subtitle {
+    font-size: 12px !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+}
+
+/* 統計卡片 - 水平佈局設計（仿照活動介面） */
+div.stat-card.modern,
+.stats-grid .stat-card.modern {
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%) !important;
+    border-radius: 12px !important;
+    padding: 1.5rem !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid #f0f0f0 !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    text-align: left !important;
+    position: relative !important;
+    gap: 1rem !important;
+    height: 120px !important;
+    min-height: 120px !important;
+}
+
+/* 個別統計卡片底色 */
+.stats-grid .stat-card.modern:nth-child(2) { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important; }
+.stats-grid .stat-card.modern:nth-child(3) { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important; }
+.stats-grid .stat-card.modern:nth-child(4) { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important; }
+.stats-grid .stat-card.modern:nth-child(5) { background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%) !important; }
+
+div.stat-card.modern:hover,
+.stats-grid .stat-card.modern:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12) !important;
+}
+
+.stat-icon {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    color: white !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+}
+
+.stat-icon.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important; }
+.stat-icon.green { background: linear-gradient(135deg, #10b981, #047857) !important; }
+.stat-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706) !important; }
+.stat-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important; }
+
+/* 統計內容區域 */
+.stat-content {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+}
+
+.stat-number {
+    font-size: 36px !important;
+    font-weight: 700 !important;
+    color: #2c3e50 !important;
+    line-height: 1 !important;
+    margin: 0 0 0.25rem 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.stat-label {
+    font-size: 14px !important;
+    color: #6c757d !important;
+    font-weight: 500 !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+/* 圖表區域樣式 */
+.charts-section {
+    margin-bottom: 2rem !important;
+}
+
+.chart-card {
+    background: white !important;
+    border-radius: 16px !important;
+    padding: 24px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+    border: 1px solid #f0f2f5 !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.chart-header {
+    margin-bottom: 20px !important;
+    padding-bottom: 16px !important;
+    border-bottom: 1px solid #f0f2f5 !important;
+}
+
+.chart-title {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin: 0 0 4px 0 !important;
+}
+
+.chart-subtitle {
+    font-size: 14px !important;
+    color: #7f8c8d !important;
+    margin: 0 !important;
+}
+
+.chart-container {
+    flex: 1 !important;
+    position: relative !important;
+    min-height: 250px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.chart-container canvas {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+.chart-loading {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #7f8c8d !important;
+    font-size: 14px !important;
+}
+
+.chart-loading i {
+    font-size: 24px !important;
+    margin-bottom: 8px !important;
+    animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 響應式設計 */
+@media (max-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
+    .achievement-card.featured {
+        grid-column: 1 / -1 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .modern-header {
+        padding: 1.5rem !important;
+    }
+    .header-main {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1rem !important;
+    }
+    .modern-title {
+        font-size: 36px !important;
+    }
+    .title-icon {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 24px !important;
+    }
+}
+
+/* 重置基本樣式，避免衝突 */
+.purchase-records *, .records-section * {
+    box-sizing: border-box;
+}
+
+/* records-section 容器 */
+.records-section {
+    background: linear-gradient(135deg, rgba(254, 255, 255, 0.8) 0%, rgba(250, 252, 254, 0.8) 100%) !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04) !important;
+    border: 1px solid rgba(240, 240, 240, 0.6) !important;
+    backdrop-filter: blur(5px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* records-header */
+.records-header {
+    padding: 24px !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 20px !important;
+    background: #fafbfc !important;
+}
+
+.section-title {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: #2c3e50 !important;
+    margin: 0 !important;
+}
+
+.section-description {
+    color: #6c757d !important;
+    margin: 4px 0 0 0 !important;
+    font-size: 14px !important;
+}
+
+/* 篩選標籤 */
+.filter-tabs {
+    display: flex !important;
+    background: #f8f9fa !important;
+    border-radius: 12px !important;
+    padding: 4px !important;
+    gap: 4px !important;
+}
+
+.tab-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 8px 16px !important;
+    border: none !important;
+    background: transparent !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    color: #6c757d !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    white-space: nowrap !important;
+}
+
+.tab-btn.active {
+    background: white !important;
+    color: #2c3e50 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+
+.tab-count {
+    background: rgba(102, 126, 234, 0.1) !important;
+    color: #667eea !important;
+    padding: 2px 8px !important;
+    border-radius: 8px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    min-width: 20px !important;
+    text-align: center !important;
+}
+
+.tab-btn.active .tab-count {
+    background: rgba(102, 126, 234, 0.15) !important;
+    color: #667eea !important;
+}
+
+/* 認購記錄容器 */
+.purchase-records {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+    padding: 30px !important;
+    background: linear-gradient(135deg, rgba(252, 253, 254, 0.8) 0%, rgba(248, 250, 252, 0.8) 100%) !important;
+    /*border-radius: 20px !important;*/
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04) !important;
+    border: 1px solid rgba(203, 213, 225, 0.2) !important;
+    backdrop-filter: blur(5px) !important;
+    margin: 0 !important;
+}
+
+/* 援助故事卡片 */
+.donation-story-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(252, 253, 254, 0.7) 100%) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04) !important;
+    transition: all 0.3s ease !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid rgba(203, 213, 225, 0.3) !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+.donation-story-card:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06) !important;
+}
+
+.donation-story-card.emergency-type {
+    border-left: 4px solid #e67e22 !important;
+    background: linear-gradient(135deg, #fffcf8 0%, #fef9f4 100%) !important;
+    box-shadow: 0 2px 12px rgba(230, 126, 34, 0.08) !important;
+    border: 1px solid rgba(230, 126, 34, 0.12) !important;
+}
+
+/* 已在後面統一定義，此處刪除重複 */
+
+.donation-story-card.package-type {
+    border-left: 4px solid #3498db !important;
+    background: linear-gradient(135deg, #fafcfe 0%, #f4f9fd 100%) !important;
+    box-shadow: 0 2px 12px rgba(52, 152, 219, 0.08) !important;
+    border: 1px solid rgba(52, 152, 219, 0.12) !important;
+}
+
+/* 故事標題區 - 統一定義 */
+.story-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 20px !important;
+    padding: 24px !important;
+    background: rgba(255, 255, 255, 0.4) !important;
+    border-bottom: 1px solid rgba(240, 242, 245, 0.6) !important;
+    backdrop-filter: blur(3px) !important;
+}
+
+/* 針對不同卡片類型的標題背景 */
+.donation-story-card.package-type .story-header {
+    background: linear-gradient(135deg, #e4f0fc 0%, #d6e9fc 100%) !important;
+    border-bottom: 1px solid rgba(52, 152, 219, 0.2) !important;
+}
+
+.donation-story-card.emergency-type .story-header {
+    background: linear-gradient(135deg, #fdf0e9 0%, #fcebe1 100%) !important;
+    border-bottom: 1px solid rgba(230, 126, 34, 0.2) !important;
+}
+
+.story-timeline {
+    flex-shrink: 0 !important;
+    text-align: center !important;
+    padding: 12px !important;
+    background: rgba(253, 254, 255, 0.8) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+    border: 1px solid rgba(203, 213, 225, 0.3) !important;
+    min-width: 80px !important;
+    backdrop-filter: blur(3px) !important;
+}
+
+.story-date {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 4px !important;
+}
+
+.story-time {
+    font-size: 12px !important;
+    color: #7f8c8d !important;
+    font-weight: 500 !important;
+}
+
+.story-content {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    min-height: 80px !important;
+}
+
+.story-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-bottom: 8px !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+}
+
+.story-icon {
+    font-size: 20px !important;
+    padding: 8px !important;
+    border-radius: 8px !important;
+    background: rgba(255,255,255,0.8) !important;
+    border: 1px solid #eee !important;
+}
+
+.story-icon.emergency {
+    background: rgba(231, 76, 60, 0.1) !important;
+    border-color: rgba(231, 76, 60, 0.2) !important;
+}
+
+.story-icon.package {
+    background: rgba(52, 152, 219, 0.1) !important;
+    border-color: rgba(52, 152, 219, 0.2) !important;
+}
+
+.story-description {
+    font-size: 14px !important;
+    color: #7f8c8d !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+}
+
+.story-amount {
+    flex-shrink: 0 !important;
+    text-align: center !important;
+    padding: 16px 20px !important;
+    background: linear-gradient(135deg, rgba(251, 252, 253, 0.7) 0%, rgba(253, 254, 255, 0.65) 100%) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(203, 213, 225, 0.3) !important;
+    position: relative !important;
+    min-width: 120px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    backdrop-filter: blur(3px) !important;
+}
+
+.donation-story-card.emergency-type .story-amount {
+    border-color: rgba(230, 126, 34, 0.3) !important;
+    background: linear-gradient(135deg, #fef7f0 0%, #fdf2e9 100%) !important;
+    box-shadow: 0 2px 8px rgba(230, 126, 34, 0.1) !important;
+}
+
+.donation-story-card.package-type .story-amount {
+    border-color: rgba(52, 152, 219, 0.3) !important;
+    background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%) !important;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1) !important;
+}
+
+.donation-story-card.emergency-type .story-timeline {
+    background: linear-gradient(135deg, #fff9f5 0%, #fef6f0 100%) !important;
+    border: 1px solid rgba(230, 126, 34, 0.2) !important;
+    box-shadow: 0 1px 4px rgba(230, 126, 34, 0.08) !important;
+}
+
+.donation-story-card.package-type .story-timeline {
+    background: linear-gradient(135deg, #f8fcff 0%, #f0f9ff 100%) !important;
+    border: 1px solid rgba(52, 152, 219, 0.2) !important;
+    box-shadow: 0 1px 4px rgba(52, 152, 219, 0.08) !important;
+}
+
+
+.amount-label {
+    font-size: 11px !important;
+    color: #6c757d !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 4px !important;
+}
+
+.amount-value {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: #27ae60 !important;
+    margin-bottom: 8px !important;
+}
+
+.payment-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    align-items: center !important;
+    margin-top: 6px !important;
+}
+
+.payment-method {
+    font-size: 10px !important;
+    color: #6c757d !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    text-align: center !important;
+}
+
+.payment-method i {
+    font-size: 9px !important;
+    color: #6c757d !important;
+}
+
+.delivery-status {
+    display: none !important;
+}
+
+/* 可展開詳情區域 */
+.story-details {
+    border-top: 1px solid #f0f2f5 !important;
+    overflow: hidden !important;
+    transition: all 0.3s ease !important;
+}
+
+.story-details.collapsed .details-content {
+    max-height: 0 !important;
+    padding: 0 24px !important;
+}
+
+.story-details:not(.collapsed) .details-content {
+    max-height: 500px !important;
+    padding: 0 24px 20px 24px !important;
+}
+
+.details-header {
+    padding: 16px 24px !important;
+    background: rgba(250, 251, 252, 0.8) !important;
+    border-bottom: 1px solid rgba(240, 242, 245, 0.6) !important;
+    backdrop-filter: blur(3px) !important;
+}
+
+.toggle-details-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 8px 16px !important;
+    background: transparent !important;
+    border: 1px solid #e1e8ed !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #536471 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.toggle-details-btn:hover {
+    background: rgba(247, 249, 250, 0.9) !important;
+    border-color: rgba(204, 214, 221, 0.8) !important;
+    color: #1d1f23 !important;
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease !important;
+}
+
+.story-details:not(.collapsed) .toggle-icon {
+    transform: rotate(180deg) !important;
+}
+
+.details-content {
+    transition: all 0.3s ease !important;
+    overflow: hidden !important;
+}
+
+/* 物資網格 */
+.supplies-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    gap: 16px !important;
+    margin-top: 20px !important;
+}
+
+.supply-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 16px !important;
+    background: #ffffff !important;
+    border: 1px solid #f0f2f5 !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.supply-item:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+
+.supply-image {
+    flex-shrink: 0 !important;
+}
+
+.supply-image img {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 8px !important;
+    object-fit: cover !important;
+    border: 1px solid #f0f2f5 !important;
+}
+
+.supply-info {
+    flex: 1 !important;
+}
+
+.supply-name {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 2px !important;
+}
+
+.supply-quantity {
+    font-size: 12px !important;
+    color: #7f8c8d !important;
+}
+
+.supply-value {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #27ae60 !important;
+}
+
+/* 影響力足跡 - 使用更具體的選擇器避免衝突 */
+.donation-story-card .impact-footer {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 20px 24px !important;
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(241, 245, 249, 0.8) 100%) !important;
+    border-top: 1px solid rgba(203, 213, 225, 0.5) !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+    position: relative !important;
+    backdrop-filter: blur(3px) !important;
+}
+
+.donation-story-card .impact-footer::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 2px !important;
+    background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.2), transparent) !important;
+}
+
+.donation-story-card .impact-stats {
+    display: flex !important;
+    gap: 24px !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+}
+
+.donation-story-card .impact-item {
+    display: flex !important;
+    flex-direction: column !important;
+    text-align: center !important;
+    min-width: 60px !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.donation-story-card .impact-number {
+    display: block !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #2c3e50 !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.donation-story-card .impact-label {
+    display: block !important;
+    font-size: 11px !important;
+    color: #7f8c8d !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin-top: 4px !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+}
+
+.donation-story-card .quick-actions {
+    display: flex !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+}
+
+.donation-story-card .action-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 8px 16px !important;
+    border: 1px solid rgba(203, 213, 225, 0.6) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #536471 !important;
+    backdrop-filter: blur(5px) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    min-height: 36px !important;
+}
+
+.donation-story-card .action-btn:hover {
+    background: rgba(247, 249, 250, 0.9) !important;
+    border-color: rgba(204, 214, 221, 0.8) !important;
+    color: #1d1f23 !important;
+    transform: translateY(-1px) !important;
+}
+
+.donation-story-card .action-btn i {
+    font-size: 12px !important;
+    color: inherit !important;
+}
+
+.donation-story-card .action-btn span {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: inherit !important;
+}
+
+/* 認購記錄卡片 */
+.purchase-record-card {
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+    transition: all 0.3s ease !important;
+    margin: 0 0 20px 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+.purchase-record-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12) !important;
+}
+
+/* 左側彩色邊框 */
+.purchase-record-card.emergency-order {
+    border-left: 5px solid #dc3545 !important;
+}
+
+.purchase-record-card.package-order {
+    border-left: 5px solid #fd7e14 !important;
+}
+
+.purchase-record-card.regular-order {
+    border-left: 5px solid #28a745 !important;
+}
+
+/* 記錄標題區 */
+.record-header {
+    padding: 24px !important;
+    background: #fafbfc !important;
+    border-bottom: 1px solid #e9ecef !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 20px !important;
+    margin: 0 !important;
+}
+
+/* 訂單資訊 */
+.order-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    flex: 1 !important;
+}
+
+.order-number {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.order-date {
+    font-size: 14px !important;
+    color: #6c757d !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+/* 訂單類型標籤 */
+.order-type-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    margin-top: 8px !important;
+}
+
+.badge-emergency {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+}
+
+.badge-package {
+    background: #fff3cd !important;
+    color: #856404 !important;
+}
+
+.badge-regular {
+    background: #d1ecf1 !important;
+    color: #0c5460 !important;
+}
+
+/* 訂單摘要 */
+.order-summary {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 12px !important;
+    min-width: 180px !important;
+}
+
+.amount-display {
+    text-align: right !important;
+}
+
+.amount-label {
+    font-size: 11px !important;
+    color: #6c757d !important;
+    font-weight: 500 !important;
+    margin: 0 0 4px 0 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.amount-value {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: #0056b3 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+}
+}
+
+/* 狀態標籤 */
+.status-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin: 0 !important;
+}
+
+.status-success {
+    background: #d4edda !important;
+    color: #155724 !important;
+}
+
+.status-pending {
+    background: #fff3cd !important;
+    color: #856404 !important;
+}
+
+/* 物資網格 */
+.purchase-items-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    gap: 16px !important;
+    padding: 24px !important;
+    background: #f8f9fa !important;
+    margin: 0 !important;
+}
+
+/* 物資卡片 */
+.purchase-item-card {
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    text-align: center !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+    display: block !important;
+    margin: 0 !important;
+}
+
+.purchase-item-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+}
+
+.purchase-item-image {
+    margin-bottom: 12px !important;
+    text-align: center !important;
+}
+
+.purchase-item-image img {
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 8px !important;
+    object-fit: cover !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+.purchase-item-name {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin: 0 0 6px 0 !important;
+    line-height: 1.3 !important;
+}
+
+.purchase-item-quantity {
+    font-size: 12px !important;
+    color: #6c757d !important;
+    margin: 0 0 6px 0 !important;
+}
+
+.purchase-item-total {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #28a745 !important;
+    margin: 0 !important;
+}
+
+/* 記錄底部 */
+.record-footer {
+    padding: 20px 24px !important;
+    background: #fafbfc !important;
+    border-top: 1px solid #e9ecef !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 16px !important;
+    margin: 0 !important;
+}
+
+.impact-message {
+    font-size: 14px !important;
+    color: #6c757d !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex: 1 !important;
+    margin: 0 !important;
+}
+
+.impact-message i {
+    color: #dc3545 !important;
+    font-size: 16px !important;
+}
+
+/* 操作按鈕 */
+.purchase-record-actions {
+    display: flex !important;
+    gap: 8px !important;
+    margin: 0 !important;
+}
+
+.purchase-action-btn {
+    background: transparent !important;
+    border: 1px solid #007bff !important;
+    color: #007bff !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    text-decoration: none !important;
+    margin: 0 !important;
+}
+
+.purchase-action-btn:hover {
+    background: #007bff !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+}
+
+/* 空狀態設計 */
+.empty-state {
+    text-align: center !important;
+    padding: 80px 40px !important;
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important;
+    margin: 0 !important;
+}
+
+.empty-icon {
+    width: 120px !important;
+    height: 120px !important;
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 32px !important;
+    font-size: 48px !important;
+    color: white !important;
+}
+
+.empty-state h4 {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 16px !important;
+}
+
+.empty-state p {
+    font-size: 16px !important;
+    color: #6c757d !important;
+    line-height: 1.6 !important;
+    margin-bottom: 32px !important;
+}
+
+/* 感謝區塊容器 - 使用更兼容的方法 */
+.purchase-records-page .container.py-5:last-of-type {
+    margin-bottom: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
+/* 或直接針對body添加底部間距 */
+.profile-page {
+    padding-bottom: 2rem !important;
+}
+
+/* 感謝區塊設計 */
+.gratitude-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-radius: 20px !important;
+    color: white !important;
+    padding: 60px 40px !important;
+    margin: 0 0 2rem 0 !important;
+}
+
+.gratitude-content {
+    text-align: left !important;
+}
+
+.gratitude-icon {
+    font-size: 64px !important;
+    color: rgba(255, 255, 255, 0.2) !important;
+    margin-bottom: 24px !important;
+    display: block !important;
+}
+
+.gratitude-title {
+    font-size: 36px !important;
+    font-weight: 700 !important;
+    margin-bottom: 20px !important;
+    color: white !important;
+}
+
+.gratitude-message {
+    font-size: 18px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 24px !important;
+    opacity: 0.9 !important;
+}
+
+.contact-info {
+    font-size: 16px !important;
+    opacity: 0.8 !important;
+}
+
+.contact-link {
+    color: white !important;
+    text-decoration: underline !important;
+    font-weight: 600 !important;
+}
+
+.contact-link:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.impact-stats {
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    gap: 20px !important;
+}
+
+.impact-item {
+    text-align: center !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    padding: 24px 16px !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    flex: 1 !important;
+}
+
+.impact-number {
+    font-size: 32px !important;
+    font-weight: 700 !important;
+    color: white !important;
+    margin-bottom: 8px !important;
+    line-height: 1 !important;
+}
+
+.impact-label {
+    font-size: 14px !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .purchase-items-grid {
+        grid-template-columns: 1fr !important;
+        padding: 16px !important;
+    }
+    
+    .record-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 16px !important;
+        padding: 20px !important;
+    }
+    
+    .order-summary {
+        align-items: flex-start !important;
+        width: 100% !important;
+    }
+    
+    .amount-display {
+        text-align: left !important;
+    }
+    
+    .record-footer {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 16px 20px !important;
+    }
+    
+    .purchase-record-actions {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    .empty-state {
+        padding: 60px 20px !important;
+    }
+    
+    .empty-icon {
+        width: 100px !important;
+        height: 100px !important;
+        font-size: 36px !important;
+        margin-bottom: 24px !important;
+    }
+    
+    .gratitude-section {
+        padding: 40px 20px !important;
+    }
+    
+    .gratitude-title {
+        font-size: 28px !important;
+    }
+    
+    .gratitude-message {
+        font-size: 16px !important;
+    }
+    
+    .impact-stats {
+        flex-direction: column !important;
+        gap: 16px !important;
+        margin-top: 32px !important;
+    }
+    
+    .impact-item {
+        width: 100% !important;
+        padding: 20px !important;
+    }
+    
+    .donation-story-card .impact-footer {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 16px !important;
+        padding: 16px 20px !important;
+    }
+    
+    .donation-story-card .impact-stats {
+        width: 100% !important;
+        justify-content: space-around !important;
+        gap: 16px !important;
+    }
+    
+    .donation-story-card .impact-item {
+        min-width: 50px !important;
+        flex: 1 !important;
+    }
+    
+    .donation-story-card .quick-actions {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    .donation-story-card .action-btn {
+        flex: 1 !important;
+        justify-content: center !important;
+        max-width: 200px !important;
+    }
+}
+
+/* === 愛心動態與成就區域樣式 === */
+.love-activities-section {
+    margin-bottom: 2rem;
+}
+
+/* 時間軸卡片 */
+.activity-timeline-card {
+    background: var(--card-background) !important;
+    border-radius: var(--border-radius-lg) !important;
+    padding: 1.5rem !important;
+    box-shadow: var(--shadow-soft) !important;
+    border: 1px solid var(--border-light) !important;
+    height: 100% !important;
+}
+
+.timeline-header {
+    margin-bottom: 1.5rem !important;
+    border-bottom: 1px solid var(--border-light) !important;
+    padding-bottom: 1rem !important;
+}
+
+.timeline-title {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    margin-bottom: 0.25rem !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.timeline-subtitle {
+    font-size: 0.875rem !important;
+    color: var(--text-muted) !important;
+    margin-bottom: 0 !important;
+}
+
+.timeline-container {
+    position: relative !important;
+}
+
+.timeline-item {
+    display: flex !important;
+    margin-bottom: 1.5rem !important;
+    position: relative !important;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+.timeline-item:not(:last-child)::after {
+    content: '' !important;
+    position: absolute !important;
+    left: 1rem !important;
+    top: 2.5rem !important;
+    bottom: -1.5rem !important;
+    width: 2px !important;
+    background: var(--border-light) !important;
+}
+
+.timeline-marker {
+    width: 2rem !important;
+    height: 2rem !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 1rem !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.timeline-marker.delivered {
+    background: #10b981 !important;
+    color: white !important;
+}
+
+.timeline-marker.processing {
+    background: #f59e0b !important;
+    color: white !important;
+}
+
+.timeline-marker.donated {
+    background: #3b82f6 !important;
+    color: white !important;
+}
+
+.timeline-content {
+    flex: 1 !important;
+    padding-top: 0.125rem !important;
+}
+
+.timeline-date {
+    font-size: 0.75rem !important;
+    color: var(--text-muted) !important;
+    font-weight: 500 !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.timeline-action {
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    margin-bottom: 0.25rem !important;
+    font-size: 0.9rem !important;
+}
+
+.timeline-details {
+    font-size: 0.8rem !important;
+    color: var(--text-secondary) !important;
+    margin-bottom: 0.5rem !important;
+    line-height: 1.4 !important;
+}
+
+.timeline-status {
+    display: inline-block !important;
+    padding: 0.125rem 0.5rem !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+}
+
+.timeline-status.success {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+}
+
+.timeline-status.processing {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+}
+
+.timeline-status.donated {
+    background: #dbeafe !important;
+    color: #1e40af !important;
+}
+
+.timeline-status.feedback {
+    background: #fce7f3 !important;
+    color: #be185d !important;
+}
+
+/* 成就徽章卡片 */
+.achievement-badges-card {
+    background: var(--card-background) !important;
+    border-radius: var(--border-radius-lg) !important;
+    padding: 1.5rem !important;
+    box-shadow: var(--shadow-soft) !important;
+    border: 1px solid var(--border-light) !important;
+    height: 100% !important;
+}
+
+.badges-header {
+    margin-bottom: 1.5rem !important;
+    border-bottom: 1px solid var(--border-light) !important;
+    padding-bottom: 1rem !important;
+}
+
+.badges-title {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    margin-bottom: 0.25rem !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.badges-subtitle {
+    font-size: 0.875rem !important;
+    color: var(--text-muted) !important;
+    margin-bottom: 0 !important;
+}
+
+.badge-item {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.75rem !important;
+    border-radius: var(--border-radius) !important;
+    margin-bottom: 0.75rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.badge-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+.badge-item.earned {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+    border: 1px solid #f59e0b !important;
+}
+
+.badge-item.locked {
+    background: var(--background-secondary) !important;
+    border: 1px solid var(--border-light) !important;
+    opacity: 0.7 !important;
+}
+
+.badge-icon {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 0.75rem !important;
+    flex-shrink: 0 !important;
+}
+
+.badge-item.earned .badge-icon {
+    background: #f59e0b !important;
+    color: white !important;
+}
+
+.badge-item.locked .badge-icon {
+    background: var(--border-light) !important;
+    color: var(--text-muted) !important;
+}
+
+.badge-info {
+    flex: 1 !important;
+}
+
+.badge-name {
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 0.125rem !important;
+}
+
+.badge-desc {
+    font-size: 0.8rem !important;
+    color: var(--text-secondary) !important;
+    line-height: 1.3 !important;
+}
+
+.badge-date {
+    font-size: 0.75rem !important;
+    color: var(--text-muted) !important;
+    text-align: right !important;
+}
+
+.badge-progress {
+    font-size: 0.75rem !important;
+    color: var(--text-muted) !important;
+    text-align: right !important;
+    font-weight: 500 !important;
+}
+
+/* 付款狀態樣式 */
+.delivery-status .status-success {
+    color: #28a745 !important;
+    font-weight: 600 !important;
+}
+
+.delivery-status .status-pending {
+    color: #ffc107 !important;
+    font-weight: 600 !important;
+    animation: pulse 2s infinite;
+}
+
+.delivery-status .status-failed {
+    color: #dc3545 !important;
+    font-weight: 600 !important;
+}
+
+.delivery-status .status-unknown {
+    color: #6c757d !important;
+    font-weight: 600 !important;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+/* ===== 從頁面內 style 標籤移過來的樣式 ===== */
+
+/* 成就徽章和時間軸區域 */
+.achievement-badges-card,
+.activity-timeline-card {
+    background: rgba(252, 253, 254, 0.8) !important;
+    border: 1px solid rgba(203, 213, 225, 0.3) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+    backdrop-filter: blur(5px) !important;
+    border-radius: 20px !important;
+}
+
+/* 成就徽章樣式 */
+.badge-item.earned {
+    background: rgba(252, 248, 240, 0.7) !important;
+    border: 1px solid rgba(245, 158, 11, 0.4) !important;
+    backdrop-filter: blur(3px) !important;
+    border-radius: 12px !important;
+}
+
+.badge-item.locked {
+    background: rgba(248, 250, 252, 0.5) !important;
+    border: 1px solid rgba(203, 213, 225, 0.25) !important;
+    backdrop-filter: blur(3px) !important;
+    border-radius: 12px !important;
+}
+
+/* 時間軸設計優化 */
+.timeline-container {
+    position: relative !important;
+}
+
+.timeline-container::before {
+    display: none !important;
+}
+
+.timeline-item {
+    background: rgba(250, 251, 252, 0.8) !important;
+    border-radius: 12px !important;
+    padding: 1.25rem !important;
+    margin-bottom: 1rem !important;
+    backdrop-filter: blur(3px) !important;
+    border: 1px solid rgba(203, 213, 225, 0.2) !important;
+    position: relative !important;
+}
+
+.timeline-marker {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    margin-right: 1rem !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.timeline-marker.delivered {
+    background: linear-gradient(135deg, #28a745, #20c997) !important;
+}
+
+.timeline-marker.processing {
+    background: linear-gradient(135deg, #ffc107, #fd7e14) !important;
+}
+
+.timeline-marker.donated {
+    background: linear-gradient(135deg, #007bff, #0056b3) !important;
+}
+
+.timeline-item::before,
+.timeline-item::after,
+.timeline-marker::before,
+.timeline-marker::after {
+    display: none !important;
+}
+
+/* 覆蓋和統一認購紀錄卡片樣式 */
+.donation-story-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(252, 253, 254, 0.7) 100%) !important;
+    border: 1px solid rgba(203, 213, 225, 0.3) !important;
+    backdrop-filter: blur(8px) !important;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    transition: all 0.3s ease !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.donation-story-card.emergency-type {
+    background: linear-gradient(135deg, rgba(251, 248, 246, 0.7) 0%, rgba(249, 246, 245, 0.65) 100%) !important;
+    border-left: 3px solid #e67e22 !important;
+    border: 1px solid rgba(230, 126, 34, 0.15) !important;
+}
+
+.donation-story-card.package-type {
+    background: linear-gradient(135deg, rgba(247, 250, 252, 0.7) 0%, rgba(245, 249, 252, 0.65) 100%) !important;
+    border-left: 3px solid #5dade2 !important;
+    border: 1px solid rgba(93, 173, 226, 0.15) !important;
+}
+
+/* 已在前面統一定義，此處刪除重複 */
+
+.story-timeline {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba(203, 213, 225, 0.3) !important;
+}
+
+.story-amount {
+    background: rgba(248, 250, 252, 0.9) !important;
+    border: 1px solid rgba(203, 213, 225, 0.3) !important;
+}
+
+.donation-story-card .impact-footer {
+    background: rgba(248, 250, 252, 0.5) !important;
+    border-top: 1px solid rgba(203, 213, 225, 0.2) !important;
+}
+
+.donation-story-card.emergency-type .impact-footer {
+    background: linear-gradient(135deg, #fffaf7 0%, #fef7f0 100%) !important;
+    border-top: 1px solid rgba(230, 126, 34, 0.15) !important;
+    box-shadow: inset 0 1px 3px rgba(230, 126, 34, 0.05) !important;
+}
+
+.donation-story-card.package-type .impact-footer {
+    background: linear-gradient(135deg, #fbfcff 0%, #f5faff 100%) !important;
+    border-top: 1px solid rgba(52, 152, 219, 0.15) !important;
+    box-shadow: inset 0 1px 3px rgba(52, 152, 219, 0.05) !important;
+}
+
+/* 覆蓋區域容器樣式 */
+.records-section {
+    background: linear-gradient(135deg, rgba(254, 255, 255, 0.8) 0%, rgba(250, 252, 254, 0.8) 100%) !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04) !important;
+    border: 1px solid rgba(240, 240, 240, 0.6) !important;
+    backdrop-filter: blur(5px) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.records-header {
+    background: rgba(248, 250, 252, 0.8) !important;
+}
+
+/* 手機版 RWD 修正 */
+@media (max-width: 575.98px) {
+    /* 修正援助紀錄卡片在手機版的布局 */
+    .story-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 16px !important;
+        padding: 20px 16px !important;
+    }
+    
+    .story-timeline {
+        width: 100% !important;
+        text-align: left !important;
+        padding: 12px 16px !important;
+        background: rgba(255, 255, 255, 0.6) !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(203, 213, 225, 0.3) !important;
+    }
+    
+    .story-content {
+        width: 100% !important;
+        min-height: auto !important;
+    }
+    
+    .story-title {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        font-size: 16px !important;
+        line-height: 1.4 !important;
+    }
+    
+    .story-description {
+        font-size: 14px !important;
+        line-height: 1.5 !important;
+        margin-top: 8px !important;
+    }
+    
+    .story-amount {
+        width: 100% !important;
+        padding: 16px !important;
+        border-radius: 8px !important;
+        background: rgba(248, 250, 252, 0.8) !important;
+        border: 1px solid rgba(203, 213, 225, 0.3) !important;
+        text-align: center !important;
+    }
+    
+    .amount-value {
+        font-size: 20px !important;
+        font-weight: 700 !important;
+    }
+    
+    .amount-label {
+        font-size: 12px !important;
+        margin-bottom: 4px !important;
+    }
+    
+    .payment-info {
+        margin-top: 8px !important;
+        justify-content: center !important;
+    }
+    
+    /* 修正捐贈故事卡片的手機版顯示 */
+    .donation-story-card {
+        margin-bottom: 20px !important;
+        border-radius: 12px !important;
+    }
+    
+    /* 修正影響力足跡區域 */
+    .donation-story-card .impact-footer {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 16px !important;
+    }
+    
+    .impact-text {
+        text-align: left !important;
+        width: 100% !important;
+    }
+    
+    .impact-icons {
+        justify-content: flex-start !important;
+        width: 100% !important;
+    }
+}

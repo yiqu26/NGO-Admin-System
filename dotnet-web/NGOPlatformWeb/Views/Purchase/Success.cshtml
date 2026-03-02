@@ -1,0 +1,310 @@
+﻿@model NGOPlatformWeb.Models.ViewModels.Purchase.OrderResultViewModel
+@{
+    var isPaymentSuccess = Model.PaymentStatus.Contains("成功") || Model.PaymentStatus == "已付款";
+    ViewData["Title"] = isPaymentSuccess ? "捐贈成功" : "付款處理中";
+}
+
+<link rel="stylesheet" href="~/css/purchase/payment.css" asp-append-version="true" />
+
+<div class="success-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                
+                <!-- 狀態動畫 -->
+                <div class="success-animation">
+                    @if (isPaymentSuccess)
+                    {
+                        <div class="success-icon">
+                            <div class="success-circle">
+                                <div class="success-check"></div>
+                            </div>
+                        </div>
+                        
+                        <h1 class="success-title">捐贈成功！</h1>
+                        <p class="success-subtitle">感謝您的愛心，您的捐贈將為需要幫助的人帶來溫暖</p>
+                    }
+                    else
+                    {
+                        <div class="warning-icon">
+                            <div class="warning-circle">
+                                <div class="warning-mark">!</div>
+                            </div>
+                        </div>
+                        
+                        <h1 class="warning-title">付款失敗</h1>
+                        <p class="warning-subtitle">付款過程中發生問題，請檢查付款狀態或重新嘗試</p>
+                    }
+                </div>
+
+                <!-- 訂單詳情 -->
+                <div class="order-details">
+                    <div class="details-header">
+                        <h3><i class="fas fa-receipt me-2"></i>@(isPaymentSuccess ? "捐贈詳情" : "訂單詳情")</h3>
+                        <div class="order-number">訂單編號：@Model.OrderNumber</div>
+                    </div>
+                    
+                    <div class="details-content">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <label>捐贈物資</label>
+                                    <div class="detail-value">
+                                        @Model.SupplyName
+                                        @if (Model.IsEmergency)
+                                        {
+                                            <span class="emergency-badge"><i class="fas fa-exclamation-triangle"></i> 緊急需求</span>
+                                        }
+                                        @if (Model.SupplyName.Contains("組合包"))
+                                        {
+                                            <span class="package-badge"><i class="fas fa-gift"></i> 組合包</span>
+                                        }
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <label>捐贈數量</label>
+                                    <div class="detail-value">
+                                        @if (Model.SupplyName.Contains("組合包") || Model.SupplyName.Contains("套組"))
+                                        {
+                                            <span>@(Model.Quantity > 0 ? Model.Quantity : 1) 組</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@(Model.Quantity > 0 ? Model.Quantity : 1) 份</span>
+                                        }
+                                    </div>
+                                </div>
+                                
+                                @if (Model.CaseId.HasValue)
+                                {
+                                    <div class="detail-item">
+                                        <label>受助個案</label>
+                                        <div class="detail-value">個案 #@Model.CaseId</div>
+                                    </div>
+                                }
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="detail-item">
+                                    <label>捐贈金額</label>
+                                    <div class="detail-value amount">NT$ @Model.TotalPrice.ToString("N0")</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <label>捐贈時間</label>
+                                    <div class="detail-value">@Model.OrderDate.ToString("yyyy/MM/dd HH:mm")</div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <label>付款方式</label>
+                                    <div class="detail-value">
+                                        @if (Model.PaymentMethod == "credit_card")
+                                        {
+                                            <text><i class="fas fa-credit-card"></i> 信用卡</text>
+                                        }
+                                        else if (Model.PaymentMethod == "atm")
+                                        {
+                                            <text><i class="fas fa-university"></i> ATM轉帳</text>
+                                        }
+                                        else if (Model.PaymentMethod == "ecpay")
+                                        {
+                                            <text><i class="fas fa-credit-card text-success"></i> 綠界 ECPay</text>
+                                        }
+                                        else
+                                        {
+                                            <text><i class="fas fa-credit-card"></i> @Model.PaymentMethod</text>
+                                        }
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <label>付款狀態</label>
+                                    <div class="detail-value status @(isPaymentSuccess ? "success" : "failed")">
+                                        @if (isPaymentSuccess)
+                                        {
+                                            <i class="fas fa-check-circle"></i> @Model.PaymentStatus
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-times-circle"></i> @Model.PaymentStatus
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 下一步行動 -->
+                <div class="next-actions">
+                    <h4>接下來您可以：</h4>
+                    
+                    <div class="action-cards">
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="action-content">
+                                <h5>查收電子收據</h5>
+                                <p>我們已將捐贈收據寄送至您的電子信箱</p>
+                            </div>
+                        </div>
+                        
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="action-content">
+                                <h5>追蹤物資動態</h5>
+                                <p>您可以隨時關注物資的配送狀況</p>
+                            </div>
+                        </div>
+                        
+                        <div class="action-card">
+                            <div class="action-icon">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
+                            <div class="action-content">
+                                <h5>分享愛心行動</h5>
+                                <p>邀請更多朋友一起參與公益行動</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 感謝訊息 -->
+                <div class="thank-you-section">
+                    <div class="thank-you-content">
+                        @if (isPaymentSuccess)
+                        {
+                            <h4>親愛的 @Model.DonorName，</h4>
+                            <p>
+                                您的善心捐贈讓這個世界變得更加美好。每一份愛心都像是希望的種子，
+                                在需要幫助的人心中生根發芽。我們承諾會將您的愛心準確送達，
+                                讓溫暖傳遞到最需要的地方。
+                            </p>
+                            <p>
+                                再次感謝您選擇信任我們，成為愛心傳遞的橋樑。
+                                願您的善意如漣漪般傳播，為更多人帶來希望與光明。
+                            </p>
+                        }
+                        else
+                        {
+                            <h4>親愛的 @Model.DonorName，</h4>
+                            <p>
+                                很抱歉付款過程中發生了問題。您的愛心我們非常感謝，
+                                但這次的付款沒有成功完成。
+                            </p>
+                            <p>
+                                如果您仍希望完成這次捐贈，可以：<br>
+                                • 回到認購記錄頁面重新付款<br>
+                                • 或是重新選擇物資進行捐贈<br>
+                                • 如有任何問題，歡迎與我們聯絡
+                            </p>
+                        }
+                        
+                        <div class="signature">
+                            <strong>NGO 愛心平台團隊</strong><br>
+                            <small>@DateTime.Now.ToString("yyyy年MM月dd日")</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 行動按鈕 -->
+                <div class="action-buttons">
+                    @if (isPaymentSuccess)
+                    {
+                        <a href="@Url.Action("Index", "Purchase")" class="btn btn-primary">
+                            <i class="fas fa-hands-helping me-2"></i>繼續幫助更多人
+                        </a>
+                        
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                            <i class="fas fa-home me-2"></i>返回首頁
+                        </a>
+                        
+                        <button class="btn btn-outline-primary" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i>列印收據
+                        </button>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("PurchaseRecords", "User")" class="btn btn-warning">
+                            <i class="fas fa-redo me-2"></i>查看認購記錄並重新付款
+                        </a>
+                        
+                        <a href="@Url.Action("Index", "Purchase")" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart me-2"></i>重新選擇物資
+                        </a>
+                        
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                            <i class="fas fa-home me-2"></i>返回首頁
+                        </a>
+                    }
+                </div>
+
+                <!-- 社群分享 -->
+                @if (isPaymentSuccess)
+                {
+                    <div class="share-section">
+                        <h5>分享您的愛心行動</h5>
+                        <div class="share-buttons">
+                            <a href="#" class="share-btn facebook" onclick="shareToFacebook()">
+                                <i class="fab fa-facebook-f"></i> Facebook
+                            </a>
+                            <a href="#" class="share-btn line" onclick="shareToLine()">
+                                <i class="fab fa-line"></i> LINE
+                            </a>
+                            <a href="#" class="share-btn copy" onclick="copyLink()">
+                                <i class="fas fa-link"></i> 複製連結
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // 成功動畫效果
+            setTimeout(() => {
+                $('.success-animation').addClass('animate');
+            }, 300);
+            
+            // 漸入動畫
+            setTimeout(() => {
+                $('.order-details').addClass('fade-in');
+            }, 800);
+            
+            setTimeout(() => {
+                $('.next-actions').addClass('fade-in');
+            }, 1200);
+            
+            setTimeout(() => {
+                $('.thank-you-section').addClass('fade-in');
+            }, 1600);
+        });
+        
+        // 分享功能
+        function shareToFacebook() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent('我剛剛完成了一次愛心捐贈，一起來幫助需要的人吧！');
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
+        }
+        
+        function shareToLine() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent('我剛剛完成了一次愛心捐贈，一起來幫助需要的人吧！');
+            window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`, '_blank');
+        }
+        
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('連結已複製到剪貼簿');
+            });
+        }
+    </script>
+}

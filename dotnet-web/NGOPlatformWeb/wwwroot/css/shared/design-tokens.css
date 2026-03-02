@@ -1,0 +1,179 @@
+/* =================================
+   設計系統 - Design Tokens
+   ================================= */
+
+:root {
+  /* 主要色彩 - 低調專業色系 */
+  --primary-color: #0891b2;          /* 溫和的青藍色 */
+  --primary-dark: #0e7490;           /* 深青藍色 */
+  --primary-light: rgba(8, 145, 178, 0.1);
+  --secondary-color: #64748b;        /* 沉穩的石板灰 */
+  --secondary-dark: #475569;         /* 深石板灰 */
+  
+  /* 功能色彩 - 柔和版本 */
+  --success-color: #059669;          /* 森林綠 */
+  --success-light: #10b981;          /* 翠綠色 */
+  --warning-color: #d97706;          /* 琥珀色 */
+  --warning-light: #f59e0b;          /* 金黃色 */
+  --info-color: #0891b2;             /* 青藍色 */
+  --info-dark: #0e7490;              /* 深青藍色 */
+  
+  /* 中性色彩 - 深色系統 */
+  --text-primary: #1e293b;           /* 深石板色 */
+  --text-secondary: #475569;         /* 中石板色 */
+  --text-muted: #64748b;             /* 淺石板色 */
+  --text-light: #94a3b8;             /* 很淺石板色 */
+  --border-color: rgba(8, 145, 178, 0.12);
+  --border-light: #e2e8f0;           /* 極淺灰藍 */
+  
+  /* 背景色彩 - 深色但溫和 */
+  --bg-white: #ffffff;
+  --bg-light: #f8fafc;               /* 極淺藍灰 */
+  --bg-muted: #f1f5f9;               /* 淺藍灰 */
+  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  
+  /* 頁面背景 - 適中的深色系 */
+  --page-bg: linear-gradient(135deg, #334155 0%, #475569 25%, #64748b 50%, #475569 75%, #334155 100%);
+  --page-bg-secondary: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+  
+  /* 陰影 - 更柔和專業 */
+  --shadow-sm: 0 3px 15px rgba(30, 41, 59, 0.08);
+  --shadow-md: 0 8px 32px rgba(30, 41, 59, 0.12);
+  --shadow-lg: 0 15px 35px rgba(8, 145, 178, 0.08);
+  --shadow-xl: 0 25px 50px rgba(8, 145, 178, 0.12);
+  --shadow-hover: 0 16px 48px rgba(8, 145, 178, 0.18);
+  
+  /* 卡片陰影 - 專業版 */
+  --card-shadow: 0 4px 20px rgba(30, 41, 59, 0.08);
+  --card-shadow-hover: 0 8px 30px rgba(8, 145, 178, 0.15);
+  
+  /* 圓角 */
+  --radius-sm: 10px;
+  --radius-md: 15px;
+  --radius-lg: 20px;
+  --radius-circle: 50%;
+  
+  /* 間距 */
+  --spacing-xs: 0.5rem;   /* 8px */
+  --spacing-sm: 0.75rem;  /* 12px */
+  --spacing-md: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;   /* 24px */
+  --spacing-xl: 2rem;     /* 32px */
+  --spacing-2xl: 2.5rem;  /* 40px */
+  --spacing-3xl: 3rem;    /* 48px */
+  
+  /* 字體大小 */
+  --font-xs: 0.75rem;     /* 12px */
+  --font-sm: 0.85rem;     /* 14px */
+  --font-base: 0.9rem;    /* 16px */
+  --font-md: 1rem;        /* 16px */
+  --font-lg: 1.1rem;      /* 18px */
+  --font-xl: 1.25rem;     /* 20px */
+  --font-2xl: 1.5rem;     /* 24px */
+  --font-3xl: 2rem;       /* 32px */
+  --font-4xl: 2.5rem;     /* 40px */
+  --font-5xl: 3.5rem;     /* 56px */
+  
+  /* 字體權重 */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  
+  /* 行高 */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.6;
+  
+  /* 過渡動畫 */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.4s ease;
+  --transition-smooth: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-bounce: 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  
+  /* Z-index 層級 */
+  --z-background: 1;
+  --z-content: 2;
+  --z-overlay: 3;
+  --z-modal: 4;
+  --z-tooltip: 5;
+}
+
+/* 漸層組合 - 專業低調版 */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+}
+
+.gradient-subtle {
+  background: linear-gradient(135deg, var(--primary-light), rgba(8, 145, 178, 0.03));
+}
+
+.gradient-overlay {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.1) 0%, rgba(30, 41, 59, 0.2) 50%, var(--primary-color) 100%);
+}
+
+/* 新增專業頁面背景 */
+.gradient-page-bg {
+  background: var(--page-bg);
+  min-height: 100vh;
+}
+
+.gradient-card-bg {
+  background: linear-gradient(135deg, var(--bg-white) 0%, var(--bg-light) 100%);
+  box-shadow: var(--card-shadow);
+  transition: box-shadow var(--transition-base);
+}
+
+.gradient-card-bg:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* 通用動畫 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes slideInFade {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 通用類別 */
+.animate-fade-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-float {
+  animation: gentleFloat 8s ease-in-out infinite;
+}
+
+.transition-smooth {
+  transition: all var(--transition-smooth);
+}
+
+.shadow-hover:hover {
+  box-shadow: var(--shadow-hover);
+}

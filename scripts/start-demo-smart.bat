@@ -78,7 +78,7 @@ echo  [3/5] Starting React Admin Panel...
 echo ================================================================
 echo.
 
-cd /d "%~dp0..\frontend"
+cd /d "%~dp0..\react-admin"
 start "React Admin (localhost:5173)" cmd /k "color 0D && echo ========================================= && echo   React Admin - http://localhost:5173 && echo ========================================= && echo. && npm run dev"
 
 echo  Starting React Admin Panel...
@@ -96,7 +96,7 @@ echo  [4/5] Starting MVC User Portal...
 echo ================================================================
 echo.
 
-cd /d "%~dp0..\mvc-frontend\NGOPlatformWeb"
+cd /d "%~dp0..\dotnet-web\NGOPlatformWeb"
 start "MVC Portal (localhost:5066)" cmd /k "color 0E && echo ========================================= && echo   MVC Portal - http://localhost:5066 && echo ========================================= && echo. && dotnet run"
 
 echo  Starting MVC User Portal...

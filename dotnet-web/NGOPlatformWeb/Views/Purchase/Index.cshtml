@@ -1,0 +1,659 @@
+﻿@{
+    ViewData["Title"] = "物資認購";
+}
+
+@Html.AntiForgeryToken()
+
+<link rel="stylesheet" href="~/css/purchase/purchase.css" asp-append-version="true" />
+
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>@ViewBag.Error
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        @if (ViewBag.ErrorDetail != null)
+        {
+            <div class="mt-2">
+                <strong>詳細錯誤：</strong>
+                <pre style="font-size: 12px; white-space: pre-wrap;">@ViewBag.ErrorDetail</pre>
+            </div>
+        }
+    </div>
+}
+
+<!-- 除錯資訊 -->
+@if (ViewBag.DebugInfo != null)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <i class="fas fa-info-circle me-2"></i>除錯資訊: @ViewBag.DebugInfo
+        <br>狀態分布: @ViewBag.StatusInfo
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (ViewBag.EmergencyError != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>@ViewBag.EmergencyError
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="purchase-page">
+
+<!-- Hero Section -->
+<section class="purchase-hero">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="fas fa-shield-alt me-2"></i>透明公益 · 專業服務
+                    </div>
+                    <h1 class="hero-title">
+                        每一份捐助<br><span class="gradient-text">都能帶來改變</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        您的慷慨捐助，將為需要幫助的個案帶來溫暖與希望。<br>
+                        透過專業的物資配送系統，確保每一份愛心都能精準送達。
+                    </p>
+                    
+                    <div class="stats-container">
+                        <div class="row g-0">
+                            <div class="col-4"><div class="stat-card"><div class="stat-number">1,247</div><div class="stat-label">家庭受惠</div><div class="stat-icon"><i class="fas fa-home"></i></div></div></div>
+                            <div class="col-4"><div class="stat-card"><div class="stat-number">98%</div><div class="stat-label">送達成功</div><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div></div>
+                            <div class="col-4"><div class="stat-card"><div class="stat-number">24hrs</div><div class="stat-label">快速響應</div><div class="stat-icon"><i class="fas fa-clock"></i></div></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    <div class="hero-image-container">
+                        <img src="https://plus.unsplash.com/premium_photo-1683134261048-dfb427f8becf?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                             class="hero-image" alt="公益支援">
+                        <div class="hero-overlay"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 緊急需求 -->
+<section class="emergency-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <div class="section-badge emergency-badge">
+                <i class="fas fa-exclamation-triangle me-2"></i>緊急救援
+            </div>
+            <h2 class="section-title">即時救援需求</h2>
+            <p class="section-subtitle">這些個案正面臨急迫困境，需要您的即時援助</p>
+        </div>
+        
+        <div class="emergency-grid">
+            @if (ViewBag.EmergencyNeeds != null && ((IEnumerable<dynamic>)ViewBag.EmergencyNeeds).Any())
+            {
+                @foreach (var item in ViewBag.EmergencyNeeds)
+                {
+                    <div class="emergency-card">
+                        <!-- 優先級標籤 -->
+                        <div class="emergency-indicator @(item.Priority == "Urgent" ? "urgent" : item.Priority == "High" ? "high" : item.Priority == "Low" ? "low" : "normal")">
+                            @(item.Priority == "Urgent" ? "極緊急" : item.Priority == "High" ? "高優先" : item.Priority == "Low" ? "低優先" : "普通")
+                        </div>
+                        
+                        <div class="card-img">
+                            <img src="@item.ImageUrl" alt="@item.SupplyName" 
+                                 onerror="this.src='https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop'">
+                            <div class="card-overlay">
+                                <div class="case-badge">個案 #@item.CaseId</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <h4 class="card-title">@item.SupplyName</h4>
+                            
+                            <!-- 描述 -->
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <p class="card-description">@item.Description</p>
+                            }
+                            
+                            <div class="progress-section">
+                                <div class="progress-info">
+                                    <span>募集進度</span>
+                                    <span>@(item.NeededQuantity - item.RemainingQuantity)/@item.NeededQuantity</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: @(item.NeededQuantity > 0 ? (item.NeededQuantity - item.RemainingQuantity) * 100 / item.NeededQuantity : 0)%"></div>
+                                </div>
+                                <div class="remaining">還需要 <strong>@item.RemainingQuantity 份</strong></div>
+                            </div>
+                            
+                            <button class="emergency-btn" onclick="directPurchase(null, 1, @item.Id, 'emergency')">
+                                <span>立即援助</span><i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Emergency Modal -->
+                    <div class="modal fade" id="modal@(item.Id)" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header emergency-header">
+                                    <h5><i class="fas fa-heartbeat me-2"></i>緊急援助</h5>
+                                    <button type="button" class="purchase-modal-close" data-bs-dismiss="modal">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="modal-item">
+                                        <img src="@item.ImageUrl" alt="@item.SupplyName">
+                                        <div>
+                                            <h6>@item.SupplyName</h6>
+                                            <p>個案 #@item.CaseId 的緊急需求</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="quantity-selector">
+                                        <label>選擇援助數量</label>
+                                        <select class="purchase-form-select">
+                                            @for (int i = 1; i <= item.RemainingQuantity; i++)
+                                            {
+                                                <option value="@i">@i 份 - 幫助度過難關</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="trust-note">
+                                        <i class="fas fa-shield-alt me-2"></i>
+                                        您的援助將直接送達個案手中，全程透明追蹤
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="purchase-btn secondary" data-bs-dismiss="modal">稍後決定</button>
+                                    <button type="button" class="purchase-btn emergency">
+                                        <i class="fas fa-hands-helping me-2"></i>確認援助
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-emergency">
+                    <div class="no-emergency-icon"><i class="fas fa-check-circle"></i></div>
+                    <h4>目前沒有緊急需求</h4>
+                    <p>感謝大家的愛心，目前所有緊急案件都已獲得協助</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- 援助套組 -->
+<section class="packages-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <div class="section-badge success-badge">
+                <i class="fas fa-boxes me-2"></i>配套方案
+            </div>
+            <h2 class="section-title">援助套組</h2>
+            <p class="section-subtitle">專業團隊精心搭配，為需要幫助的家庭提供完整支援</p>
+        </div>
+        
+        <div class="packages-grid">
+            <!-- 醫療照護套組 -->
+            <div class="package-card medical-bg">
+                <div class="package-header medical">
+                    <div class="package-icon"><i class="fas fa-medkit"></i></div>
+                    <h4>醫療照護套組</h4>
+                    <div class="package-price">NT$ 705</div>
+                </div>
+                <div class="package-body">
+                    <div class="package-items">
+                        <div class="package-item"><i class="fas fa-check"></i><span>口罩 x 2盒</span></div>
+                        <div class="package-item"><i class="fas fa-check"></i><span>酒精 x 2瓶</span></div>
+                        <div class="package-item"><i class="fas fa-check"></i><span>體溫計 x 2支</span></div>
+                        <div class="package-item"><i class="fas fa-check"></i><span>紗布繃帶 x 5組</span></div>
+                    </div>
+                    <p class="package-desc">適合需要醫療照護的長者或慢性病患</p>
+                    <div class="package-quantity">
+                        <label>捐贈數量：</label>
+                        <select class="quantity-select" id="medical-quantity" onchange="updatePackagePrice('medical', 705)">
+                            <option value="1">1組 (NT$ 705)</option>
+                            <option value="2">2組 (NT$ 1,410)</option>
+                            <option value="3">3組 (NT$ 2,115)</option>
+                        </select>
+                    </div>
+                    <button class="package-btn medical" onclick="buyPackageWithQuantity('medical')">
+                        <span>立即捐贈</span><i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 營養食物套組 -->
+            <div class="package-card food-bg">
+                <div class="package-header food">
+                    <div class="package-icon"><i class="fas fa-utensils"></i></div>
+                    <h4>營養食物套組</h4>
+                    <div class="package-price">NT$ 605</div>
+                </div>
+                <div class="package-body">
+                    <div class="package-items">
+                        <div class="package-item"><i class="fas fa-check"></i><span>糙米 x 3包</span></div>
+                        <div class="package-item"><i class="fas fa-check"></i><span>玉米罐頭 x 4罐</span></div>
+                        <div class="package-item"><i class="fas fa-check"></i><span>蘋果麵包 x 6個</span></div>
+                        <div class="package-item"><i class="fas fa-check"></i><span>豆奶 x 12瓶</span></div>
+                    </div>
+                    <p class="package-desc">提供一周基本營養需求，幫助家庭度過困難</p>
+                    <div class="package-quantity">
+                        <label>捐贈數量：</label>
+                        <select class="quantity-select" id="food-quantity" onchange="updatePackagePrice('food', 605)">
+                            <option value="1">1組 (NT$ 605)</option>
+                            <option value="2">2組 (NT$ 1,210)</option>
+                            <option value="3">3組 (NT$ 1,815)</option>
+                        </select>
+                    </div>
+                    <button class="package-btn food" onclick="buyPackageWithQuantity('food')">
+                        <span>立即捐贈</span><i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 清潔護理套組 -->
+            <div class="package-card hygiene-bg">
+                <div class="package-header hygiene">
+                    <div class="package-icon"><i class="fas fa-spa"></i></div>
+                    <h4>清潔護理套組</h4>
+                    <div class="package-price">NT$ 415</div>
+                </div>
+                <div class="package-body">
+                    <div class="package-items">
+                        <div class="package-item"><i class="fas fa-check"></i><span>洗髮精 x 1瓶</span></div>
+                        <div class="package-item"><i class="fas fa-check"></i><span>沐浴乳 x 1瓶</span></div>
+                        <div class="package-item"><i class="fas fa-check"></i><span>肥皂 x 4塊</span></div>
+                        <div class="package-item"><i class="fas fa-check"></i><span>濕紙巾 x 5包</span></div>
+                    </div>
+                    <p class="package-desc">維持基本清潔衛生，提升生活品質</p>
+                    <div class="package-quantity">
+                        <label>捐贈數量：</label>
+                        <select class="quantity-select" id="hygiene-quantity" onchange="updatePackagePrice('hygiene', 415)">
+                            <option value="1">1組 (NT$ 415)</option>
+                            <option value="2">2組 (NT$ 830)</option>
+                            <option value="3">3組 (NT$ 1,245)</option>
+                        </select>
+                    </div>
+                    <button class="package-btn hygiene" onclick="buyPackageWithQuantity('hygiene')">
+                        <span>立即捐贈</span><i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 影響力展示區 -->
+<section class="impact-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <div class="section-badge impact-badge">
+                <i class="fas fa-chart-line me-2"></i>成果展示
+            </div>
+            <h2 class="section-title">您的捐贈帶來的改變</h2>
+            <p class="section-subtitle">透明公開每一筆捐贈的實際成效，讓愛心有跡可循</p>
+        </div>
+        
+        <!-- 即時統計 -->
+        <div class="impact-stats">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6"><div class="impact-stat-card"><div class="stat-icon"><i class="fas fa-home"></i></div><div class="stat-number" data-target="1247">0</div><div class="stat-label">受惠家庭</div><div class="stat-desc">累計服務家庭數</div></div></div>
+                <div class="col-lg-3 col-md-6"><div class="impact-stat-card"><div class="stat-icon"><i class="fas fa-boxes"></i></div><div class="stat-number" data-target="8934">0</div><div class="stat-label">物資配送</div><div class="stat-desc">本年度配送次數</div></div></div>
+                <div class="col-lg-3 col-md-6"><div class="impact-stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-number" data-target="24">0</div><div class="stat-label">小時內送達</div><div class="stat-desc">平均處理時間</div></div></div>
+                <div class="col-lg-3 col-md-6"><div class="impact-stat-card"><div class="stat-icon"><i class="fas fa-percentage"></i></div><div class="stat-number" data-target="98">0</div><div class="stat-label">成功送達率</div><div class="stat-desc">物資配送成功率</div></div></div>
+            </div>
+        </div>
+
+        <!-- 捐贈影響計算器 -->
+        <div class="donation-calculator">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="calculator-content">
+                        <h3>您的捐贈能帶來什麼改變？</h3>
+                        <p>選擇捐贈金額，了解實際能提供的幫助</p>
+                        
+                        <div class="amount-options">
+                            <button class="amount-btn active" data-amount="300">NT$ 300</button>
+                            <button class="amount-btn" data-amount="600">NT$ 600</button>
+                            <button class="amount-btn" data-amount="1000">NT$ 1,000</button>
+                            <button class="amount-btn" data-amount="2000">NT$ 2,000</button>
+                        </div>
+                        
+                        <div class="impact-result">
+                            <div class="impact-item">
+                                <i class="fas fa-utensils text-success"></i>
+                                <span>提供 <strong id="meals">6</strong> 餐營養餐食</span>
+                            </div>
+                            <div class="impact-item">
+                                <i class="fas fa-medkit text-primary"></i>
+                                <span>支援 <strong id="medical">2</strong> 個家庭基礎醫療</span>
+                            </div>
+                            <div class="impact-item">
+                                <i class="fas fa-graduation-cap text-warning"></i>
+                                <span>幫助 <strong id="education">1</strong> 位孩童學習用品</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="calculator-visual">
+                        <div class="progress-ring">
+                            <svg class="progress-svg" width="200" height="200">
+                                <circle cx="100" cy="100" r="80" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                                <circle cx="100" cy="100" r="80" fill="none" stroke="#10b981" stroke-width="8" 
+                                        stroke-dasharray="502.4" stroke-dashoffset="150.72" class="progress-circle"/>
+                            </svg>
+                            <div class="progress-content">
+                                <div class="progress-amount">NT$ <span id="selected-amount">300</span></div>
+                                <div class="progress-label">您的捐贈</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 捐贈方式說明 -->
+<section class="donation-methods">
+    <div class="container">
+        <div class="section-header text-center">
+            <div class="section-badge info-badge">
+                <i class="fas fa-info-circle me-2"></i>捐贈方式
+            </div>
+            <h2 class="section-title">多元便利的捐贈管道</h2>
+            <p class="section-subtitle">選擇最適合您的捐贈方式，讓愛心行動更簡單</p>
+        </div>
+        
+        <div class="methods-grid">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6"><div class="method-card"><div class="method-icon"><i class="fas fa-credit-card"></i></div><h4>線上捐贈</h4><p>支援信用卡、LINE Pay、Apple Pay等多種線上支付方式，即時完成捐贈</p><div class="method-features"><span class="feature-tag">即時到帳</span><span class="feature-tag">安全加密</span></div></div></div>
+                <div class="col-lg-4 col-md-6"><div class="method-card"><div class="method-icon"><i class="fas fa-university"></i></div><h4>銀行轉帳</h4><p>提供專用帳戶進行轉帳捐贈，適合較大金額或定期捐贈</p><div class="method-features"><span class="feature-tag">無手續費</span><span class="feature-tag">定期捐贈</span></div></div></div>
+                <div class="col-lg-4 col-md-6"><div class="method-card"><div class="method-icon"><i class="fas fa-receipt"></i></div><h4>其他方式</h4><p>郵局劃撥、超商代碼繳費等傳統方式，滿足不同需求</p><div class="method-features"><span class="feature-tag">彈性選擇</span><span class="feature-tag">廣泛支援</span></div></div></div>
+            </div>
+        </div>
+        
+        <div class="tax-info">
+            <div class="tax-info-card">
+                <div class="tax-icon">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div class="tax-content">
+                    <h4>稅務優惠說明</h4>
+                    <p>依據所得稅法第17條規定，個人捐贈可列舉扣除，最高可扣除綜合所得總額20%，我們將提供正式收據供您報稅使用。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 信任區域 -->
+<section class="trust-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="trust-content">
+                    <h3>透明公益，值得信賴</h3>
+                    <p>我們堅持透明化運作，每一筆捐款都有詳細記錄，確保您的愛心能夠精準送達需要幫助的個案手中。</p>
+                    
+                    <div class="trust-features">
+                        <div class="trust-feature"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><div><h5>資料安全保護</h5><p>採用銀行級加密技術保護您的個人資訊</p></div></div>
+                        <div class="trust-feature"><div class="feature-icon"><i class="fas fa-chart-line"></i></div><div><h5>即時追蹤系統</h5><p>隨時查看您的捐贈狀態和配送進度</p></div></div>
+                        <div class="trust-feature"><div class="feature-icon"><i class="fas fa-certificate"></i></div><div><h5>合法立案組織</h5><p>政府認證的非營利組織，公開透明運作</p></div></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="trust-visual">
+                    <div class="trust-stats">
+                        @foreach(var stat in new[] {
+                            new { icon = "fa-users", num = "1,247", desc = "受惠家庭" },
+                            new { icon = "fa-truck", num = "98%", desc = "送達成功率" },
+                            new { icon = "fa-donate", num = "5,832", desc = "公益捐贈" },
+                            new { icon = "fa-clock", num = "24hrs", desc = "平均處理時間" }
+                        })
+                        {
+                        }
+                    </div>
+                    
+                    <div class="cert-badges">
+                        <div class="cert-badge"><i class="fas fa-award"></i><span>政府認證</span></div>
+                        <div class="cert-badge"><i class="fas fa-star"></i><span>公信保證</span></div>
+                        <div class="cert-badge"><i class="fas fa-check-circle"></i><span>透明運作</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // 統計數字動畫
+            $('.purchase-page .stat-number').each(function() {
+                const $this = $(this);
+                const target = parseInt($this.attr('data-target') || $this.text().replace(/,/g, ''));
+                if (!isNaN(target)) {
+                    let current = 0;
+                    const increment = target / 60;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        $this.text(Math.floor(current).toLocaleString());
+                    }, 16);
+                }
+            });
+            
+            // 進度條動畫
+            $('.purchase-page .progress-fill').each(function() {
+                const width = $(this).css('width');
+                $(this).css('width', '0').animate({ width: width }, 1000);
+            });
+            
+            // 捐贈計算器
+            $('.amount-btn').on('click', function() {
+                $('.amount-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                const amount = parseInt($(this).attr('data-amount'));
+                updateImpactCalculation(amount);
+                updateProgressRing(amount);
+            });
+            
+            function updateImpactCalculation(amount) {
+                // 計算影響力 (這些比例可以根據實際情況調整)
+                const meals = Math.floor(amount / 50); // 每50元一餐
+                const medical = Math.floor(amount / 150); // 每150元支援一個家庭
+                const education = Math.floor(amount / 300); // 每300元幫助一位孩童
+                
+                $('#meals').text(meals);
+                $('#medical').text(medical);
+                $('#education').text(education);
+                $('#selected-amount').text(amount.toLocaleString());
+            }
+            
+            function updateProgressRing(amount) {
+                const maxAmount = 2000;
+                const percentage = Math.min(amount / maxAmount, 1);
+                const circumference = 2 * Math.PI * 80; // r=80
+                const offset = circumference * (1 - percentage);
+                
+                $('.progress-circle').css('stroke-dashoffset', offset);
+            }
+            
+            // 初始化計算器
+            updateImpactCalculation(300);
+        });
+        
+        // 直接購買函數
+        function directPurchase(supplyId, quantity, emergencyNeedId, supplyType) {
+            // 找到被點擊的按鈕並顯示載入狀態
+            const clickedBtn = event.target.closest('button');
+            if (clickedBtn) {
+                const originalText = clickedBtn.innerHTML;
+                clickedBtn.disabled = true;
+                clickedBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>處理中...';
+                
+                // 設定超時恢復按鈕狀態
+                setTimeout(() => {
+                    clickedBtn.disabled = false;
+                    clickedBtn.innerHTML = originalText;
+                }, 10000);
+            }
+            
+            // 創建表單並提交
+            const form = $('<form>', {
+                'method': 'POST',
+                'action': '@Url.Action("DirectPurchase", "Purchase")'
+            });
+            
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'supplyId',
+                'value': supplyId
+            }));
+            
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'quantity',
+                'value': quantity
+            }));
+            
+            if (emergencyNeedId) {
+                form.append($('<input>', {
+                    'type': 'hidden',
+                    'name': 'emergencyNeedId',
+                    'value': emergencyNeedId
+                }));
+            }
+            
+            // 添加防偽令牌
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': '__RequestVerificationToken',
+                'value': $('input[name="__RequestVerificationToken"]').val()
+            }));
+            
+            $('body').append(form);
+            form.submit();
+        }
+        
+        // 組合包購買函數
+        function buyPackage(packageType) {
+            // 找到被點擊的按鈕並顯示載入狀態
+            const clickedBtn = event.target.closest('button');
+            if (clickedBtn) {
+                const originalText = clickedBtn.innerHTML;
+                clickedBtn.disabled = true;
+                clickedBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>處理中...';
+                
+                // 設定超時恢復按鈕狀態
+                setTimeout(() => {
+                    clickedBtn.disabled = false;
+                    clickedBtn.innerHTML = originalText;
+                }, 10000);
+            }
+            
+            // 創建表單並提交到組合包購買API
+            const form = $('<form>', {
+                'method': 'POST',
+                'action': '@Url.Action("BuyPackage", "Purchase")'
+            });
+            
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'packageType',
+                'value': packageType
+            }));
+            
+            // 添加防偽令牌
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': '__RequestVerificationToken',
+                'value': $('input[name="__RequestVerificationToken"]').val()
+            }));
+            
+            $('body').append(form);
+            form.submit();
+        }
+        
+        // 更新組合包價格顯示
+        function updatePackagePrice(packageType, basePrice) {
+            const quantity = parseInt(document.getElementById(packageType + '-quantity').value);
+            const totalPrice = basePrice * quantity;
+            
+            // 更新卡片上的價格顯示
+            const priceElement = document.querySelector(`.${packageType}-bg .package-price`);
+            if (priceElement) {
+                priceElement.textContent = `NT$ ${totalPrice.toLocaleString()}`;
+            }
+        }
+        
+        // 帶數量的組合包購買函數
+        function buyPackageWithQuantity(packageType) {
+            // 找到被點擊的按鈕並顯示載入狀態
+            const clickedBtn = event.target.closest('button');
+            if (clickedBtn) {
+                const originalText = clickedBtn.innerHTML;
+                clickedBtn.disabled = true;
+                clickedBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>處理中...';
+                
+                // 設定超時恢復按鈕狀態
+                setTimeout(() => {
+                    clickedBtn.disabled = false;
+                    clickedBtn.innerHTML = originalText;
+                }, 10000);
+            }
+            
+            // 取得選擇的數量
+            const quantity = parseInt(document.getElementById(packageType + '-quantity').value) || 1;
+            
+            // 創建表單並提交到組合包購買API
+            const form = $('<form>', {
+                'method': 'POST',
+                'action': '@Url.Action("BuyPackage", "Purchase")'
+            });
+            
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'packageType',
+                'value': packageType
+            }));
+            
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': 'quantity',
+                'value': quantity
+            }));
+            
+            // 添加防偽令牌
+            form.append($('<input>', {
+                'type': 'hidden',
+                'name': '__RequestVerificationToken',
+                'value': $('input[name="__RequestVerificationToken"]').val()
+            }));
+            
+            $('body').append(form);
+            form.submit();
+        }
+    </script>
+}
+</div>

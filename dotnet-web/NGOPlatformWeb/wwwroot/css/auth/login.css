@@ -1,0 +1,1207 @@
+﻿/* CSS 變數預設值 */
+:root {
+    --initial-loading-display: none;
+    --initial-content-opacity: 1;
+}
+
+/* 確保body沒有多餘空白 */
+.login-page {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden; /* 防止橫向滾動條 */
+}
+
+/* Lottie Loading Overlay */
+.loading-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: linear-gradient(135deg, #374151 0%, #4b5563 50%, #374151 100%) !important;
+    display: var(--initial-loading-display) !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 99999 !important;
+    transition: opacity 0.5s ease !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+}
+
+/* 隱藏動畫時的樣式 */
+.loading-overlay.hide {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+    transition: opacity 0.5s ease !important;
+}
+
+.loading-container {
+    text-align: center;
+    color: white;
+    transform: translateZ(0); /* 啟用硬體加速 */
+}
+
+.loading-container dotlottie-player {
+    transform: translateZ(0); /* 避免動畫卡頓 */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* 全屏居中背景 - 專業漸變與幾何圖案 */
+.login-wrapper {
+	height: 100vh; /* 改為固定高度，不使用min-height */
+	background: 
+		/* 幾何圖案覆蓋層 */
+		radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+		radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+		/* 主要漸變背景 */
+		linear-gradient(135deg, #1f2937 0%, #374151 25%, #4b5563 50%, #374151 75%, #1f2937 100%);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	opacity: var(--initial-content-opacity);
+	transform: translateY(0);
+	transition: opacity 0.8s ease;
+	padding: 15px; /* 減少padding來縮小留白 */
+	margin: 0; /* 確保沒有外邊距 */
+	box-sizing: border-box; /* 確保padding不會增加總尺寸 */
+	overflow: hidden; /* 防止內容溢出造成滾動條 */
+	position: relative;
+}
+
+/* 添加細微的幾何裝飾元素 */
+.login-wrapper::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: 
+		/* 細微的網格圖案 */
+		linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+		linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+	background-size: 60px 60px;
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+/* 筆電尺寸：消除下方留白，緊湊顯示 */
+@media (min-width: 768px) and (max-width: 1024px) {
+	.login-wrapper {
+		height: 100vh; /* 固定高度 */
+		align-items: center; /* 改回居中對齊，避免上方偏移 */
+		padding: 10px; /* 進一步減少padding */
+		overflow: hidden; /* 防止溢出 */
+	}
+	
+	/* 筆電專用：讓container更緊湊 */
+	.login-container {
+		max-width: 750px; /* 在筆電上進一步縮小 */
+		height: auto; /* 讓高度自適應內容 */
+		max-height: calc(100vh - 20px); /* 最大高度不超過螢幕減去padding */
+	}
+	
+	.login-image,
+	.login-form-area {
+		height: auto; /* 讓高度自適應 */
+		min-height: 450px; /* 減少最小高度 */
+	}
+}
+
+.login-wrapper.visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* 卡片容器 - 響應式高度 */
+.login-container {
+	display: flex;
+	flex-wrap: wrap; /* 保證手機版能換行 */
+	max-width: 950px; /* 從1200px縮小到950px，讓容器更緊湊 */
+	width: 100%;
+	height: auto; /* 讓高度自適應內容 */
+	max-height: calc(100vh - 30px); /* 最大高度限制 */
+	border-radius: 20px;
+	overflow: hidden;
+	/* 增強陰影效果，營造專業感 */
+	box-shadow: 
+		0 25px 50px -12px rgba(0, 0, 0, 0.25),
+		0 0 0 1px rgba(255, 255, 255, 0.05);
+	position: relative;
+	/* 添加細微的邊框光暈 */
+	backdrop-filter: blur(10px);
+}
+
+/* 為卡片添加細微的內陰影 */
+.login-container::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border-radius: 20px;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.02) 100%);
+	pointer-events: none;
+	z-index: 1;
+}
+
+/* 只在大螢幕上設定最小高度 */
+@media (min-width: 1025px) {
+	.login-container {
+		min-height: 520px; /* 進一步降低高度 */
+		max-height: calc(100vh - 30px); /* 限制最大高度 */
+	}
+}
+
+
+/* 左侧背景图 - 響應式高度 */
+.login-image {
+	flex: 1 1 50%; /* 每邊各佔 50%，自動調整 */
+	display: flex;
+	flex-direction: column;
+	justify-content: center; /* 垂直置中 */
+	background: url('/images/LoginImage.png') center/cover no-repeat;
+	height: auto; /* 讓高度自適應 */
+	width: 50%; /* 固定寬度 */
+	position: relative;
+	overflow: hidden; /* 避免內容溢出導致尺寸變化 */
+}
+
+/* 為左側圖片添加漸變覆蓋層，增加專業感 */
+.login-image::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: 
+		/* 細微的彩色漸變覆蓋 */
+		linear-gradient(135deg, 
+			rgba(59, 130, 246, 0.15) 0%, 
+			rgba(16, 185, 129, 0.10) 25%, 
+			rgba(139, 92, 246, 0.08) 50%, 
+			rgba(236, 72, 153, 0.10) 75%, 
+			rgba(251, 146, 60, 0.12) 100%
+		),
+		/* 暗色遮罩確保文字清晰 */
+		linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+	pointer-events: none;
+	z-index: 1;
+}
+
+/* 只在大螢幕上設定最小高度 */
+@media (min-width: 1025px) {
+	.login-image {
+		min-height: 520px; /* 與container統一高度 */
+	}
+}
+
+/* 右侧表单内距 - 響應式可滾動 */
+.login-form-area {
+	flex: 1 1 50%; /* 每邊各佔 50%，自動調整 */
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start; /* 改為從上方對齊，避免內容被擠壓 */
+	padding: 1.5rem; /* 稍微減少padding */
+	height: auto; /* 讓高度自適應 */
+	width: 50%; /* 固定寬度 */
+	box-sizing: border-box; /* 確保padding不影響總尺寸 */
+	overflow-y: auto; /* 允許垂直滾動 */
+	overflow-x: visible; /* 允許下拉選單顯示 */
+	position: relative;
+	z-index: 2; /* 確保表單在覆蓋層之上 */
+	/* 添加細微的背景漸變 */
+	background: 
+		linear-gradient(135deg, 
+			rgba(255, 255, 255, 0.98) 0%, 
+			rgba(248, 250, 252, 0.95) 100%
+		);
+}
+
+/* 為表單區域添加細微的紋理效果 */
+.login-form-area::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: 
+		/* 非常細微的點狀圖案 */
+		radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.02) 1px, transparent 0);
+	background-size: 20px 20px;
+	pointer-events: none;
+	z-index: -1;
+}
+
+/* 只在大螢幕上設定最小高度 */
+@media (min-width: 1025px) {
+	.login-form-area {
+		min-height: 520px; /* 與container統一高度 */
+	}
+}
+
+/* 共用：大号浅灰输入框 - 添加透明邊框避免跳動 */
+.form-control-lg,
+.input-group .form-control,
+.input-group .btn {
+	background: #f2f2f2;
+	border: 2px solid transparent; /* 透明邊框，避免focus時尺寸變化 */
+	height: 3rem;
+	font-size: 1rem;
+	line-height: 1.5;
+	box-sizing: border-box; /* 確保邊框不影響尺寸 */
+}
+
+/* placeholder 颜色 */
+.form-control::placeholder {
+	color: #999;
+	opacity: 1;
+}
+
+/* 去掉 focus 时默认 outline/box-shadow */
+.input-group .form-control:focus,
+.input-group .btn:focus,
+.login-container:focus-within {
+	outline: none;
+	box-shadow: none;
+}
+
+/* 圓角 Pill 組 + 密碼切換按鈕 - 現代化設計 */
+.password-input-group {
+	border-radius: 8px; /* 統一使用8px圓角 */
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	background: #f2f2f2;
+	border: 2px solid transparent;
+	transition: all 0.2s ease;
+	position: relative;
+}
+
+/* 移除內陰影避免抖動問題 */
+.password-input-group::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border-radius: 6px;
+	pointer-events: none;
+	opacity: 0; /* 預設隱藏，避免任何視覺變化 */
+	transition: opacity 0.2s ease;
+}
+
+.password-input-group:hover,
+.password-input-group:focus-within {
+	background-color: #ffffff;
+	border-color: #0d6efd;
+	box-shadow: none; /* 完全移除陰影避免抖動 */
+}
+
+.password-input-group:focus-within::before {
+	opacity: 0; /* focus時隱藏內陰影 */
+}
+
+.password-input-group .btn {
+	border: none;
+	background: transparent;
+	color: #6c757d;
+	padding: 0 1rem;
+}
+
+.password-input-group .btn:hover {
+	background: rgba(0, 0, 0, 0.03);
+}
+
+.password-input-group .btn i {
+	font-size: 1.2rem;
+}
+
+/* ==== 忘記密碼功能美化 ==== */
+
+/* Modal 美化 */
+.modal-content {
+	border: none;
+	border-radius: 16px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+	border-bottom: none;
+}
+
+.modal-footer {
+	border-top: none;
+}
+
+/* 成功圖示動畫 */
+.success-icon {
+	animation: successPulse 0.6s ease-in-out;
+}
+
+@keyframes successPulse {
+	0% {
+		transform: scale(0.8);
+		opacity: 0;
+	}
+	50% {
+		transform: scale(1.1);
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+/* 表單輸入框 focus 效果 - 完全避免任何尺寸變化 */
+.form-control:focus,
+.password-input-group:focus-within .form-control {
+	background-color: #ffffff;
+	border-color: #0d6efd; /* 只改變邊框顏色，不改變尺寸 */
+	box-shadow: none; /* 完全移除陰影避免任何佈局變化 */
+	transition: all 0.2s ease;
+	outline: none;
+}
+
+/* 添加輸入框內容動畫和狀態效果 */
+.form-control {
+	transition: all 0.2s ease, box-shadow 0.2s ease;
+	position: relative;
+}
+
+.form-control:not(:placeholder-shown) {
+	background-color: #fbfbfb;
+}
+
+/* 輸入框輸入動畫效果 */
+.form-control:not(:placeholder-shown):not(:focus) {
+	background-color: #f8f9fa;
+	border-color: rgba(13, 110, 253, 0.2);
+}
+
+/* 為表單添加漸入動畫 */
+.login-form-area {
+	animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+	0% {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* 輸入框 hover 效果 */
+.form-control:hover:not(:focus) {
+	background-color: #f8f9fa;
+	border-color: rgba(13, 110, 253, 0.1);
+}
+
+.password-input-group:hover:not(:focus-within) {
+	background-color: #f8f9fa;
+	border-color: rgba(13, 110, 253, 0.1);
+}
+
+/* Logo 和標題動畫 */
+.login-form-area .d-flex.align-items-center.mb-3 {
+	animation: slideInLeft 0.7s ease-out 0.2s both;
+}
+
+.login-form-area h4 {
+	animation: slideInLeft 0.7s ease-out 0.3s both;
+}
+
+@keyframes slideInLeft {
+	0% {
+		opacity: 0;
+		transform: translateX(-30px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+/* Checkbox 開關樣式美化 */
+.form-check-input:checked {
+	background-color: #0d6efd;
+	border-color: #0d6efd;
+	box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.2);
+}
+
+.form-check-input:focus {
+	border-color: #86b7fe;
+	outline: 0;
+	box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+}
+
+/* 按鈕 hover 效果增強 - 減少版面跳動 */
+.btn-primary {
+	background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+	border: none;
+	border-radius: 8px;
+	font-weight: 600;
+	transition: all 0.25s ease;
+	box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
+}
+
+.btn-primary:hover {
+	background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+	transform: translateY(-1px); /* 減少移動距離 */
+	box-shadow: 0 5px 18px rgba(13, 110, 253, 0.3);
+}
+
+.btn-primary:active {
+	transform: translateY(0);
+}
+
+/* 密碼顯示/隱藏按鈕美化 - 無外框版本 */
+.password-input-group .btn {
+	border-radius: 0 6px 6px 0;
+	transition: all 0.15s ease;
+	color: #8e9297;
+	background: transparent;
+	border: none !important; /* 強制移除所有邊框 */
+	outline: none !important; /* 移除focus outline */
+	box-shadow: none !important; /* 移除所有陰影 */
+	padding: 0 14px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	position: relative;
+}
+
+/* 創建內部圓形hover效果 */
+.password-input-group .btn::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 32px;
+	height: 32px;
+	background: rgba(13, 110, 253, 0.08);
+	border-radius: 50%;
+	transform: translate(-50%, -50%) scale(0);
+	transition: transform 0.2s ease, opacity 0.2s ease;
+	opacity: 0;
+	z-index: 0;
+}
+
+.password-input-group .btn:hover::before {
+	transform: translate(-50%, -50%) scale(1);
+	opacity: 1;
+}
+
+.password-input-group .btn:hover {
+	color: #0d6efd;
+}
+
+.password-input-group .btn:active::before {
+	background: rgba(13, 110, 253, 0.15);
+	transform: translate(-50%, -50%) scale(0.9);
+}
+
+.password-input-group .btn:focus,
+.password-input-group .btn:focus-visible {
+	outline: none !important;
+	box-shadow: none !important;
+	border: none !important;
+}
+
+.password-input-group .btn i {
+	font-size: 1.05rem;
+	transition: all 0.15s ease;
+	position: relative;
+	z-index: 1;
+}
+
+.password-input-group .btn:hover i {
+	transform: scale(1.05);
+}
+
+.password-input-group .btn:active i {
+	transform: scale(0.95);
+}
+
+/* 移除Bootstrap預設的focus樣式 */
+.password-input-group .btn:not(:disabled):not(.disabled):active,
+.password-input-group .btn:not(:disabled):not(.disabled):active:focus {
+	outline: none !important;
+	box-shadow: none !important;
+	border: none !important;
+}
+
+/* 輸入框圓角調整 - 統一邊框處理 */
+.form-control {
+	border-radius: 8px;
+	transition: all 0.2s ease;
+	border: 2px solid transparent; /* 統一透明邊框 */
+}
+
+.password-input-group .form-control {
+	border-radius: 8px 0 0 8px;
+	border: none; /* 密碼組內的輸入框不需要邊框，由容器處理 */
+}
+
+/* 警告提示美化 - 改進版 */
+.alert {
+	border: none;
+	border-radius: 10px;
+	font-weight: 500;
+	position: relative;
+	overflow: hidden;
+}
+
+.alert::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 4px;
+	height: 100%;
+	background: currentColor;
+	opacity: 0.7;
+}
+
+.alert-danger {
+	background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
+	color: #b91c1c;
+	border: 1px solid rgba(185, 28, 28, 0.1);
+}
+
+.alert-info {
+	background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+	color: #0c4a6e;
+	border: 1px solid rgba(12, 74, 110, 0.1);
+}
+
+/* 個別欄位錯誤訊息美化 */
+.text-danger {
+	font-size: 0.825rem;
+	font-weight: 500;
+	margin-top: 0.25rem;
+	display: block;
+}
+
+/* 註冊表單的驗證摘要特殊樣式 */
+.register-form .alert-danger {
+	animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+	0% {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* 當有錯誤時才顯示 */
+.alert.d-none {
+	display: none !important;
+}
+
+/* JavaScript控制顯示 */
+.alert.show-errors {
+	display: block !important;
+}
+
+/* 導航鏈接美化 */
+.breadcrumb-item a {
+	color: #6c757d;
+	transition: color 0.2s ease;
+}
+
+.breadcrumb-item a:hover {
+	color: #0d6efd;
+}
+
+/* 返回登入鏈接美化 */
+.text-decoration-none {
+	color: #6c757d;
+	transition: all 0.2s ease;
+}
+
+.text-decoration-none:hover {
+	color: #0d6efd;
+	transform: translateX(-2px);
+}
+
+/* 載入動畫 - 改進版 */
+.btn-loading {
+	position: relative;
+	pointer-events: none;
+	opacity: 0.8;
+}
+
+.btn-loading::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 18px;
+	height: 18px;
+	margin: -9px 0 0 -9px;
+	border: 2px solid transparent;
+	border-top: 2px solid #ffffff;
+	border-right: 2px solid rgba(255, 255, 255, 0.3);
+	border-radius: 50%;
+	animation: modernSpin 0.8s linear infinite;
+}
+
+@keyframes modernSpin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+/* 表單驗證樣式改進 - 移除陰影避免抖動 */
+.form-control.is-invalid {
+	border-color: #dc3545;
+	box-shadow: none; /* 完全移除陰影 */
+}
+
+.form-control.is-valid {
+	border-color: #198754;
+	box-shadow: none; /* 完全移除陰影 */
+}
+
+/* 麵包屑導航美化 - 修復對齊問題 */
+.breadcrumb {
+	margin-bottom: 0.25rem;
+	padding: 0;
+}
+
+.breadcrumb-item {
+	display: flex;
+	align-items: center; /* 垂直居中對齊 */
+}
+
+.breadcrumb-item a {
+	color: #6c757d;
+	transition: all 0.2s ease;
+	text-decoration: none;
+	padding: 6px 10px;
+	border-radius: 6px;
+	display: flex;
+	align-items: center; /* 圖標和文字垂直居中 */
+	line-height: 1.2; /* 統一行高 */
+}
+
+.breadcrumb-item a:hover {
+	background: rgba(13, 110, 253, 0.08);
+	color: #0d6efd;
+}
+
+.breadcrumb-item.active {
+	display: flex;
+	align-items: center; /* active項目也要對齊 */
+	line-height: 1.2;
+}
+
+/* 確保圖標和文字間距一致 */
+.breadcrumb-item a i,
+.breadcrumb-item.active i {
+	margin-right: 4px;
+	font-size: 0.875rem; /* 統一圖標大小 */
+}
+
+/* Modal 進入動畫 */
+.modal.fade .modal-dialog {
+	transform: translateY(-50px);
+	transition: transform 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+	transform: translateY(0);
+}
+
+/* 簡化頁面切換 - 優化渲染 */
+.login-wrapper {
+	opacity: var(--initial-content-opacity);
+	transform: translateY(0);
+	transition: opacity 0.15s ease;
+	backface-visibility: hidden; /* 提升渲染性能 */
+	-webkit-backface-visibility: hidden;
+	will-change: opacity; /* 告知瀏覽器即將變化的屬性 */
+}
+
+/* 頁面切換覆蓋層樣式 */
+#page-transition-overlay,
+#page-enter-overlay {
+	backface-visibility: hidden !important;
+	-webkit-backface-visibility: hidden !important;
+	transform: translateZ(0) !important; /* 啟用硬體加速 */
+	-webkit-transform: translateZ(0) !important;
+}
+
+/* 鏈接hover動畫增強 - 更流暢的效果 */
+a[href*="Login"], a[href*="Register"], a[href*="ForgotPassword"], a[href*="ResetPassword"] {
+	position: relative;
+	transition: all 0.2s ease;
+}
+
+a[href*="Login"]:hover, a[href*="Register"]:hover, a[href*="ForgotPassword"]:hover, a[href*="ResetPassword"]:hover {
+	color: #0d6efd !important;
+	text-decoration: none !important;
+}
+
+/* 添加底線動畫 */
+a[href*="Login"]:not(.breadcrumb-item > a):after, 
+a[href*="Register"]:not(.breadcrumb-item > a):after, 
+a[href*="ForgotPassword"]:not(.breadcrumb-item > a):after, 
+a[href*="ResetPassword"]:not(.breadcrumb-item > a):after {
+	content: '';
+	position: absolute;
+	bottom: -2px;
+	left: 0;
+	width: 0;
+	height: 2px;
+	background: linear-gradient(90deg, #0d6efd, #6b7280);
+	transition: width 0.2s ease;
+}
+
+a[href*="Login"]:not(.breadcrumb-item > a):hover:after, 
+a[href*="Register"]:not(.breadcrumb-item > a):hover:after, 
+a[href*="ForgotPassword"]:not(.breadcrumb-item > a):hover:after, 
+a[href*="ResetPassword"]:not(.breadcrumb-item > a):hover:after {
+	width: 100%;
+}
+
+/* 按鈕點擊動畫 - 改進波紋效果 */
+.btn {
+	position: relative;
+	overflow: hidden;
+	transition: all 0.25s ease;
+}
+
+.btn:before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	height: 0;
+	background: rgba(255, 255, 255, 0.15);
+	border-radius: 50%;
+	transition: width 0.25s ease, height 0.25s ease;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+}
+
+.btn:active:before {
+	width: 120px;
+	height: 120px;
+}
+
+/* Google 登入按鈕特殊樣式 */
+.btn-dark {
+	background: #1a1a1a;
+	border: 2px solid transparent;
+	transition: all 0.25s ease;
+}
+
+.btn-dark:hover {
+	background: #2d2d2d;
+	transform: translateY(-1px);
+	box-shadow: 0 5px 18px rgba(0, 0, 0, 0.2);
+}
+
+/* 註冊按鈕美化 */
+.btn-success {
+	background: linear-gradient(135deg, #198754 0%, #157347 100%);
+	border: none;
+	border-radius: 8px;
+	font-weight: 600;
+	transition: all 0.25s ease;
+	box-shadow: 0 4px 15px rgba(25, 135, 84, 0.2);
+}
+
+.btn-success:hover {
+	background: linear-gradient(135deg, #157347 0%, #146c43 100%);
+	transform: translateY(-1px);
+	box-shadow: 0 5px 18px rgba(25, 135, 84, 0.3);
+}
+
+.btn-success:active {
+	transform: translateY(0);
+}
+
+.btn-success:focus {
+	outline: none;
+	box-shadow: 0 4px 15px rgba(25, 135, 84, 0.2), 0 0 0 0.15rem rgba(25, 135, 84, 0.15);
+}
+.login-container {
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	margin-bottom: 0 !important; /* 確保沒有底部margin */
+}
+/* 壓縮登入表單區高度 */
+.login-form-area {
+	padding-top: 1rem !important; /* 減少上方padding */
+	padding-bottom: 1rem !important; /* 統一上下padding */
+}
+.breadcrumb {
+	margin-bottom: 0.25rem; /* 原本可能是1rem或更多 */
+}
+/* 壓縮 logo 圖、標題上下間距 */
+.login-form-area h1,
+.login-form-area h2,
+.login-form-area h4 {
+	margin-top: 0.25rem !important;
+	margin-bottom: 0.5rem !important;
+}
+
+/* 特別優化登入頁面的間距，讓Google登入按鈕有足夠空間 */
+.login-form-area .d-flex.align-items-center.mb-3 {
+	margin-bottom: 0.5rem !important; /* 減少logo區塊下方間距 */
+}
+
+.login-form-area .mb-3 {
+	margin-bottom: 0.75rem !important; /* 統一縮小表單項目間距 */
+}
+
+.login-form-area .mb-4 {
+	margin-bottom: 1rem !important; /* 縮小較大間距項目 */
+}
+
+
+/* 在1024px以下的設備隱藏圖片，給表單更多空間 */
+@media (max-width: 1024px) {
+	.login-image {
+		display: none !important;
+	}
+	
+	.login-form-area {
+		width: 100% !important;
+		flex: 1 1 100% !important;
+	}
+}
+
+/* 手机版隐藏左图 & 去圆角阴影 - 改進版 */
+@media (max-width: 767.98px) {
+	/* 移除不必要的背景效果，提升性能 */
+	.login-wrapper {
+		background: #f8f9fa;
+		padding: 0;
+		min-height: 100vh;
+		height: auto !important; /* 允許高度自動擴展 */
+		overflow-y: visible !important; /* 確保內容可見 */
+	}
+	
+	.login-wrapper::before {
+		display: none; /* 隱藏網格背景以簡化手機版視覺 */
+	}
+
+	.login-container {
+		border-radius: 0;
+		box-shadow: none;
+		max-height: none !important;
+		height: auto !important; /* 允許容器高度自動調整 */
+		min-height: auto !important; /* 移除固定最小高度 */
+		max-width: 100%;
+		margin: 0;
+	}
+
+	.login-image {
+		display: none !important;
+	}
+	
+	.login-form-area {
+		width: 100% !important;
+		flex: 1 1 100% !important;
+		padding: 1rem 1rem 2rem 1rem !important; /* 增加底部padding確保內容不被裁切 */
+		height: auto !important; /* 允許高度自動調整 */
+		min-height: auto !important; /* 移除固定最小高度限制 */
+		justify-content: flex-start;
+		background: #ffffff !important; /* 純白背景更適合手機 */
+		overflow: visible !important; /* 確保所有內容都可見 */
+	}
+	
+	/* 手機版專用間距優化 */
+	.login-form-area .breadcrumb {
+		margin-bottom: 1rem;
+		font-size: 0.875rem; /* 稍微縮小麵包屑字體 */
+	}
+	
+	.login-form-area .d-flex.align-items-center.mb-3 {
+		margin-bottom: 1.5rem !important; /* 增加logo區塊下方間距 */
+	}
+	
+	.login-form-area h4 {
+		font-size: 1.5rem; /* 適合手機的標題大小 */
+		margin-bottom: 1.5rem !important;
+	}
+	
+	/* 手機版表單項目間距優化 */
+	.login-form-area .mb-3 {
+		margin-bottom: 1rem !important;
+	}
+	
+	.login-form-area .mb-4 {
+		margin-bottom: 1.5rem !important;
+	}
+	
+	/* 確保所有表單元素都可見 */
+	.login-form-area form {
+		width: 100% !important;
+		overflow: visible !important;
+	}
+	
+	.login-form-area .input-group {
+		width: 100% !important;
+		flex-wrap: nowrap !important;
+		overflow: visible !important;
+	}
+	
+	/* 手機版輸入框優化 */
+	.form-control-lg,
+	.input-group .form-control {
+		height: 3.25rem; /* 稍微增加高度，提升觸控體驗 */
+		font-size: 1rem;
+		padding: 0.75rem 1rem;
+	}
+	
+	/* 手機版密碼切換按鈕優化 */
+	.password-input-group .btn {
+		min-width: 48px !important; /* 確保觸控面積足夠 */
+		padding: 0 1rem !important;
+		height: 3.25rem !important; /* 與輸入框高度一致 */
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+	}
+	
+	/* 確保密碼輸入群組在手機上正常顯示 */
+	.password-input-group {
+		position: relative !important;
+		display: flex !important;
+		width: 100% !important;
+		overflow: visible !important;
+	}
+	
+	.password-input-group input {
+		flex: 1 !important;
+		border-right: none !important;
+	}
+	
+	/* 手機版按鈕優化 */
+	.btn-lg {
+		height: 3.25rem;
+		font-size: 1.1rem;
+		font-weight: 600;
+	}
+	
+	/* 手機版標籤字體優化 */
+	.form-label {
+		font-size: 0.95rem;
+		font-weight: 500;
+		margin-bottom: 0.5rem;
+	}
+	
+	/* Modal在手機版的優化 */
+	.modal-dialog {
+		margin: 1rem;
+		max-width: calc(100% - 2rem);
+	}
+	
+	/* 手機版文字連結優化 */
+	.small, small {
+		font-size: 0.9rem;
+	}
+	
+	/* 手機版 Checkbox 優化 */
+	.form-check-input {
+		width: 1.2em;
+		height: 1.2em;
+	}
+	
+	.form-check-label {
+		font-size: 0.95rem;
+	}
+}
+/* ==== 只影響註冊表單的雙欄排版 - 修復版面跳動 ==== */
+.register-form .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem; /* 縮小間距以適應統一高度 */
+}
+
+.register-form .form-row .form-control {
+    flex: 1 1 50%;
+}
+
+.register-form label {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    font-weight: 500; /* 增加標籤字重 */
+}
+
+.register-form .form-control {
+    padding-top: 0.6rem; /* 增加padding提升視覺 */
+    padding-bottom: 0.6rem;
+    height: auto;
+    border: 2px solid transparent; /* 透明邊框避免跳動 */
+    background: #f8f9fa; /* 稍微不同的背景色 */
+    transition: all 0.2s ease;
+}
+
+/* 註冊表單專用的focus效果 - 完全防止抖動 */
+.register-form .form-control:focus {
+    background-color: #ffffff;
+    border-color: #0d6efd; /* 只改變邊框顏色 */
+    box-shadow: none; /* 完全移除陰影 */
+    outline: none;
+}
+
+/* 註冊表單密碼輸入組也要修復 */
+.register-form .password-input-group {
+    border: 2px solid transparent;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+}
+
+.register-form .password-input-group:focus-within {
+    background-color: #ffffff;
+    border-color: #0d6efd;
+    box-shadow: none; /* 完全移除陰影避免抖動 */
+}
+
+.register-form .password-input-group .form-control {
+    background: transparent; /* 內部輸入框背景透明 */
+    border: none; /* 移除內部輸入框邊框 */
+}
+
+/* 註冊頁面的標題和間距調整 */
+.register-form .mb-3 {
+    margin-bottom: 0.75rem !important;
+}
+
+.register-form h4 {
+    margin-bottom: 1rem !important;
+}
+
+/* 手機版改回單欄 - 優化版 */
+@media (max-width: 767.98px) {
+    .register-form .form-row {
+        flex-direction: column;
+        gap: 0; /* 移除間隙，改用margin控制 */
+        margin-bottom: 0;
+    }
+    
+    .register-form .form-row .mb-3 {
+        margin-bottom: 1rem !important; /* 統一單欄間距 */
+    }
+    
+    /* 手機版註冊表單優化 */
+    .register-form .form-control {
+        height: 3.25rem;
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .register-form .password-input-group {
+        height: 3.25rem;
+    }
+    
+    .register-form .password-input-group .btn {
+        min-width: 48px;
+        height: 100%;
+    }
+    
+    /* 手機版註冊標題優化 */
+    .register-form h2.h5 {
+        font-size: 1.25rem;
+    }
+    
+    /* 驗證錯誤訊息在手機版的優化 */
+    .register-form .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.375rem;
+        line-height: 1.3;
+    }
+    
+    /* 註冊按鈕在手機版的優化 */
+    .register-form .btn-success {
+        height: 3.25rem;
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+    }
+}
+
+/* 平板設備優化 (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+	.login-wrapper {
+		padding: 1rem;
+	}
+	
+	.login-container {
+		max-width: 700px; /* 適合平板的寬度 */
+	}
+	
+	.login-form-area {
+		padding: 1.25rem; /* 平板專用padding */
+	}
+	
+	/* 平板版輸入框 */
+	.form-control-lg,
+	.input-group .form-control {
+		height: 3rem;
+		font-size: 1rem;
+	}
+	
+	/* 平板版按鈕 */
+	.btn-lg {
+		height: 3rem;
+		font-size: 1rem;
+	}
+}
+
+/* 大平板和小筆電優化 (1025px - 1200px) */
+@media (min-width: 1025px) and (max-width: 1200px) {
+	.login-container {
+		max-width: 850px; /* 在較小的筆電上減少寬度 */
+	}
+	
+	.login-form-area {
+		padding: 1.75rem; /* 適中的padding */
+	}
+}
+
+/* 超大螢幕優化 (1400px+) */
+@media (min-width: 1400px) {
+	.login-container {
+		max-width: 1100px; /* 在超大螢幕上適度增加寬度 */
+	}
+	
+	.login-form-area {
+		padding: 2.5rem; /* 更寬鬆的間距 */
+	}
+	
+	.form-control-lg,
+	.input-group .form-control {
+		height: 3.5rem; /* 更大的輸入框 */
+		font-size: 1.1rem;
+	}
+	
+	.btn-lg {
+		height: 3.5rem;
+		font-size: 1.125rem;
+	}
+}
+
