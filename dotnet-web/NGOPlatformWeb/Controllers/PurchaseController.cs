@@ -677,12 +677,13 @@ namespace NGOPlatformWeb.Controllers
             };
         }
 
-        // 產生訂單編號: NGO{yyyyMMddHHmmss} 例如 NGO20250727143052
-        // 使用時間戳記確保絕對唯一性，符合業界標準
+        // 產生訂單編號: NGO{yyyyMMddHHmmss}{3位亂數} 例如 NGO20250727143052847
+        // 加入亂數尾碼防止同一秒多筆訂單產生相同的 MerchantTradeNo（ECPay 不允許重複）
         private string GenerateOrderNumber()
         {
             var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-            return $"NGO{timestamp}";
+            var random = Random.Shared.Next(100, 999);
+            return $"NGO{timestamp}{random}";
         }
 
         // 智慧型預設圖片選擇 - 根據物資名稱自動匹配圖片
@@ -1065,7 +1066,7 @@ namespace NGOPlatformWeb.Controllers
             try
             {
                 // 為重新付款生成新的訂單號（ECPay 限制20字元）
-                var timestamp = DateTime.Now.ToString("mmss"); // 4位數字，更短
+                var timestamp = DateTime.Now.ToString("MMss"); // 月份(MM)+秒(ss)，4位數字
                 var baseOrderNumber = order.OrderNumber;
                 
                 // 如果已經是重新付款的訂單號，替換時間戳部分

@@ -13,16 +13,21 @@ namespace NGOPlatformWeb.Services
         private readonly NGODbContext _context;
         private readonly IConfiguration _configuration;
 
-        // ECPay 測試環境設定 (付款測試專用)
-        private readonly string _merchantId = "3002607"; // 正確的付款測試商店代號
-        private readonly string _hashKey = "pwFHCqoQZGmho4w6"; // 正確的測試 HashKey
-        private readonly string _hashIv = "EkRm7iFT261dpevs"; // 正確的測試 HashIV
-        private readonly string _paymentUrl = "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5"; // 測試環境
+        private readonly string _merchantId;
+        private readonly string _hashKey;
+        private readonly string _hashIv;
+        private readonly string _paymentUrl;
 
         public EcpayService(NGODbContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
+
+            // 從 appsettings.json 讀取，方便日後切換測試/正式環境不需修改程式碼
+            _merchantId = configuration["ECPay:MerchantId"] ?? throw new InvalidOperationException("ECPay:MerchantId 未設定");
+            _hashKey = configuration["ECPay:HashKey"] ?? throw new InvalidOperationException("ECPay:HashKey 未設定");
+            _hashIv = configuration["ECPay:HashIv"] ?? throw new InvalidOperationException("ECPay:HashIv 未設定");
+            _paymentUrl = configuration["ECPay:PaymentUrl"] ?? throw new InvalidOperationException("ECPay:PaymentUrl 未設定");
         }
 
         public string CreatePayment(UserOrder order, string returnUrl, string clientBackUrl)
@@ -52,6 +57,10 @@ namespace NGOPlatformWeb.Services
                 EcpayTransaction ecpayTransaction;
                 if (existingTransaction != null)
                 {
+                    // 已付款訂單不允許重新觸發付款，防止重複扣款與庫存雙重更新
+                    if (existingTransaction.Status == "Success")
+                        throw new InvalidOperationException("此訂單已付款成功，不允許重複付款");
+
                     // 重新付款：更新現有記錄
                     ecpayTransaction = existingTransaction;
                     ecpayTransaction.Status = "Pending";
@@ -80,8 +89,8 @@ namespace NGOPlatformWeb.Services
                 ["MerchantTradeDate"] = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"),
                 ["PaymentType"] = "aio",
                 ["TotalAmount"] = ((int)order.TotalPrice).ToString(),
-                ["TradeDesc"] = System.Web.HttpUtility.UrlEncode("test", Encoding.UTF8),
-                ["ItemName"] = System.Web.HttpUtility.UrlEncode("test", Encoding.UTF8),
+                ["TradeDesc"] = "NGO物資捐贈",
+                ["ItemName"] = "物資捐贈",
                 ["ReturnURL"] = returnUrl,
                 ["ClientBackURL"] = clientBackUrl, // 添加付款完成後跳轉網址
                 ["ChoosePayment"] = "ALL",
@@ -146,9 +155,13 @@ namespace NGOPlatformWeb.Services
                 
                 if (rtnCode == "1") // 付款成功且 CheckMacValue 驗證通過
                 {
+                    // 冪等保護：已處理過的成功回調直接回傳，防止 ECPay 重送時重複更新庫存
+                    if (ecpayTransaction.Status == "Success")
+                        return true;
+
                     ecpayTransaction.Status = "Success";
                     order.PaymentStatus = "已付款";
-                    
+
                     // 付款成功後，更新庫存和緊急需求
                     UpdateInventoryAndEmergencyNeeds(order);
                 }
@@ -274,7 +287,9 @@ namespace NGOPlatformWeb.Services
             
             foreach (var param in parameters)
             {
-                formBuilder.AppendLine($"<input type='hidden' name='{param.Key}' value='{param.Value}' />");
+                // HtmlEncode 防止 value 中含有單引號或特殊字元破壞 HTML 屬性結構（XSS）
+                var encodedValue = System.Net.WebUtility.HtmlEncode(param.Value);
+                formBuilder.AppendLine($"<input type='hidden' name='{param.Key}' value='{encodedValue}' />");
             }
             
             formBuilder.AppendLine("<input type='submit' value='前往付款' style='padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;' />");
@@ -300,8 +315,9 @@ namespace NGOPlatformWeb.Services
                             "UPDATE EmergencySupplyNeeds SET CollectedQuantity = CollectedQuantity + {0}, UpdatedDate = {1} WHERE EmergencyNeedId = {2}",
                             emergencyRecord.Quantity, DateTime.Now, emergencyRecord.EmergencyNeedId);
                         
-                        // 檢查是否需要更新狀態
+                        // AsNoTracking 確保從 DB 重新讀取，而非 EF Core 快取的舊值（raw SQL 不會更新 EF 追蹤物件）
                         var emergencyNeed = _context.EmergencySupplyNeeds
+                            .AsNoTracking()
                             .FirstOrDefault(e => e.EmergencyNeedId == emergencyRecord.EmergencyNeedId);
                         
                         if (emergencyNeed != null && emergencyNeed.CollectedQuantity >= emergencyNeed.Quantity && emergencyNeed.Status == "Fundraising")
