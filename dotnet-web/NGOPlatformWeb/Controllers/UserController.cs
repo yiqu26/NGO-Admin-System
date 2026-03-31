@@ -34,10 +34,10 @@ namespace NGOPlatformWeb.Controllers
 
             var vm = new UserProfileViewModel
             {
-                Name = user.Name,
-                Email = user.Email,
-                Phone = user.Phone,
-                IdentityNumber = user.IdentityNumber,
+                Name = user.Name ?? "",
+                Email = user.Email ?? "",
+                Phone = user.Phone ?? "",
+                IdentityNumber = user.IdentityNumber ?? "",
                 Password = user.Password,
                 ProfileImage = user.ProfileImage ?? _imageUploadService.GetDefaultProfileImage("user"),
                 
@@ -94,8 +94,8 @@ namespace NGOPlatformWeb.Controllers
                     OrderId = o.UserOrderId,
                     OrderDate = o.OrderDate,
                     TotalPrice = o.TotalPrice,
-                    Status = o.PaymentStatus,
-                    OrderNumber = o.OrderNumber
+                    Status = o.PaymentStatus ?? "",
+                    OrderNumber = o.OrderNumber ?? ""
                 }).ToList()
             };
 
@@ -138,10 +138,10 @@ namespace NGOPlatformWeb.Controllers
 
             var vm = new UserEditViewModel
             {
-                Name = user.Name,
-                Email = user.Email,
-                Phone = user.Phone,
-                IdentityNumber = user.IdentityNumber,
+                Name = user.Name ?? "",
+                Email = user.Email ?? "",
+                Phone = user.Phone ?? "",
+                IdentityNumber = user.IdentityNumber ?? "",
                 ProfileImage = user.ProfileImage ?? _imageUploadService.GetDefaultProfileImage("user")
             };
 
@@ -285,12 +285,12 @@ namespace NGOPlatformWeb.Controllers
                 Orders = orders.Select(o => new OrderRecordViewModel
                 {
                     OrderId = o.UserOrderId,
-                    OrderNumber = o.OrderNumber,
+                    OrderNumber = o.OrderNumber ?? "",
                     OrderDate = o.OrderDate,
                     TotalPrice = o.TotalPrice,
-                    PaymentStatus = o.PaymentStatus,
-                    PaymentMethod = o.PaymentMethod,
-                    OrderSource = o.OrderSource,
+                    PaymentStatus = o.PaymentStatus ?? "",
+                    PaymentMethod = o.PaymentMethod ?? "",
+                    OrderSource = o.OrderSource ?? "",
                     EmergencyNeedId = o.EmergencyNeedId,
                     Items = o.OrderSource == "emergency" ? 
                         // 緊急物資訂單 - 從緊急物資認購記錄取得資料
@@ -330,7 +330,7 @@ namespace NGOPlatformWeb.Controllers
                             TotalPrice = od.UnitPrice * od.Quantity,
                             ImageUrl = od.Supply?.ImageUrl ?? "/images/default-supply.png",
                             IsEmergency = false,
-                            OrderSource = od.OrderSource
+                            OrderSource = od.OrderSource ?? ""
                         }).ToList()
                 }).ToList()
             };

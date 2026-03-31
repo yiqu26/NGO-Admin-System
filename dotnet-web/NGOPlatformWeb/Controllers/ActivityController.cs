@@ -36,7 +36,7 @@ public class ActivityController : Controller
     {
         try
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var viewModel = await _activityService.GetActivitiesForRoleAsync("User", userId, category, keyword);
             return View("ActivityIndex", viewModel);
         }
@@ -52,7 +52,7 @@ public class ActivityController : Controller
     {
         try
         {
-            var caseId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var caseId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var viewModel = await _activityService.GetActivitiesForRoleAsync("Case", caseId, category, keyword);
             return View("ActivityIndex", viewModel);
         }
@@ -83,7 +83,7 @@ public class ActivityController : Controller
         try
         {
             var userRole = _activityService.DetermineUserRole(User);
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
 
             var success = await _activityService.CancelRegistrationAsync(userId, id, userRole);
 
@@ -162,7 +162,7 @@ public class ActivityController : Controller
         {
             Console.WriteLine("[❌ 寫入失敗] " + ex.Message);
             vm.Activity = _context.Activities!
-                .FirstOrDefault(a => a.ActivityId == vm.Registration.ActivityId);
+                .FirstOrDefault(a => a.ActivityId == vm.Registration!.ActivityId);
             ViewBag.Error = ex.Message;
             return View(vm);
         }
@@ -179,7 +179,7 @@ public class ActivityController : Controller
             if (activity == null)
                 return Json(new { success = false, message = "活動不存在" });
 
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var userRole = _activityService.DetermineUserRole(User);
             var registeredIds = await _activityService.GetUserRegisteredActivityIdsAsync(userId, userRole);
             var isRegistered = registeredIds.Contains(id);
@@ -211,7 +211,7 @@ public class ActivityController : Controller
     {
         try
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var success = await _activityService.RegisterUserWithCompanionsAsync(userId, activityId, numberOfCompanions);
 
             if (success)
@@ -245,7 +245,7 @@ public class ActivityController : Controller
         try
         {
             var userRole = _activityService.DetermineUserRole(User);
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
 
             var success = await _activityService.CancelRegistrationAsync(userId, activityId, userRole);
 
@@ -279,7 +279,7 @@ public class ActivityController : Controller
     {
         try
         {
-            var caseId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var caseId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
             var success = await _activityService.RegisterCaseAsync(caseId, activityId);
 
             if (success)

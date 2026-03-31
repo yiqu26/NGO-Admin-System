@@ -1067,8 +1067,8 @@ namespace NGOPlatformWeb.Controllers
             {
                 // 為重新付款生成新的訂單號（ECPay 限制20字元）
                 var timestamp = DateTime.Now.ToString("MMss"); // 月份(MM)+秒(ss)，4位數字
-                var baseOrderNumber = order.OrderNumber;
-                
+                var baseOrderNumber = order.OrderNumber ?? "";
+
                 // 如果已經是重新付款的訂單號，替換時間戳部分
                 if (baseOrderNumber.Contains("R") && baseOrderNumber.Length > 18)
                 {
@@ -1114,7 +1114,7 @@ namespace NGOPlatformWeb.Controllers
         /// </summary>
         private decimal GetEmergencySupplyPrice(string supplyName)
         {
-            return supplyName?.ToLower() switch
+            return supplyName.ToLower() switch
             {
                 // 醫療相關
                 var name when name.Contains("血糖機") || name.Contains("血糖檢測") => 800m,

@@ -98,7 +98,7 @@ namespace NGOPlatformWeb.Controllers
             var targetAudience = "public"; // 預設顯示一般民眾活動
             
             // 檢查是否為個案登入，個案只看到個案專屬活動
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity?.IsAuthenticated == true)
             {
                 var userRole = User.FindFirstValue(ClaimTypes.Role);
                 if (userRole == "Case")

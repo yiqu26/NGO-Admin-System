@@ -33,7 +33,7 @@ namespace NGOPlatformWeb.Controllers
 
             if (!string.IsNullOrEmpty(category))
             {
-                query = query.Where(s => s.SupplyCategory != null && s.SupplyCategory.SupplyCategoryName.Contains(category));
+                query = query.Where(s => s.SupplyCategory != null && s.SupplyCategory.SupplyCategoryName != null && s.SupplyCategory.SupplyCategoryName.Contains(category));
             }
 
             var supplies = query.ToList();
@@ -84,17 +84,17 @@ namespace NGOPlatformWeb.Controllers
             // 🔹 撈出未領取
             var unreceived = _context.RegularSuppliesNeeds
                 .Include(r => r.Supply)
-                    .ThenInclude(s => s.SupplyCategory)
+                    .ThenInclude(s => s!.SupplyCategory)
                 .Where(r => r.CaseId == caseId && r.Status == "pending")
                 .Select(r => new SupplyRecordItem
                 {
-                    Name = r.Supply.SupplyName,
-                    Category = r.Supply.SupplyCategory.SupplyCategoryName,
+                    Name = r.Supply != null ? r.Supply.SupplyName ?? "" : "",
+                    Category = r.Supply != null && r.Supply.SupplyCategory != null ? r.Supply.SupplyCategory.SupplyCategoryName ?? "" : "",
                     Quantity = r.Quantity,
                     ApplyDate = r.ApplyDate,
                     PickupDate = r.PickupDate,
-                    Status = r.Status,
-                    ImageUrl = r.Supply.ImageUrl
+                    Status = r.Status ?? "",
+                    ImageUrl = r.Supply != null ? r.Supply.ImageUrl : null
                 })
                 .OrderByDescending(r => r.ApplyDate)
                 .ToList();
@@ -102,24 +102,24 @@ namespace NGOPlatformWeb.Controllers
             // 🔹 撈出已領取 + 訪談物資
             var received = _context.RegularSuppliesNeeds
                 .Include(r => r.Supply)
-                    .ThenInclude(s => s.SupplyCategory)
+                    .ThenInclude(s => s!.SupplyCategory)
                 .Where(r => r.CaseId == caseId && (r.Status == "collected"))
                 .Select(r => new SupplyRecordItem
                 {
-                    Name = r.Supply.SupplyName,
-                    Category = r.Supply.SupplyCategory.SupplyCategoryName,
+                    Name = r.Supply != null ? r.Supply.SupplyName ?? "" : "",
+                    Category = r.Supply != null && r.Supply.SupplyCategory != null ? r.Supply.SupplyCategory.SupplyCategoryName ?? "" : "",
                     Quantity = r.Quantity,
                     ApplyDate = r.ApplyDate,
                     PickupDate = r.PickupDate,
-                    Status = r.Status,
-                    ImageUrl = r.Supply.ImageUrl
+                    Status = r.Status ?? "",
+                    ImageUrl = r.Supply != null ? r.Supply.ImageUrl : null
                 })
                 .Union(
                     _context.EmergencySupplyNeeds
                         .Where(e => e.CaseId == caseId && e.Status == "Completed")
                         .Select(e => new SupplyRecordItem
                         {
-                            Name = e.SupplyName,
+                            Name = e.SupplyName ?? "",
                             Category = "緊急物資",
                             Quantity = e.Quantity,
                             ApplyDate = e.CreatedDate ?? DateTime.Now,
@@ -173,6 +173,10 @@ namespace NGOPlatformWeb.Controllers
 
             // 透過 Email 找到個案的登入資料和基本資料
             var caseLogin = await _context.CaseLogins.FirstOrDefaultAsync(c => c.Email == email);
+            if (caseLogin == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
             var cas = await _context.Cases.FirstOrDefaultAsync(c => c.CaseId == caseLogin.CaseId);
             if (cas == null)
             {
@@ -220,6 +224,7 @@ namespace NGOPlatformWeb.Controllers
             if (string.IsNullOrEmpty(email)) return RedirectToAction("Login", "Auth");
 
             var caseLogin = await _context.CaseLogins.FirstOrDefaultAsync(c => c.Email == email);
+            if (caseLogin == null) return NotFound();
             var cas = await _context.Cases.FirstOrDefaultAsync(c => c.CaseId == caseLogin.CaseId);
             if (cas == null) return NotFound();
 
@@ -243,10 +248,10 @@ namespace NGOPlatformWeb.Controllers
 
             var vm = new CaseProfileViewModel
             {
-                Name = cas.Name,
-                Email = caseLogin.Email,
-                Phone = cas.Phone,
-                IdentityNumber = cas.IdentityNumber,
+                Name = cas.Name ?? "",
+                Email = caseLogin.Email ?? "",
+                Phone = cas.Phone ?? "",
+                IdentityNumber = cas.IdentityNumber ?? "",
                 ProfileImage = cas.ProfileImage ?? _imageUploadService.GetDefaultProfileImage("case"),
                 Birthday = cas.Birthday,
                 Address = cas.FullAddress,
@@ -307,7 +312,7 @@ namespace NGOPlatformWeb.Controllers
             }
 
             // 更新密碼和頭像
-            caseLogin.Password = _passwordService.HashPassword(vm.NewPassword);
+            caseLogin.Password = _passwordService.HashPassword(vm.NewPassword ?? "");
             cas.ProfileImage = newImagePath;
             await _context.SaveChangesAsync();
 
@@ -377,6 +382,10 @@ namespace NGOPlatformWeb.Controllers
 
             // 透過 Email 找到個案的登入資料和基本資料
             var caseLogin = await _context.CaseLogins.FirstOrDefaultAsync(c => c.Email == email);
+            if (caseLogin == null)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
             var cas = await _context.Cases.FirstOrDefaultAsync(c => c.CaseId == caseLogin.CaseId);
             if (cas == null)
             {

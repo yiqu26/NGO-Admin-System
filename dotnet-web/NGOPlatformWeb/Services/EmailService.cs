@@ -24,7 +24,7 @@ namespace NGOPlatformWeb.Services
             {
                 // Get SMTP settings
                 var smtpHost = _configuration["EmailSettings:SmtpHost"];
-                var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"]);
+                var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"] ?? "587");
                 var smtpUser = _configuration["EmailSettings:SmtpUser"];
                 var smtpPassword = _configuration["EmailSettings:SmtpPassword"];
                 var fromEmail = _configuration["EmailSettings:FromEmail"];
@@ -41,7 +41,7 @@ namespace NGOPlatformWeb.Services
 
                 // Create mail message
                 var mailMessage = new MailMessage();
-                mailMessage.From = new MailAddress(fromEmail, fromName);
+                mailMessage.From = new MailAddress(fromEmail ?? "", fromName ?? "");
                 mailMessage.To.Add(email);
                 mailMessage.Subject = "密碼重設通知 - NGO平台";
                 mailMessage.IsBodyHtml = true;

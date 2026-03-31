@@ -31,7 +31,7 @@
                 </div>
                 <div class="status-card-info">
                     <div class="label">未領取</div>
-                    <div class="count">@Model.UnreceivedSupplies.Count 項</div>
+                    <div class="count">@(Model.UnreceivedSupplies?.Count ?? 0) 項</div>
                 </div>
             </button>
 
@@ -41,7 +41,7 @@
                 </div>
                 <div class="status-card-info">
                     <div class="label">已領取</div>
-                    <div class="count">@Model.ReceivedSupplies.Count(s => s.Status == "collected") 項</div>
+                    <div class="count">@(Model.ReceivedSupplies?.Count(s => s.Status == "collected") ?? 0) 項</div>
                 </div>
             </button>
 
@@ -51,7 +51,7 @@
                 </div>
                 <div class="status-card-info">
                     <div class="label">訪談物資</div>
-                    <div class="count">@Model.ReceivedSupplies.Count(s => s.Status == "訪談物資") 項</div>
+                    <div class="count">@(Model.ReceivedSupplies?.Count(s => s.Status == "訪談物資") ?? 0) 項</div>
                 </div>
             </button>
         </div>
@@ -61,7 +61,7 @@
         <div class="list-wrapper" id="wrap-unreceived">
             <div class="scroll-area">
                 <div class="selection-list">
-                    @foreach (var item in Model.UnreceivedSupplies)
+                    @foreach (var item in Model.UnreceivedSupplies ?? new List<NGOPlatformWeb.Models.ViewModels.SupplyRecordItem>())
                     {
                         <div class="item-card">
                             <img src="@item.ImageUrl" alt="@item.Name" class="item-img" />
@@ -82,7 +82,7 @@
         <div class="list-wrapper" id="wrap-received" style="display:none;">
             <div class="scroll-area">
                 <div class="selection-list">
-                    @foreach (var item in Model.ReceivedSupplies.Where(s => s.Status == "collected"))
+                    @foreach (var item in (Model.ReceivedSupplies ?? new List<NGOPlatformWeb.Models.ViewModels.SupplyRecordItem>()).Where(s => s.Status == "collected"))
                     {
                         <div class="item-card">
                             <img src="@item.ImageUrl" alt="@item.Name" class="item-img" />
@@ -103,7 +103,7 @@
         <div class="list-wrapper" id="wrap-interview" style="display:none;">
             <div class="scroll-area">
                 <div class="selection-list">
-                    @foreach (var item in Model.ReceivedSupplies.Where(s => s.Status == "訪談物資"))
+                    @foreach (var item in (Model.ReceivedSupplies ?? new List<NGOPlatformWeb.Models.ViewModels.SupplyRecordItem>()).Where(s => s.Status == "訪談物資"))
                     {
                         <div class="item-card">
                             <img src="@item.ImageUrl" alt="@item.Name" class="item-img" />
@@ -126,7 +126,7 @@
         <div class="stats-panel">
             <h3>📊 登記類別統計</h3>
             <ul class="stats-list">
-                @foreach (var stat in Model.CategoryStats)
+                @foreach (var stat in Model.CategoryStats ?? new List<NGOPlatformWeb.Models.ViewModels.CategoryStat>())
                 {
                     <li>
                         <div class="cat-title">

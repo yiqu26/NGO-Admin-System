@@ -85,7 +85,7 @@ namespace NGOPlatformWeb.Services
             var parameters = new Dictionary<string, string>
             {
                 ["MerchantID"] = _merchantId,
-                ["MerchantTradeNo"] = order.OrderNumber, // 使用資料庫中的訂單號
+                ["MerchantTradeNo"] = order.OrderNumber ?? "", // 使用資料庫中的訂單號
                 ["MerchantTradeDate"] = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"),
                 ["PaymentType"] = "aio",
                 ["TotalAmount"] = ((int)order.TotalPrice).ToString(),
@@ -345,7 +345,7 @@ namespace NGOPlatformWeb.Services
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // 記錄錯誤但不拋出異常，避免影響回調處理
                 // 可以考慮記錄到日誌系統

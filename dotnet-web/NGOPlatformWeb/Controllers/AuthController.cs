@@ -47,7 +47,7 @@ namespace NGOPlatformWeb.Controllers
                 // 嘗試一般使用者登入
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == vm.Email);
             
-            if (user != null && ValidatePassword(vm.Password, user.Password))
+            if (user != null && ValidatePassword(vm.Password ?? "", user.Password ?? ""))
             {
                 await SignInAsync(
                     httpContext: HttpContext,
@@ -63,7 +63,7 @@ namespace NGOPlatformWeb.Controllers
             // 嘗試個案登入
             var caseLogin = await _context.CaseLogins.FirstOrDefaultAsync(c => c.Email == vm.Email);
             
-            if (caseLogin != null && ValidatePassword(vm.Password, caseLogin.Password))
+            if (caseLogin != null && ValidatePassword(vm.Password ?? "", caseLogin.Password ?? ""))
             {
                 var caseName = await _context.Cases
                     .Where(c => c.CaseId == caseLogin.CaseId)
@@ -251,7 +251,7 @@ namespace NGOPlatformWeb.Controllers
                     new { token = token.Token }, Request.Scheme);
 
                 // Send email using injected EmailService
-                await _emailService.SendPasswordResetEmailAsync(model.Email, resetLink);
+                await _emailService.SendPasswordResetEmailAsync(model.Email, resetLink ?? "");
 
                 // Set success flag and return to the same page to show modal
                 TempData["EmailSent"] = true;
@@ -494,7 +494,7 @@ namespace NGOPlatformWeb.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 TempData["ErrorMessage"] = "登入過程發生錯誤，請重試";
                 return RedirectToAction("Login");

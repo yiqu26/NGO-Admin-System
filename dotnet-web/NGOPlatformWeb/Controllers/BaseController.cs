@@ -51,7 +51,7 @@ namespace NGOPlatformWeb.Controllers
                 if (!uploadResult.Success)
                     return Json(new { success = false, message = uploadResult.ErrorMessage });
 
-                await updateImagePath(uploadResult.ImagePath);
+                await updateImagePath(uploadResult.ImagePath ?? "");
                 await _context.SaveChangesAsync();
 
                 return Json(new { 

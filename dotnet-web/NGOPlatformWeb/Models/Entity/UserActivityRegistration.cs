@@ -20,7 +20,7 @@ namespace NGOPlatformWeb.Models.Entity
         public DateTime RegisterTime { get; set; } = DateTime.Now;
         
         // Navigation properties
-        public virtual User User { get; set; }
-        public virtual Activity Activity { get; set; }
+        public virtual User? User { get; set; }
+        public virtual Activity? Activity { get; set; }
     }
 }
