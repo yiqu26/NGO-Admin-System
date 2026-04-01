@@ -207,6 +207,7 @@ public class ActivityController : Controller
     // API: User 報名 (支援同伴人數)
     [HttpPost]
     [Authorize(Roles = "User")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> RegisterWithCompanions(int activityId, int numberOfCompanions)
     {
         try
@@ -240,6 +241,7 @@ public class ActivityController : Controller
     // API: 取消報名 (AJAX版本)
     [HttpPost]
     [Authorize]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CancelRegistrationAjax(int activityId)
     {
         try
@@ -275,6 +277,7 @@ public class ActivityController : Controller
     // API: Case 報名 (固定1人)
     [HttpPost]
     [Authorize(Roles = "Case")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> RegisterCase(int activityId)
     {
         try

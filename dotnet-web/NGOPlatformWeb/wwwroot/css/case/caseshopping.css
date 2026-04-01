@@ -2,7 +2,7 @@
 .caseshopping-hero {
     position: relative;
     height: 300px;
-    background: url('/images/Caseshoppingback.jpg') center center / cover no-repeat;
+    background: url('/images/Caseshoppingback.png') center center / cover no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;

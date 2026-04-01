@@ -23,6 +23,9 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-family: var(--font-body);
+  background-color: var(--bg-white);
+  color: var(--text-primary);
 }
 
 /* 確保main內容區域填滿剩餘空間 */

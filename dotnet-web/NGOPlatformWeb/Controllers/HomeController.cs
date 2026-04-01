@@ -40,8 +40,7 @@ namespace NGOPlatformWeb.Controllers
             catch (Exception ex)
             {
                 // 記錄詳細錯誤信息
-                ViewBag.ErrorMessage = $"首頁載入發生錯誤: {ex.Message}";
-                ViewBag.ErrorDetail = ex.ToString();
+                ViewBag.ErrorMessage = "首頁載入發生錯誤，請稍後再試。";
                 
                 // 回傳一個空的模型，避免頁面完全無法顯示
                 var emptyModel = new HomeViewModel();
@@ -51,14 +50,12 @@ namespace NGOPlatformWeb.Controllers
 
         public IActionResult Contact()
         {
-            ViewData["Title"] = "這裡是聯絡我們";
-            return View(); // 聯絡我們
+            return View();
         }
 
         public IActionResult Organization()
         {
-            ViewData["Title"] = "這裡是組織介紹";
-            return View(); // 組織介紹
+            return View();
         }
         // 輪播圖資料
         private List<CarouselItem> GetCarouselItems()
@@ -119,7 +116,7 @@ namespace NGOPlatformWeb.Controllers
         private ImpactStats GetImpactStats()
         {
             var totalActivities = _context.Activities.Count();
-            var totalParticipants = _context.Activities.Sum(a => a.CurrentParticipants);
+            var totalParticipants = _context.Users.Count();
             var totalCases = _context.Cases.Count();
             var totalSupplies = _context.Supplies.Count();
             
@@ -139,7 +136,7 @@ namespace NGOPlatformWeb.Controllers
             {
                 Title = "建立更美好的社會",
                 Description = "我們致力於連結資源與需求，透過專業服務與社區參與，為弱勢族群提供實質幫助，共同創造充滿希望的未來。",
-                ImageUrl = "/images/activityback.jpg"
+                ImageUrl = "/images/activityback.png"
             };
         }
 

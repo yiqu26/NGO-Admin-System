@@ -1,49 +1,430 @@
 /* =================================
-   首頁整合樣式 - 模組化版本
-   減少了 60% 的代碼行數
+   首頁樣式 - Warm Editorial
    ================================= */
 
-/* 引入組件樣式 */
-@import url('../components/carousel.css');
-@import url('../components/impact-section.css');
-@import url('../components/activity-cards.css');
+/* carousel.css 和 activity-cards.css 改由 View 的 <link> 載入，避免 @import 無法 cache-bust */
 
-/* 僅保留首頁特有的樣式 */
+/* ---- 共用 section 標記 ---- */
+.section-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    font-family: var(--font-body);
+    font-weight: 500;
+}
 
-/* 頁面基礎設置 */
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    line-height: var(--line-height-relaxed);
+/* ---- 影響力數字帶 ---- */
+.impact-strip {
+    background: var(--bg-white);
+    padding: 5rem 0;
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.impact-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.impact-eyebrow {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-bottom: 2.5rem;
+}
+
+.impact-numbers {
+    display: flex;
+    align-items: center;
+    gap: 3.5rem;
+}
+
+.impact-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+}
+
+.stat-num {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 5vw, 5.5rem);
+    line-height: 1;
+    color: var(--text-primary);
+    font-weight: 400;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--text-primary);
 }
 
-/* 全局動畫設置 */
-.modern-activity-card {
-    will-change: transform, box-shadow, filter;
+.stat-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    max-width: 130px;
+    line-height: 1.5;
 }
 
-.modern-activity-card:not(:hover) {
-    animation: gentleFloat 8s ease-in-out infinite;
+.impact-sep {
+    color: var(--border-light);
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    user-select: none;
 }
 
-.modern-activity-card * {
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+/* ---- 使命 2 欄 ---- */
+.mission-section {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    min-height: 520px;
 }
 
-/* 性能優化 */
+.mission-image-col {
+    position: relative;
+    overflow: hidden;
+}
+
+.mission-image-col img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.8s ease;
+}
+
+.mission-image-col:hover img {
+    transform: scale(1.03);
+}
+
+.mission-text-col {
+    background: var(--bg-light);
+    padding: 5rem 4.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.mission-heading {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--text-primary);
+    margin: 1.25rem 0 1.5rem;
+}
+
+.mission-body {
+    color: var(--text-secondary);
+    line-height: 1.85;
+    font-size: 0.98rem;
+    margin-bottom: 2.25rem;
+}
+
+.mission-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: gap 0.25s ease, color 0.2s ease;
+    width: fit-content;
+}
+
+.mission-link:hover {
+    gap: 0.65rem;
+    color: var(--primary-dark);
+}
+
+/* ---- 三種參與 ---- */
+.paths-section {
+    padding: 5.5rem 0;
+    background: var(--bg-white);
+}
+
+.paths-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+}
+
+.path-card {
+    padding: 3rem 2.5rem 2.75rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    background: var(--bg-white);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.path-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.path-card--featured {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.path-num {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 4rem;
+    line-height: 1;
+    color: var(--border-light);
+    margin-bottom: 1.5rem;
+    user-select: none;
+}
+
+.path-card--featured .path-num {
+    color: rgba(250, 247, 242, 0.2);
+}
+
+.path-title {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.path-card--featured .path-title {
+    color: #faf7f2;
+}
+
+.path-body {
+    color: var(--text-secondary);
+    line-height: 1.75;
+    font-size: 0.93rem;
+    margin-bottom: 2rem;
+}
+
+.path-card--featured .path-body {
+    color: rgba(250, 247, 242, 0.8);
+}
+
+.path-link {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--primary-color);
+    padding-bottom: 3px;
+    transition: letter-spacing 0.25s ease;
+}
+
+.path-link:hover {
+    letter-spacing: 0.14em;
+}
+
+.path-card--featured .path-link {
+    color: #faf7f2;
+    border-bottom-color: rgba(250, 247, 242, 0.45);
+}
+
+/* ---- 活動區塊 ---- */
+.activities-section {
+    padding: 5.5rem 0;
+    background: var(--bg-light);
+}
+
+.activities-heading {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: 400;
+    text-align: center;
+    color: var(--text-primary);
+    margin-bottom: 3rem;
+}
+
 .activity-carousel-container {
-    transform: translateZ(0);
+    max-width: 860px;
+    margin: 0 auto;
 }
 
-/* 特殊動畫效果已在 design-tokens.css 中定義 */
+.no-activities-msg {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 3rem 0;
+}
 
-/* 首頁載入動畫 */
-.page-fade-in {
+/* ---- CTA ---- */
+.cta-section {
+    padding: 7rem 0;
+    background: var(--page-bg);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '加入';
+    position: absolute;
+    font-family: var(--font-display);
+    font-size: clamp(12rem, 20vw, 22rem);
+    color: rgba(255, 255, 255, 0.03);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.cta-heading {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 400;
+    color: #faf7f2;
+    margin-bottom: 1.25rem;
+    position: relative;
+}
+
+.cta-body {
+    color: rgba(250, 247, 242, 0.65);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 2.75rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+}
+
+.cta-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.btn-cta-primary {
+    background: var(--primary-color);
+    color: #faf7f2;
+    border: 2px solid var(--primary-color);
+    padding: 14px 40px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: all var(--transition-base);
+    display: inline-block;
+}
+
+.btn-cta-primary:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: #faf7f2;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(184, 92, 56, 0.35);
+}
+
+.btn-cta-outline {
+    background: transparent;
+    color: rgba(250, 247, 242, 0.8);
+    border: 2px solid rgba(250, 247, 242, 0.28);
+    padding: 14px 40px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: all var(--transition-base);
+    display: inline-block;
+}
+
+.btn-cta-outline:hover {
+    border-color: rgba(250, 247, 242, 0.65);
+    color: #faf7f2;
+    transform: translateY(-3px);
+}
+
+/* ---- 進場動畫（Intersection Observer） ---- */
+.fade-in-up {
     opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
-.page-fade-in.loaded {
+.fade-in-up.visible {
     opacity: 1;
+    transform: translateY(0);
+}
+
+/* ---- RWD ---- */
+@media (max-width: 992px) {
+    .paths-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .path-card--featured {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 0 2rem;
+        padding: 2.5rem;
+    }
+    .path-card--featured .path-num {
+        margin-bottom: 0;
+        grid-row: 1 / 3;
+    }
+    .path-card--featured .path-body {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .impact-numbers {
+        flex-direction: column;
+        gap: 2.5rem;
+        align-items: flex-start;
+    }
+    .impact-sep { display: none; }
+
+    .mission-section {
+        grid-template-columns: 1fr;
+    }
+    .mission-image-col {
+        height: 280px;
+    }
+    .mission-text-col {
+        padding: 3rem 1.75rem;
+    }
+
+    .paths-grid {
+        grid-template-columns: 1fr;
+    }
+    .path-card--featured {
+        grid-template-columns: 1fr;
+    }
+    .path-card--featured .path-num {
+        grid-row: auto;
+    }
+    .path-card--featured .path-body {
+        margin-bottom: 2rem;
+    }
+
+    .cta-section { padding: 5rem 1.5rem; }
 }

@@ -1,118 +1,80 @@
-﻿@{
+@{
     ViewBag.Title = "聯絡我們";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- 如果你還沒有用 _Layout.cshtml 的話，這樣寫即可 -->
+@section Styles {
+    <link rel="stylesheet" href="~/css/contact-page.css" asp-append-version="true" />
+}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>聯絡我們</title>
-    <style>
-        /* 頁面標題 */
-        .page-title {
-            background-color: #fbd0a2;
-            padding: 30px;
-            text-align: center;
-            font-size: 28px;
-            color: white;
-        }
-
-        /* 表單與地圖 */
-        .content {
-            display: flex;
-            justify-content: space-between;
-            padding: 40px;
-        }
-
-        .form-section, .map-section {
-            width: 45%;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        contact-button {
-            margin-top: 15px;
-            padding: 10px 30px;
-            background-color: #fbd0a2;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .map-container {
-            width: 100%;
-            height: 300px;
-            background-color: #ffe5e5;
-            margin-bottom: 20px;
-        }
-
-        .contact-infopage {
-            background-color: #fbd0a2;
-            padding: 15px;
-            line-height: 1.6;
-            border-radius: 6px;
-        }
-
-    </style>
-</head>
-<body>
-    <!-- 頁面標題 -->
-    <div class="caseshopping-hero mb-4">
-        <div class="hero-content">
-            <h1>聯絡我們</h1>
-            <p></p>
-        </div>
+<!-- Hero -->
+<div class="contact-hero">
+    <div class="hero-inner">
+        <p class="hero-eyebrow">恩舉基金會</p>
+        <h1>聯絡我們</h1>
+        <p class="hero-sub">有任何問題，歡迎隨時聯繫</p>
     </div>
-    <link rel="stylesheet" href="~/css/contact.css" />
-    <!-- 主內容區 -->
-    <div class="content">
-        <!-- 表單 -->
-        <div class="form-section">
-            <form class="form-inner" method="post" enctype="multipart/form-data" asp-controller="Contact" asp-action="Submit">
-                <input type="text" name="Name" placeholder="姓名" />
-                <input type="text" name="Phone" placeholder="聯絡電話" />
-                <input type="email" name="Email" placeholder="電子信箱" />
-                <textarea name="Message" placeholder="詢問內容" rows="5"></textarea>
+</div>
 
-                <div class="button-wrapper">
-                    <button class="contact-button" type="submit">送出</button>
-                </div>
-            </form>
-        </div>
+<!-- 主體 -->
+<div class="contact-body">
 
+    <!-- 左側：聯絡資訊 -->
+    <div class="contact-panel">
+        <p class="panel-eyebrow">Reach Us</p>
+        <h2 class="panel-heading">找到我們</h2>
+        <hr class="contact-rule" />
 
+        <dl class="contact-list">
+            <dt>電話</dt>
+            <dd>04-1234-5678</dd>
 
-        <!-- 地圖與聯絡資訊 -->
-        <div class="map-section">
-            <div class="map-container">
-                <!-- 嵌入 Google 地圖 -->
-                <iframe src="https://www.google.com/maps?q=台中市南屯區公益路二段51號&output=embed"
-                        width="100%"
-                        height="300"
-                        style="border:0;"
-                        allowfullscreen=""
-                        loading="lazy">
-                </iframe>
+            <dt>傳真</dt>
+            <dd>04-8765-4321</dd>
 
-            </div>
+            <dt>地址</dt>
+            <dd>
+                408 台中市南屯區<br />
+                公益路二段 51 號 18 樓
+            </dd>
 
-            <div class="contact-infopage">
-                電話：04-1234-5678<br />
-                傳真：04-8765-4321<br />
-                地址：408台中市南屯區公益路二段51號18樓<br />
-                電子信箱：msit5566@gmail.com
-            </div>
-        </div>
+            <dt>服務時間</dt>
+            <dd>
+                週一至週五<br />
+                09:00 — 17:00
+            </dd>
+        </dl>
+
+        <a href="mailto:msit5566@gmail.com" class="contact-email-link">
+            msit5566@gmail.com
+        </a>
     </div>
-</body>
-</html>
+
+    <!-- 右側：Google Maps -->
+    <div class="contact-map-side">
+        <iframe
+            src="https://www.google.com/maps?q=台中市南屯區公益路二段51號&output=embed"
+            allowfullscreen=""
+            loading="lazy"
+            title="恩舉基金會位置">
+        </iframe>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        // Scroll 進場
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    observer.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.contact-panel, .contact-map-side')
+            .forEach(el => observer.observe(el));
+    </script>
+}

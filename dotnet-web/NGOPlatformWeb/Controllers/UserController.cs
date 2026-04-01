@@ -151,6 +151,7 @@ namespace NGOPlatformWeb.Controllers
         // 使用者編輯個人資料頁面 - POST 方法
         [Authorize(Roles = "User")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditProfile(UserEditViewModel vm, IFormFile? profileImageFile)
         {
             if (!ModelState.IsValid) return View(vm);
@@ -200,6 +201,7 @@ namespace NGOPlatformWeb.Controllers
         // AJAX 頭像上傳 API
         [Authorize(Roles = "User")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadProfileImage(IFormFile profileImage)
         {
             var user = await GetCurrentUserAsync();

@@ -39,7 +39,7 @@ class HomepageManager {
         this.injectGlobalStyles();
         
         // 設置數字計數動畫
-        this.createScrollObserver('.impact-section', () => this.animateNumbers());
+        this.createScrollObserver('.impact-strip', () => this.animateNumbers());
         
         // 設置成就項目動畫
         this.createScrollObserver('.compact-quality-section', () => this.animateAchievements());
@@ -47,7 +47,7 @@ class HomepageManager {
 
     // 數字動畫 (優化版)
     animateNumbers() {
-        const numbers = document.querySelectorAll('.impact-number[data-count]');
+        const numbers = document.querySelectorAll('.stat-num[data-count]');
         
         numbers.forEach(number => {
             const target = parseInt(number.getAttribute('data-count'));

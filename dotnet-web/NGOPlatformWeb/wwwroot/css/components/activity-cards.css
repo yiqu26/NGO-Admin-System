@@ -125,7 +125,7 @@
     opacity: 0;
     transition: opacity var(--transition-bounce);
     pointer-events: none;
-    z-index: var(--z-background);
+    z-index: var(--z-layer-1);
 }
 
 .modern-activity-card:hover {
@@ -161,7 +161,7 @@
     background-repeat: no-repeat;
     filter: blur(10px) brightness(0.6) saturate(1.4);
     transform: scale(1.2);
-    z-index: var(--z-background);
+    z-index: var(--z-layer-1);
     transition: all var(--transition-bounce);
 }
 
@@ -174,7 +174,7 @@
     object-fit: cover;
     transition: all var(--transition-bounce);
     filter: brightness(0.95) saturate(0.9);
-    z-index: var(--z-content);
+    z-index: var(--z-layer-2);
 }
 
 .modern-activity-card:hover .activity-img {
@@ -200,7 +200,7 @@
         rgba(0, 0, 0, 0.1) 30%,
         transparent 100%
     );
-    z-index: var(--z-overlay);
+    z-index: var(--z-layer-3);
     pointer-events: none;
 }
 
@@ -218,7 +218,7 @@
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(2px);
-    z-index: var(--z-modal);
+    z-index: var(--z-layer-4);
 }
 
 .modern-activity-card:hover .elegant-image-overlay {
@@ -228,7 +228,7 @@
 .overlay-content {
     text-align: center;
     color: var(--bg-white);
-    z-index: var(--z-content);
+    z-index: var(--z-layer-2);
     transform: translateY(10px);
     transition: transform var(--transition-smooth);
 }
@@ -396,7 +396,7 @@
     gap: var(--spacing-sm);
     margin-top: auto;
     position: relative;
-    z-index: var(--z-content);
+    z-index: var(--z-layer-2);
 }
 
 .btn-modern {

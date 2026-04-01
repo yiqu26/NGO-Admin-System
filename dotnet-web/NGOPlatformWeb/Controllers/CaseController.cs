@@ -46,6 +46,7 @@ namespace NGOPlatformWeb.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ApplySupply(int supplyId, int quantity)
         {
             var caseIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -279,6 +280,7 @@ namespace NGOPlatformWeb.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Case")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CaseProfile(CaseProfileViewModel vm, IFormFile? profileImageFile)
         {
             if (vm.NewPassword != vm.ConfirmPassword)
@@ -323,6 +325,7 @@ namespace NGOPlatformWeb.Controllers
         // AJAX 頭像上傳 API (個案專用)
         [Authorize(Roles = "Case")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadCaseProfileImage(IFormFile profileImage)
         {
             try

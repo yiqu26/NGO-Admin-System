@@ -25,7 +25,7 @@
     font-weight: var(--font-bold);
     margin-bottom: var(--spacing-md);
     position: relative;
-    z-index: var(--z-background);
+    z-index: var(--z-layer-1);
 }
 
 .impact-section .section-subtitle {
@@ -33,7 +33,7 @@
     font-size: var(--font-xl);
     margin-bottom: var(--spacing-xl);
     position: relative;
-    z-index: var(--z-background);
+    z-index: var(--z-layer-1);
 }
 
 .title-decoration {
@@ -42,7 +42,7 @@
     justify-content: center;
     margin-top: var(--spacing-xl);
     position: relative;
-    z-index: var(--z-background);
+    z-index: var(--z-layer-1);
 }
 
 .decoration-line {
@@ -74,7 +74,7 @@
     height: 100%;
     position: relative;
     border: 1px solid var(--border-light);
-    z-index: var(--z-background);
+    z-index: var(--z-layer-1);
 }
 
 .primary-card:hover {

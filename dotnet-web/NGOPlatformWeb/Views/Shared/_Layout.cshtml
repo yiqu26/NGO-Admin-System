@@ -5,6 +5,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - NGOPlatformWeb</title>
+    @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+    @{ var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken; }
+    <meta name="csrf-token" content="@csrfToken" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/shared/design-tokens.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/shared/site.css" asp-append-version="true" />
@@ -99,6 +105,20 @@
         }
     </style>
     
+    <script>
+        // 全域 CSRF：所有 AJAX POST 自動帶 antiforgery token
+        $(document).ready(function () {
+            var token = $('meta[name="csrf-token"]').attr('content');
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (settings.type && settings.type.toUpperCase() !== 'GET') {
+                        xhr.setRequestHeader('RequestVerificationToken', token);
+                    }
+                }
+            });
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

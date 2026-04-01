@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using NGOPlatformWeb.Models.Entity;
 using NGOPlatformWeb.Services;
@@ -76,8 +77,34 @@ if (!app.Environment.IsDevelopment())
 }
 
 
+// 讓 ASP.NET Core 信任 Cloudflare Tunnel 傳來的 X-Forwarded-Proto header
+// 這樣 OAuth callback URL 才會正確產生 https:// 而非 http://
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
+                     | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+});
+
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        var headers = ctx.Context.Response.Headers;
+        var contentType = ctx.Context.Response.ContentType ?? "";
+
+        if (contentType.StartsWith("image/"))
+        {
+            // 圖片：1天快取，但每次都向伺服器確認是否更新
+            headers.CacheControl = "public, max-age=86400, must-revalidate";
+        }
+        else if (contentType.Contains("css") || contentType.Contains("javascript"))
+        {
+            // CSS/JS 已有 asp-append-version 做 cache busting，可放長快取
+            headers.CacheControl = "public, max-age=604800, immutable";
+        }
+    }
+});
 
 app.UseRouting();
 app.UseSession();

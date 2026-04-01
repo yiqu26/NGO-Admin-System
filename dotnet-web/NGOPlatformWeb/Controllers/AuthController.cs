@@ -39,6 +39,7 @@ namespace NGOPlatformWeb.Controllers
 
         // POST: /Auth/Login
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel vm)
         {
             if (!ModelState.IsValid)
@@ -88,6 +89,7 @@ namespace NGOPlatformWeb.Controllers
 
         // POST: /Auth/Logout
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -103,6 +105,7 @@ namespace NGOPlatformWeb.Controllers
 
         // POST: /Auth/Register
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel vm)
         {
             if (!ModelState.IsValid)
@@ -200,6 +203,7 @@ namespace NGOPlatformWeb.Controllers
         // model: Form data containing Email
         // Returns: Redirects to confirmation page
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
             if (!ModelState.IsValid)
@@ -302,6 +306,7 @@ namespace NGOPlatformWeb.Controllers
         // model: Form data containing new password and token
         // Returns: Redirect to login page
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (!ModelState.IsValid)
@@ -366,6 +371,7 @@ namespace NGOPlatformWeb.Controllers
 
         // POST: /Auth/ExternalLogin
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ExternalLogin(string provider)
         {
             // 設定外部登入的回調路徑

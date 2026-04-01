@@ -3,49 +3,57 @@
    ================================= */
 
 :root {
-  /* 主要色彩 - 低調專業色系 */
-  --primary-color: #0891b2;          /* 溫和的青藍色 */
-  --primary-dark: #0e7490;           /* 深青藍色 */
-  --primary-light: rgba(8, 145, 178, 0.1);
-  --secondary-color: #64748b;        /* 沉穩的石板灰 */
-  --secondary-dark: #475569;         /* 深石板灰 */
-  
-  /* 功能色彩 - 柔和版本 */
-  --success-color: #059669;          /* 森林綠 */
-  --success-light: #10b981;          /* 翠綠色 */
-  --warning-color: #d97706;          /* 琥珀色 */
-  --warning-light: #f59e0b;          /* 金黃色 */
-  --info-color: #0891b2;             /* 青藍色 */
-  --info-dark: #0e7490;              /* 深青藍色 */
-  
-  /* 中性色彩 - 深色系統 */
-  --text-primary: #1e293b;           /* 深石板色 */
-  --text-secondary: #475569;         /* 中石板色 */
-  --text-muted: #64748b;             /* 淺石板色 */
-  --text-light: #94a3b8;             /* 很淺石板色 */
-  --border-color: rgba(8, 145, 178, 0.12);
-  --border-light: #e2e8f0;           /* 極淺灰藍 */
-  
-  /* 背景色彩 - 深色但溫和 */
-  --bg-white: #ffffff;
-  --bg-light: #f8fafc;               /* 極淺藍灰 */
-  --bg-muted: #f1f5f9;               /* 淺藍灰 */
-  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
-  
-  /* 頁面背景 - 適中的深色系 */
-  --page-bg: linear-gradient(135deg, #334155 0%, #475569 25%, #64748b 50%, #475569 75%, #334155 100%);
-  --page-bg-secondary: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
-  
-  /* 陰影 - 更柔和專業 */
-  --shadow-sm: 0 3px 15px rgba(30, 41, 59, 0.08);
-  --shadow-md: 0 8px 32px rgba(30, 41, 59, 0.12);
-  --shadow-lg: 0 15px 35px rgba(8, 145, 178, 0.08);
-  --shadow-xl: 0 25px 50px rgba(8, 145, 178, 0.12);
-  --shadow-hover: 0 16px 48px rgba(8, 145, 178, 0.18);
-  
-  /* 卡片陰影 - 專業版 */
-  --card-shadow: 0 4px 20px rgba(30, 41, 59, 0.08);
-  --card-shadow-hover: 0 8px 30px rgba(8, 145, 178, 0.15);
+  /* 字型 */
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+
+  /* 主要色彩 - Warm Editorial */
+  --primary-color: #b85c38;          /* 陶土紅 */
+  --primary-dark: #8b4224;           /* 深陶土紅 */
+  --primary-light: rgba(184, 92, 56, 0.1);
+  --secondary-color: #5c7a5e;        /* 鼠尾草綠 */
+  --secondary-dark: #3d5e40;         /* 深鼠尾草綠 */
+
+  /* 功能色彩 */
+  --success-color: #3d7a45;
+  --success-light: #5c9e64;
+  --warning-color: #c47c2a;
+  --warning-light: #e09540;
+  --info-color: #5c7a5e;
+  --info-dark: #3d5e40;
+
+  /* 中性色彩 - 暖棕色系 */
+  --text-primary: #2c1f14;           /* 深暖棕 */
+  --text-secondary: #5c4a3a;         /* 中暖棕 */
+  --text-muted: #8c7b6e;             /* 淺暖棕 */
+  --text-light: #b3a49a;             /* 很淺暖棕 */
+  --border-color: rgba(184, 92, 56, 0.12);
+  --border-light: #e8e0d8;           /* 暖米色邊框 */
+
+  /* 背景色彩 - 暖米白系 */
+  --bg-white: #faf7f2;               /* 暖米白 */
+  --bg-light: #f5efe6;               /* 淺米 */
+  --bg-muted: #ede4d9;               /* 中米 */
+  --bg-gradient: linear-gradient(135deg, #faf7f2 0%, #f5efe6 50%, #ede4d9 100%);
+
+  /* 漸層 */
+  --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  --gradient-secondary: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
+
+  /* 頁面深色背景 */
+  --page-bg: linear-gradient(135deg, #1c1410 0%, #2c1f14 50%, #1c1410 100%);
+  --page-bg-secondary: linear-gradient(135deg, #120e0a 0%, #1c1410 50%, #2c1f14 100%);
+
+  /* 陰影 - 暖色調 */
+  --shadow-sm: 0 3px 15px rgba(44, 31, 20, 0.08);
+  --shadow-md: 0 8px 32px rgba(44, 31, 20, 0.12);
+  --shadow-lg: 0 15px 35px rgba(184, 92, 56, 0.08);
+  --shadow-xl: 0 25px 50px rgba(184, 92, 56, 0.12);
+  --shadow-hover: 0 16px 48px rgba(184, 92, 56, 0.18);
+
+  /* 卡片陰影 */
+  --card-shadow: 0 4px 20px rgba(44, 31, 20, 0.08);
+  --card-shadow-hover: 0 8px 30px rgba(184, 92, 56, 0.15);
   
   /* 圓角 */
   --radius-sm: 10px;
@@ -92,12 +100,18 @@
   --transition-smooth: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   --transition-bounce: 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
   
-  /* Z-index 層級 */
-  --z-background: 1;
-  --z-content: 2;
-  --z-overlay: 3;
-  --z-modal: 4;
-  --z-tooltip: 5;
+  /* Z-index 層級 - 元件內部層疊（在 position: relative 容器的 stacking context 內使用） */
+  --z-layer-1: 1;   /* 背景圖片、裝飾元素 */
+  --z-layer-2: 2;   /* 圖片主體、次級覆蓋層 */
+  --z-layer-3: 3;   /* 漸層遮罩、主要內容 */
+  --z-layer-4: 4;   /* 懸浮面板、badge */
+
+  /* 全域層疊 - 對齊 Bootstrap，避免衝突 */
+  --z-dropdown: 1000;
+  --z-sticky:   1020;
+  --z-navbar:   1030;
+  --z-modal:    1050;
+  --z-tooltip:  1070;
 }
 
 /* 漸層組合 - 專業低調版 */

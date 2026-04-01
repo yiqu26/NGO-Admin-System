@@ -1,0 +1,228 @@
+/* =============================================
+   Contact Page — contact-page.css
+   ============================================= */
+
+/* Hero */
+.contact-hero {
+    position: relative;
+    height: 340px;
+    background: url('/images/contact.png') center center / cover no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #fff;
+    overflow: hidden;
+}
+
+.contact-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.55) 100%
+    );
+}
+
+.contact-hero .hero-inner {
+    position: relative;
+    z-index: 1;
+}
+
+.contact-hero .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+    font-weight: var(--font-semibold);
+}
+
+.contact-hero h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.5rem;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.contact-hero .hero-sub {
+    font-size: 1rem;
+    opacity: 0.8;
+    letter-spacing: 0.05em;
+}
+
+/* ── Body: 非對稱兩欄 ── */
+.contact-body {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    min-height: 520px;
+}
+
+/* ── 左側深色面板 ── */
+.contact-panel {
+    background: var(--page-bg);
+    padding: 4rem 3rem;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 背景裝飾：大型透明文字 */
+.contact-panel::after {
+    content: "CONTACT";
+    position: absolute;
+    bottom: -1rem;
+    right: -1rem;
+    font-size: 6rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: rgba(255, 255, 255, 0.03);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+}
+
+.panel-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    margin-bottom: 0.6rem;
+    font-weight: var(--font-semibold);
+}
+
+.panel-heading {
+    font-size: 2rem;
+    font-weight: var(--font-bold);
+    line-height: 1.2;
+    margin: 0 0 2rem;
+}
+
+.contact-rule {
+    width: 36px;
+    height: 2px;
+    background: var(--primary-color);
+    margin-bottom: 2.5rem;
+    border: none;
+    opacity: 1;
+}
+
+/* ── 聯絡資訊：dt/dd 無 icon ── */
+.contact-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1.75rem;
+    row-gap: 0.6rem;
+    margin-bottom: 2.5rem;
+}
+
+.contact-list dt {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    font-weight: var(--font-semibold);
+    padding-top: 0.2rem;
+    white-space: nowrap;
+    align-self: start;
+}
+
+.contact-list dd {
+    font-size: 0.92rem;
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* 每組 dt/dd 之間的視覺間距 */
+.contact-list dt:not(:first-child) {
+    margin-top: 0.75rem;
+}
+.contact-list dd:not(:first-of-type) {
+    margin-top: 0.75rem;
+}
+
+/* ── Email 連結 ── */
+.contact-email-link {
+    display: inline-block;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding-bottom: 3px;
+    transition:
+        color var(--transition-base),
+        border-color var(--transition-base);
+}
+
+.contact-email-link:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* ── 右側地圖 ── */
+.contact-map-side {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-muted);
+}
+
+.contact-map-side iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 520px;
+    border: none;
+    display: block;
+    filter: grayscale(15%);
+    transition: filter var(--transition-slow);
+}
+
+.contact-map-side:hover iframe {
+    filter: grayscale(0%);
+}
+
+/* ── 進場動畫 ── */
+.contact-panel,
+.contact-map-side {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 0.7s ease,
+        transform 0.7s ease;
+}
+
+.contact-panel.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.contact-map-side.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.15s;
+}
+
+/* ── RWD ── */
+@media (max-width: 900px) {
+    .contact-body {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-panel {
+        padding: 3rem 2rem;
+    }
+
+    .contact-panel::after {
+        font-size: 4rem;
+    }
+
+    .contact-map-side iframe {
+        min-height: 320px;
+    }
+}

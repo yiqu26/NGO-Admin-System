@@ -79,7 +79,7 @@ body.profile-page .container:last-of-type {
     position: absolute;
     bottom: 5px;
     right: 5px;
-    background: #007bff;
+    background: var(--primary-color);
     color: white;
     width: 35px;
     height: 35px;
@@ -168,13 +168,13 @@ body.profile-page .container:last-of-type {
 
 .profile-info h5 {
     margin: 0 0 0.5rem 0;
-    color: #2c3e50;
+    color: var(--text-primary);
     font-weight: 600;
 }
 
 .profile-info p {
     margin: 0;
-    color: #6c757d;
+    color: var(--text-muted);
     font-size: 0.9rem;
 }
 
@@ -192,19 +192,19 @@ body.profile-page .container:last-of-type {
     padding: 1rem;
     border-radius: 12px;
     text-decoration: none;
-    color: #64748b;
+    color: var(--text-secondary);
     transition: all 0.3s ease;
-    border: 1px solid rgba(203, 213, 225, 0.2);
-    background: rgba(248, 250, 252, 0.5);
+    border: 1px solid var(--border-color);
+    background: rgba(250, 247, 242, 0.5);
     backdrop-filter: blur(5px);
 }
 
 .profile-nav .nav-item:hover,
 .profile-nav .nav-item.active {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    background: var(--gradient-primary);
     color: white;
     transform: translateX(5px);
-    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 5px 15px rgba(184, 92, 56, 0.3);
 }
 
 .profile-nav .nav-item i {
@@ -254,7 +254,7 @@ body.profile-page .container:last-of-type {
 
 .content-header h4 {
     margin: 0;
-    color: #2c3e50;
+    color: var(--text-primary);
     font-weight: 600;
 }
 
@@ -307,7 +307,7 @@ body.profile-page .container:last-of-type {
 }
 
 .edit-btn {
-    background: linear-gradient(135deg, #28a745, #20c997);
+    background: var(--gradient-primary);
     color: white;
     padding: 0.75rem 2rem;
     border-radius: 12px;
@@ -316,12 +316,12 @@ body.profile-page .container:last-of-type {
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 4px 15px rgba(184, 92, 56, 0.3);
 }
 
 .edit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    box-shadow: 0 6px 20px rgba(184, 92, 56, 0.4);
     color: white;
 }
 
@@ -419,7 +419,7 @@ body.profile-page .container:last-of-type {
 }
 
 .view-all-btn {
-    color: #007bff;
+    color: var(--primary-color);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -427,7 +427,7 @@ body.profile-page .container:last-of-type {
 }
 
 .view-all-btn:hover {
-    color: #0056b3;
+    color: var(--primary-dark);
 }
 
 .overview-stats {
@@ -443,7 +443,7 @@ body.profile-page .container:last-of-type {
 .stat-item .stat-number {
     font-size: 2rem;
     font-weight: 700;
-    color: #007bff;
+    color: var(--primary-color);
     margin-bottom: 0.25rem;
 }
 
@@ -538,8 +538,8 @@ body.profile-page .container:last-of-type {
 
 .filter-btn:hover,
 .filter-btn.active {
-    background: #007bff;
-    border-color: #007bff;
+    background: var(--primary-color);
+    border-color: var(--primary-color);
     color: white;
 }
 
@@ -581,8 +581,8 @@ body.profile-page .container:last-of-type {
 }
 
 .password-form .form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(184, 92, 56, 0.25);
 }
 
 /* Case頁面的表單樣式 */
@@ -597,7 +597,7 @@ body.profile-page .container:last-of-type {
 }
 
 .update-btn {
-    background: linear-gradient(135deg, #28a745, #20c997);
+    background: var(--gradient-primary);
     color: white;
     padding: 0.75rem 2rem;
     border: none;
@@ -606,12 +606,12 @@ body.profile-page .container:last-of-type {
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 4px 15px rgba(184, 92, 56, 0.3);
 }
 
 .update-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    box-shadow: 0 6px 20px rgba(184, 92, 56, 0.4);
 }
 
 /* Case頁面的更新按鈕 */
