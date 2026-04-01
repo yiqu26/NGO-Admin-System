@@ -1,78 +1,130 @@
 # NGO 案件管理系統
 
-> 完整的 NGO 案件管理、活動管理、物資配送與志工協作平台
+> 非營利組織的完整數位化平台——從個案追蹤、活動報名到物資購買與 AI 輔助作業，涵蓋員工後台與公眾前台兩套系統。
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=.net)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://reactjs.org/)
-[![SQL Server](https://img.shields.io/badge/SQL%20Server-2019+-CC2927?logo=microsoft-sql-server)](https://www.microsoft.com/sql-server)
+[![MVC](https://img.shields.io/badge/ASP.NET_MVC-.NET_8-512BD4?logo=.net)](https://dotnet.microsoft.com/)
+[![SQL Server](https://img.shields.io/badge/SQL_Server-2019+-CC2927?logo=microsoft-sql-server)](https://www.microsoft.com/sql-server)
 
-## 📋 專案簡介
+## Live Demo
 
-這是一個為非營利組織設計的全功能管理系統，採用現代化前後端分離架構，提供完整的案件追蹤、活動管理、物資配送等功能。
+| 系統 | 網址 |
+|------|------|
+| 用戶前台（民眾） | https://ngo-management-hub.com |
+| 員工管理後台 | https://admin.ngo-management-hub.com |
+| Backend API | https://api.ngo-management-hub.com |
 
-### ✨ 核心功能
+> Demo 使用 Cloudflare Tunnel 對外，服務需要本機啟動才會連線。測試帳號見下方。
 
-- 📊 **Dashboard 儀表板** - 即時統計與視覺化圖表
-- 📝 **案件管理** - 完整的個案追蹤系統
-- 🎯 **活動管理** - 活動建立、報名、追蹤
-- 📦 **物資管理** - 庫存管理與配送追蹤
-- 👥 **帳號管理** - 角色權限系統
-- 📅 **行程管理** - 個人與團隊行程
+---
 
-### 🛠 技術棧
+## 這個專案在做什麼
 
-**後端**
-- ASP.NET Core 9.0 (Web API)
-- Entity Framework Core
-- SQL Server
+培訓機構的小組專案，原始設計是讓 NGO 的工作人員能統一管理個案、活動與物資，同時提供一個公眾前台讓一般民眾報名活動、購買物資。
 
-**前端 - 管理後台**
-- React 18 + Vite
-- Ant Design / Material-UI
-- Chart.js
+結訓之後我把它當作個人練習的延伸，陸續補上當時來不及做的東西：AI 功能整合、ECPay 金流串接、UI 全站重設計、以及把一些當時趕出來比較粗糙的地方重構。
 
-**前端 - 用戶前台**
-- ASP.NET Core MVC (.NET 8)
-- Google OAuth
-- ECPay 金流
+**我在這個專案的主要負責範圍：**
+- 資料庫設計與建置（SQL Server，含資料表設計、關聯規劃）
+- MVC 用戶前台的大部分開發（Controllers、Views、CSS、金流串接）
+- 結訓後：UI 重設計、ECPay 安全修正、AI 服務整合、持續重構
 
-## 🚀 快速啟動
+---
 
-### 環境需求
+## 功能概覽
 
-- Node.js 18+
-- .NET SDK 8.0 或 9.0
-- SQL Server 2019+
+### 員工管理後台（React）
 
-### ⚡ 最快啟動方式
+- **Dashboard** - 個案數、活動狀態、物資庫存的即時統計圖表
+- **個案管理** - 新增/編輯個案，支援圖片上傳與**語音轉文字**（OpenAI Whisper）記錄案況
+- **活動管理** - 建立活動、審核報名、用 **GPT-4o-mini 優化活動文案**、**DALL-E 3 生成活動封面圖**
+- **物資管理** - 庫存追蹤、低庫存警示
+- **帳號管理** - 三層角色權限（管理員 / 督導 / 員工），JWT 驗證
 
-詳細步驟請參考：**[QUICK-START.md](QUICK-START.md)** 或 **[docs/00-快速開始.md](docs/00-快速開始.md)**
+### 用戶前台（MVC）
 
-```bash
-# 終端機 1 - 啟動後端 API
-cd NGO-Management-System/api
-dotnet run
-# 運行於 http://localhost:5264
+- **Google OAuth** 第三方登入
+- **活動瀏覽與報名** - 一般民眾可報名 NGO 活動
+- **物資購物** - 加入購物車、結帳流程
+- **ECPay 綠界金流** - 信用卡付款（含 SHA-256 checksum 驗證）
+- **購買紀錄** - 訂單歷史查詢
+- **成就系統** - 累積參與解鎖徽章
 
-# 終端機 2 - 啟動 React 管理後台
-cd NGO-Management-System/react-admin
-npm run dev
-# 運行於 http://localhost:5173
+---
 
-# 終端機 3 - 啟動 MVC 用戶前台（選用）
-cd NGO-Management-System/dotnet-web/NGOPlatformWeb
-dotnet run
-# 運行於 http://localhost:5066
+## 技術架構
+
+```
+┌─────────────────────────────────┐
+│         SQL Server              │
+│       (NGOPlatformDb)           │
+└──────────────┬──────────────────┘
+               │
+┌──────────────▼──────────────────┐
+│      ASP.NET Core 9 WebAPI      │
+│         (port 5264)             │
+│  Controllers / Services / EF    │
+└───────┬──────────────┬──────────┘
+        │              │
+┌───────▼──────┐ ┌─────▼────────────┐
+│  React 18    │ │  ASP.NET MVC     │
+│  + Vite      │ │  .NET 8          │
+│  (port 5173) │ │  (port 5066)     │
+│              │ │                  │
+│  員工後台    │ │  用戶前台        │
+│  JWT Auth    │ │  Google OAuth    │
+│  MUI + MUI X │ │  ECPay 金流      │
+└──────────────┘ └──────────────────┘
 ```
 
-### 📚 完整文檔
+### AI 功能的設計方式
 
-- **[QUICK-START.md](QUICK-START.md)** - 3 分鐘快速啟動指南
-- **[docs/00-快速開始.md](docs/00-快速開始.md)** - 詳細啟動步驟
-- **[docs/02-Cloudflare展示指南.md](docs/02-Cloudflare展示指南.md)** - 公開展示設定
-- **[docs/03-測試帳號.md](docs/03-測試帳號.md)** - 測試帳號與 ECPay 綠界資訊
+AI 服務同時支援 **OpenAI Direct** 和 **Azure OpenAI** 兩個 provider，透過 `appsettings.json` 的 `AI:Provider` 切換，不需要改程式碼。這樣設計是因為 Azure OpenAI 有些部署限制，直接用 OpenAI API 開發期間比較方便，但實際部署可能需要 Azure 版本。
 
-## 🔐 測試帳號
+| 功能 | 模型 | 說明 |
+|------|------|------|
+| 文案優化 | GPT-4o-mini | 活動描述的 AI 改寫建議 |
+| 封面圖生成 | DALL-E 3 | 根據活動內容生成圖片 |
+| 語音轉文字 | Whisper-1 | 個案訪談記錄快速輸入 |
+
+---
+
+## 本地啟動
+
+### 需要的環境
+
+- Node.js 18+
+- .NET SDK 8 & 9
+- SQL Server（本地或遠端）
+
+### 啟動步驟
+
+```bash
+# 後端 API
+cd api
+dotnet run
+# http://localhost:5264
+
+# React 管理後台
+cd react-admin
+npm install
+npm run dev
+# http://localhost:5173
+
+# MVC 用戶前台
+cd dotnet-web/NGOPlatformWeb
+dotnet run
+# http://localhost:5066
+```
+
+`appsettings.json` 已被 `.gitignore` 排除（含 DB 連線字串、API Key），請自行建立並填入對應設定。範例結構在 `docs/` 裡。
+
+---
+
+## 測試帳號
+
+**員工後台**
 
 | 角色 | Email | 密碼 |
 |------|-------|------|
@@ -80,67 +132,38 @@ dotnet run
 | 督導 | supervisor@ngo.org | Super123! |
 | 員工 | staff@ngo.org | Staff123! |
 
-## 📊 系統架構
+**用戶前台**
 
+| Email | 密碼 |
+|-------|------|
+| test.user@example.com | Test123! |
+
+**ECPay 測試信用卡**
 ```
-     SQL Server
-  (NGOPlatformDb)
-         ↓
-   後端 WebAPI
- ASP.NET Core 9
-   (port 5264)
-         ↓
-    ┌────┴────┐
-    ↓         ↓
-React 前端    MVC 前端
-管理後台      用戶前台
-(5173)       (5066)
-員工系統      民眾/個案
+卡號：4311-9511-1111-1111　到期：12/25　CVV：222
 ```
 
-## 📁 專案結構
+---
+
+## 專案結構
 
 ```
 NGO-Management-System/
-│
-├── 📂 react-admin/             # React 管理後台（員工系統）
-│   ├── src/                    # 原始碼
-│   ├── public/                 # 靜態資源
-│   ├── package.json
-│   ├── vite.config.ts
-│   └── README.md               # 前端說明文檔
-│
-├── 📂 api/                    # .NET 9 後端 API
-│   ├── Controllers/            # API 控制器
-│   ├── Models/                 # 資料模型
-│   ├── Services/               # 業務邏輯
-│   ├── appsettings.json
-│   └── README.md               # 後端說明文檔
-│
-├── 📂 dotnet-web/             # MVC 用戶前台（民眾/個案系統）
-│   ├── NGOPlatformWeb/         # MVC 專案
-│   │   ├── Controllers/
-│   │   ├── Views/
-│   │   ├── Models/
-│   │   └── appsettings.json
-│   └── README.md               # MVC 說明文檔
-│
-├── 📂 docs/                    # 📚 完整文檔
-│   ├── 00-快速開始.md
-│   ├── 02-Cloudflare展示指南.md
-│   ├── 03-測試帳號.md          # ⭐ 測試帳號與 ECPay 資訊
-│   └── README.md
-│
-├── 📂 scripts/                 # 啟動腳本
-│   └── 啟動展示系統-Cloudflare.bat
-│
-├── 📂 config/                  # 配置範例
-│   └── README.md
-│
-├── 📂 database/                # 資料庫腳本
-│   └── *.sql
-│
-├── 📄 README.md                # ⭐ 本文檔（專案總覽）
-└── 📄 QUICK-START.md           # ⭐ 3 分鐘快速啟動
+├── api/                    # ASP.NET Core 9 WebAPI
+│   ├── Controllers/
+│   ├── Models/
+│   └── Services/           # AI、語音、檔案儲存服務
+├── react-admin/            # React 18 員工後台
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       └── services/
+├── dotnet-web/             # ASP.NET MVC 用戶前台
+│   └── NGOPlatformWeb/
+│       ├── Controllers/
+│       ├── Views/
+│       └── Services/       # ECPay、Email、成就系統
+├── database/               # SQL 建表腳本
+├── docs/                   # 詳細技術文件
+└── scripts/                # 一鍵啟動腳本
 ```
-
