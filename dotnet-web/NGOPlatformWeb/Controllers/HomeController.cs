@@ -19,7 +19,7 @@ namespace NGOPlatformWeb.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error(int? statusCode = null)
+        public IActionResult Error(int? id = null)
         {
             var exceptionFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
             if (exceptionFeature != null)
@@ -30,7 +30,7 @@ namespace NGOPlatformWeb.Controllers
             var model = new ErrorViewModel
             {
                 RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier,
-                StatusCode = statusCode ?? 500
+                StatusCode = id ?? 500
             };
             return View(model);
         }

@@ -2,33 +2,133 @@
 @{
     ViewData["Title"] = Model.Is404 ? "頁面不存在" : "發生錯誤";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.BodyClass = "error-page";
 }
 
-<div class="container" style="max-width: 600px; margin: 80px auto; text-align: center;">
-    <div style="font-size: 4rem; color: var(--primary-color, #b85c38); font-weight: 700; line-height: 1;">
-        @Model.StatusCode
-    </div>
-    <h1 style="font-size: 1.5rem; color: var(--text-primary, #333); margin: 1rem 0 0.5rem;">
-        @(Model.Is404 ? "找不到此頁面" : "系統發生錯誤")
+<div class="error-container">
+    <div class="error-code">@Model.StatusCode</div>
+
+    <h1 class="error-title">
+        @if (Model.Is404)
+        {
+            @:找不到此頁面
+        }
+        else
+        {
+            @:系統發生錯誤
+        }
     </h1>
-    <p style="color: var(--text-secondary, #666); margin: 0.5rem 0 1.5rem;">
-        @(Model.Is404
-            ? "您所尋找的頁面不存在，可能已被移除或網址有誤。"
-            : "很抱歉，處理您的請求時發生了問題。請稍後再試，或聯繫管理員。")
+
+    <p class="error-message">
+        @if (Model.Is404)
+        {
+            @:您所尋找的頁面不存在，可能已被移除或網址有誤。
+        }
+        else
+        {
+            @:很抱歉，處理您的請求時發生了問題。請稍後再試，或聯繫管理員。
+        }
     </p>
-    @if (Model.ShowRequestId)
+
+    @if (Model.ShowRequestId && !Model.Is404)
     {
-        <p style="font-size: 0.85rem; color: #999;">
+        <p class="error-trace">
             請求編號：<code>@Model.RequestId</code>
         </p>
     }
-    <a href="/" style="
+
+    <div class="error-actions">
+        <a href="/" class="btn-primary-error">返回首頁</a>
+        @if (Model.Is404)
+        {
+            <a href="javascript:history.back()" class="btn-secondary-error">返回上一頁</a>
+        }
+    </div>
+</div>
+
+@section Styles {
+<style>
+    .error-page main,
+    .error-page .main-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+    }
+
+    .error-container {
+        max-width: 520px;
+        margin: 5rem auto;
+        text-align: center;
+        padding: 0 1.5rem;
+    }
+
+    .error-code {
+        font-size: 6rem;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--primary-color, #b85c38);
+        letter-spacing: -2px;
+    }
+
+    .error-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary, #2c2c2c);
+        margin: 1rem 0 0.75rem;
+    }
+
+    .error-message {
+        color: var(--text-secondary, #666);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin: 0 0 2rem;
+    }
+
+    .error-trace {
+        font-size: 0.8rem;
+        color: #aaa;
+        margin-bottom: 1.5rem;
+    }
+
+    .error-trace code {
+        font-family: monospace;
+        background: #f5f5f5;
+        padding: 2px 6px;
+        border-radius: 3px;
+    }
+
+    .error-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary-error,
+    .btn-secondary-error {
         display: inline-block;
-        margin-top: 1rem;
         padding: 0.6rem 1.5rem;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: opacity 0.15s;
+    }
+
+    .btn-primary-error {
         background: var(--primary-color, #b85c38);
         color: white;
-        border-radius: 4px;
-        text-decoration: none;
-    ">返回首頁</a>
-</div>
+    }
+
+    .btn-secondary-error {
+        background: transparent;
+        color: var(--text-secondary, #666);
+        border: 1px solid #ddd;
+    }
+
+    .btn-primary-error:hover,
+    .btn-secondary-error:hover {
+        opacity: 0.85;
+    }
+</style>
+}
