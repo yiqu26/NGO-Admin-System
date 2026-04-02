@@ -77,12 +77,14 @@ if (!app.Environment.IsDevelopment())
 }
 
 
-// 讓 ASP.NET Core 信任 Cloudflare Tunnel 傳來的 X-Forwarded-Proto header
-// 這樣 OAuth callback URL 才會正確產生 https:// 而非 http://
+// Cloudflare Tunnel (cloudflared) 在本機以 loopback 連接 app，
+// 明確只信任 loopback proxy，防止外部偽造 X-Forwarded-For。
+// 若改用 Cloudflare CDN（非 Tunnel），需改為信任 Cloudflare 公告的 CIDR 範圍。
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
-                     | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    KnownProxies    = { System.Net.IPAddress.Loopback, System.Net.IPAddress.IPv6Loopback },
+    ForwardLimit    = 1
 });
 
 app.UseHttpsRedirection();
