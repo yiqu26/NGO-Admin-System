@@ -178,24 +178,7 @@ dotnet run
 
 ## 測試帳號
 
-### 員工後台
-
-| 角色 | Email | 密碼 |
-|------|-------|------|
-| 管理員 | admin@ngo.org | Admin123! |
-| 督導 | supervisor@ngo.org | Super123! |
-| 員工 | staff@ngo.org | Staff123! |
-
-### 用戶前台
-
-| Email | 密碼 |
-|-------|------|
-| test.user@example.com | Test123! |
-
-### ECPay 測試信用卡
-```
-卡號：4311-9511-1111-1111　到期：12/25　CVV：222
-```
+員工後台、用戶前台各有預設測試帳號（管理員、督導、員工、一般用戶、個案），本地啟動後即可登入。ECPay 使用綠界官方測試卡號。
 
 ---
 
@@ -238,10 +221,3 @@ NGO-Management-System/
 
 ---
 
-## 技術文件
-
-| 文件 | 說明 |
-|------|------|
-| [系統架構與功能說明](docs/01-系統架構與功能說明.md) | 完整架構說明、各模組功能細節 |
-| [ECPay 金流技術分析](docs/04-ECPay綠界金流技術分析與面試指南.md) | CheckMacValue 實作、安全設計說明 |
-| [Cloudflare 展示指南](docs/02-Cloudflare展示指南.md) | Demo 環境啟動與 Tunnel 設定 |
