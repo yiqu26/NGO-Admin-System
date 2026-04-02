@@ -666,36 +666,29 @@ const SearchEditCaseTab: React.FC = () => {
         birthdayAsDate: updateData.Birthday
       });
       
-      // 如果有新的圖片檔案，先上傳圖片
+      // 如果有新的圖片檔案，先上傳並取得新 URL，再合併進 updateData
       if (editFormData.imageFile) {
         console.log('🖼️ 開始上傳新圖片...');
         const formData = new FormData();
         formData.append('file', editFormData.imageFile);
-        
+
         const response = await caseService.uploadProfileImage(formData);
-        
-        // 處理不同的回應格式
+
         let imageUrl = '';
         if (response) {
-          if (typeof response === 'string') {
-            imageUrl = response;
-          } else if (typeof response === 'object') {
-            if ('imageUrl' in response && response.imageUrl) {
-              imageUrl = response.imageUrl;
-            } else if ('data' in response && typeof response.data === 'string') {
-              imageUrl = response.data;
-            }
+          if (typeof (response as any) === 'string') {
+            imageUrl = response as any;
+          } else if ((response as any).imageUrl) {
+            imageUrl = (response as any).imageUrl;
+          } else if ((response as any).data && typeof (response as any).data === 'string') {
+            imageUrl = (response as any).data;
           }
         }
-        
-        if (imageUrl) {
-          // 更新個案的圖片 URL
-          const imageUpdateData = { ProfileImage: imageUrl };
-          await caseService.updateCase(editFormData.caseId, imageUpdateData);
-          console.log('✅ 圖片上傳並更新成功');
-        } else {
-          throw new Error('圖片上傳失敗：無法獲取圖片URL');
-        }
+
+        if (!imageUrl) throw new Error('圖片上傳失敗：無法獲取圖片URL');
+
+        updateData.ProfileImage = imageUrl;
+        console.log('✅ 圖片上傳成功，URL:', imageUrl);
       }
 
       // 如果有新的音檔檔案，先上傳音檔

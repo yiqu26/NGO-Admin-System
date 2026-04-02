@@ -5,8 +5,6 @@ namespace NGOPlatformWeb.Models.ViewModels.Profile
 {
     public class UserProfileViewModel : BaseProfileViewModel
     {
-        public string? Password { get; set; }
-        
         // 活動報名總覽
         public List<ActivitySummary> RecentActivities { get; set; } = new List<ActivitySummary>();
         

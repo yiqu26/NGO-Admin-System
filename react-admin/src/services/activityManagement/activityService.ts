@@ -69,11 +69,10 @@ class ActivityService {
   async getActivities(): Promise<ActivityListResponse> {
     try {
       console.log('正在呼叫 API: /Activity');
-      const response = await api.get('/Activity');
+      const response = await api.get<{ data: Activity[] }>('/Activity');
       console.log('API 回應:', response);
-      
-      // 後端直接回傳陣列，api.get() 已經取了 response.data
-      const activities = response || [];
+
+      const activities = response.data || [];
       // 處理後的活動資料
       
       return {
@@ -275,8 +274,8 @@ class ActivityService {
    */
   async getCategories(): Promise<CategoryOption[]> {
     try {
-      const response = await api.get<CategoryOption[]>('/Activity/categories');
-      return response || [];
+      const response = await api.get<{ data: CategoryOption[] }>('/Activity/categories');
+      return response.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -450,10 +449,10 @@ class ActivityService {
       
       // 發送查詢參數
       
-      const response = await api.get<ActivityListPagedResponse>('/Activity/paged', {
+      const response = await api.get<{ data: ActivityListPagedResponse }>('/Activity/paged', {
         params: queryParams
       });
-      return response;
+      return response.data;
     } catch (error) {
       console.error('取得分頁活動失敗:', error);
       throw error;

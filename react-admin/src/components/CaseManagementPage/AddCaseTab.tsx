@@ -141,12 +141,9 @@ const AddCaseTab: React.FC = () => {
         if (!value.trim()) {
           isValid = false;
           errorMessage = '電話為必填欄位';
-        } else if (!/^[0-9\-\s\(\)]+$/.test(value.trim())) {
+        } else if (!/^09[0-9]{8}$/.test(value.trim())) {
           isValid = false;
-          errorMessage = '電話號碼格式錯誤（只能包含數字、空格、括號、破折號）';
-        } else if (value.replace(/[\-\s\(\)]/g, '').length < 8) {
-          isValid = false;
-          errorMessage = '電話號碼至少需要8位數字';
+          errorMessage = '請輸入10碼手機號碼（格式：0912345678）';
         }
         break;
 
@@ -730,6 +727,12 @@ const AddCaseTab: React.FC = () => {
           type: 'error',
           text: `⚠️ 此身分證字號已存在！\n\n個案資訊：\n• 個案編號：${errorData.existingCaseId}\n• 姓名：${errorData.existingCaseName}\n• 建立時間：${new Date(errorData.existingCaseCreatedAt).toLocaleString('zh-TW')}\n\n建議：請使用「查詢個案」功能搜尋該個案`
         });
+      } else if ((error as Error)?.message) {
+        // 由 createCase 解析出的後端驗證訊息（含多行）
+        setSubmitMessage({
+          type: 'error',
+          text: (error as Error).message
+        });
       } else if (errorData?.message) {
         setSubmitMessage({
           type: 'error',
@@ -945,7 +948,7 @@ const AddCaseTab: React.FC = () => {
                       sx={getValidationStyle(fieldErrors.email)}
                       placeholder="例：example@email.com"
                       error={fieldErrors.email}
-                      helperText={fieldErrorMessages.email}
+                      helperText={fieldErrorMessages.email || '填寫 Email 後系統將自動建立登入帳號，初始密碼為身分證後6碼'}
                     />
                   </Box>
                 </Box>

@@ -10,10 +10,6 @@
 {
     <div class="alert alert-danger alert-dismissible fade show mx-auto mt-3" role="alert" style="max-width:1100px;">
         @ViewBag.Error
-        @if (ViewBag.ErrorDetail != null)
-        {
-            <div class="mt-2"><small>@ViewBag.ErrorDetail</small></div>
-        }
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
@@ -57,7 +53,7 @@
                 </div>
 
                 <div class="emergency-grid">
-                    @foreach (var item in ViewBag.EmergencyNeeds)
+                    @foreach (dynamic item in ViewBag.EmergencyNeeds)
                     {
                         <div class="emergency-card">
                             <div class="emergency-indicator @(item.Priority == "Urgent" ? "urgent" : item.Priority == "High" ? "high" : item.Priority == "Low" ? "low" : "normal")">

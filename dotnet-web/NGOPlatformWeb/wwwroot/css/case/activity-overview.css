@@ -1,105 +1,124 @@
 /* ================================================
-   活動總覽頁 — Warm Editorial 設計
+   活動總覽頁 — Warm Editorial 雜誌感排版
    依賴 design-tokens.css（已由 _Layout 載入）
    ================================================ */
 
-/* ── Hero 區塊 ─────────────────────────────────── */
-.activity-hero {
-    position: relative;
-    height: 300px;
-    background: url('/images/activityback2.png') center center / cover no-repeat;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: #fff;
-    overflow: hidden;
+/* ── 頁面整體背景 ─────────────────────────────── */
+.activity-page {
+    background: var(--bg-white);
+    min-height: 100vh;
 }
 
-.activity-hero__overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(44, 31, 20, 0.55);
+/* ── 編輯排版 Header ─────────────────────────── */
+.activity-editorial-header {
+    background: var(--bg-white);
+    border-bottom: 1px solid var(--border-light);
+    padding: 3.5rem 0 2.5rem;
 }
 
-.activity-hero__content {
-    position: relative;
-    z-index: 1;
-}
-
-.activity-hero__title {
-    font-family: var(--font-display);
-    font-size: 2.6rem;
-    font-weight: 400;
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.02em;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
-.activity-hero__subtitle {
+.activity-eyebrow {
+    display: block;
     font-family: var(--font-body);
-    font-size: 1.1rem;
-    opacity: 0.9;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
 }
 
-/* ── 搜尋 & 篩選控制列 ──────────────────────────── */
-.activity-controls {
-    padding-top: 2.5rem;
-    padding-bottom: 1.5rem;
+.activity-headline {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: 1.05;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.01em;
 }
 
-.activity-controls__inner {
+.activity-tagline {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
+    max-width: 420px;
+}
+
+/* 裝飾線 */
+.activity-header-rule {
+    width: 60px;
+    height: 3px;
+    background: var(--gradient-primary);
+    border: none;
+    margin: 1.5rem 0 0;
+    border-radius: 2px;
+}
+
+/* ── 搜尋 & 篩選工具列 ──────────────────────── */
+.activity-toolbar {
+    background: var(--bg-light);
+    border-bottom: 1px solid var(--border-light);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+}
+
+.activity-toolbar__inner {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .search-box {
-    border-radius: 30px;
-    padding: 0.55rem 1.1rem;
-    border: 1.5px solid var(--border-light);
-    background: var(--bg-white);
-    color: var(--text-primary);
+    flex: 1;
+    min-width: 180px;
+    max-width: 280px;
+    border: none;
+    border-bottom: 1.5px solid var(--border-light);
+    background: transparent;
+    padding: 0.45rem 0.25rem;
     font-family: var(--font-body);
-    font-size: 0.9rem;
-    width: 260px;
-    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color var(--transition-base);
+    border-radius: 0;
 }
 
+.search-box::placeholder { color: var(--text-light); }
+
 .search-box:focus {
-    outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(184, 92, 56, 0.12);
 }
 
 .filter-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
+    gap: 0.35rem;
 }
 
 .btn-filter {
     display: inline-block;
-    border: 1.5px solid var(--primary-color);
+    border: 1px solid var(--border-light);
     background: var(--bg-white);
-    color: var(--primary-color);
-    border-radius: 50px;
-    padding: 0.3rem 0.9rem;
+    color: var(--text-secondary);
+    border-radius: 4px;
+    padding: 0.3rem 0.8rem;
     font-family: var(--font-body);
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background var(--transition-base), color var(--transition-base), box-shadow var(--transition-base);
+    transition: all var(--transition-fast);
     line-height: 1.4;
 }
 
 .btn-filter:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
     background: var(--primary-light);
-    box-shadow: 0 2px 8px rgba(184, 92, 56, 0.15);
 }
 
 .btn-filter.active {
@@ -108,27 +127,105 @@
     border-color: var(--primary-color);
 }
 
-.btn-filter:focus,
-.btn-filter:active {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(184, 92, 56, 0.18);
+.btn-filter:focus { outline: none; }
+
+/* ── NGO 使命語橫幅 ──────────────────────────── */
+.activity-mission-strip {
+    background: var(--bg-light);
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+    padding: 1.1rem 0;
 }
 
-/* ── 活動卡片 ──────────────────────────────────── */
+.activity-mission-text {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0;
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+    max-width: 600px;
+    margin-inline: auto;
+}
+
+/* ── 活動 Grid — Magazine 排版 ──────────────── */
+.activity-grid-section {
+    padding: 2.5rem 0 4rem;
+}
+
+.activity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+/* 第一張卡片 featured — 橫跨2列2行 */
+.activity-item:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.activity-item:first-child .activity-card__image {
+    height: 380px;
+}
+
+.activity-item:first-child .activity-card__image img {
+    filter: brightness(0.96);
+}
+
+.activity-item:first-child .activity-card__body {
+    padding: 1.4rem 1.6rem 1.6rem;
+}
+
+.activity-item:first-child .activity-card__title {
+    font-size: 1.6rem;
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+}
+
+.activity-item:first-child .activity-card__desc {
+    -webkit-line-clamp: 3;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+/* 非首張卡片淡入動畫 */
+.activity-item:not(:first-child) {
+    animation: fadeSlideIn 0.4s ease both;
+}
+
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.activity-item:nth-child(2) { animation-delay: 0.06s; }
+.activity-item:nth-child(3) { animation-delay: 0.12s; }
+.activity-item:nth-child(4) { animation-delay: 0.18s; }
+.activity-item:nth-child(5) { animation-delay: 0.24s; }
+.activity-item:nth-child(6) { animation-delay: 0.30s; }
+
+/* ── 活動卡片 ───────────────────────────────── */
+.activity-item { display: flex; }
+
 .activity-card {
     display: flex;
     flex-direction: column;
     background: var(--bg-white);
-    border-radius: 12px;
-    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
     overflow: hidden;
-    height: 100%;
-    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    width: 100%;
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
 }
 
 .activity-card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--card-shadow-hover);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(184, 92, 56, 0.15);
 }
 
 /* 圖片區塊 */
@@ -138,50 +235,50 @@
     height: 200px;
     overflow: hidden;
     flex-shrink: 0;
+    background: var(--bg-muted);
 }
 
 .activity-card__image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.5s ease;
     display: block;
 }
 
 .activity-card:hover .activity-card__image img {
-    transform: scale(1.04);
+    transform: scale(1.05);
 }
 
 .activity-card__image-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, transparent 55%, rgba(44, 31, 20, 0.28) 100%);
+    background: linear-gradient(to bottom, transparent 50%, rgba(44, 31, 20, 0.22) 100%);
     opacity: 0;
     transition: opacity var(--transition-base);
 }
 
-.activity-card:hover .activity-card__image-overlay {
-    opacity: 1;
-}
+.activity-card:hover .activity-card__image-overlay { opacity: 1; }
 
 /* 類別標籤 */
 .activity-card__category-tag {
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 12px;
+    left: 12px;
     background: var(--primary-color);
     color: #fff;
     font-family: var(--font-body);
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.2rem 0.65rem;
-    border-radius: 50px;
-    letter-spacing: 0.03em;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 /* 卡片內容 */
 .activity-card__body {
-    padding: 16px;
+    padding: 1.1rem 1.25rem 1.25rem;
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -192,7 +289,7 @@
     font-size: 1.05rem;
     font-weight: 400;
     color: var(--text-primary);
-    margin-bottom: 6px;
+    margin: 0 0 0.5rem;
     line-height: 1.3;
 }
 
@@ -200,8 +297,8 @@
     font-family: var(--font-body);
     font-size: 0.82rem;
     color: var(--text-muted);
-    margin-bottom: 10px;
-    line-height: 1.5;
+    margin-bottom: 0.875rem;
+    line-height: 1.55;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -211,46 +308,50 @@
 .activity-card__meta {
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    margin-bottom: 12px;
+    gap: 4px;
+    margin-bottom: 1rem;
 }
 
 .activity-card__meta-item {
     font-family: var(--font-body);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--text-secondary);
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
 }
 
 .activity-card__meta-item i {
     color: var(--primary-color);
-    font-size: 0.75rem;
-    width: 14px;
+    font-size: 0.72rem;
+    width: 13px;
     flex-shrink: 0;
 }
 
 /* 按鈕區 */
 .activity-card__actions {
     margin-top: auto;
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-light);
 }
 
-/* 立即參與按鈕 */
+/* 立即參與 / 取消報名 按鈕 */
 .btn-join {
     display: inline-block;
     background: var(--primary-color);
     border: none;
-    border-radius: 20px;
-    padding: 0.38rem 1rem;
+    border-radius: 6px;
+    padding: 0.4rem 1.1rem;
     font-family: var(--font-body);
     font-size: 0.82rem;
     font-weight: 600;
     color: #fff;
     cursor: pointer;
     text-decoration: none;
-    transition: background var(--transition-base), transform var(--transition-fast), box-shadow var(--transition-base);
+    letter-spacing: 0.02em;
+    transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .btn-join:hover {
@@ -261,94 +362,98 @@
     text-decoration: none;
 }
 
-/* 取消報名按鈕 */
 .btn-join.btn-cancel {
-    background: #c0392b;
-    border: none;
+    background: transparent;
+    border: 1.5px solid rgba(180, 60, 48, 0.5);
+    color: #b43c30;
 }
 
 .btn-join.btn-cancel:hover {
-    background: #a93226;
+    background: rgba(180, 60, 48, 0.08);
+    border-color: #b43c30;
+    color: #b43c30;
+    box-shadow: none;
 }
 
-/* ── Skeleton 骨架卡片 ────────────────────────── */
+/* ── Skeleton 骨架 ───────────────────────────── */
 @keyframes shimmer {
-    0%   { background-position: -400px 0; }
-    100% { background-position:  400px 0; }
+    0%   { background-position: -600px 0; }
+    100% { background-position:  600px 0; }
 }
 
 .skeleton {
-    background: linear-gradient(90deg, #f0ebe4 25%, #e8e0d6 50%, #f0ebe4 75%);
-    background-size: 400px 100%;
-    animation: shimmer 1.4s ease infinite;
+    background: linear-gradient(90deg, #f0ebe4 25%, #e6ddd3 50%, #f0ebe4 75%);
+    background-size: 600px 100%;
+    animation: shimmer 1.5s ease infinite;
     border-radius: 6px;
 }
 
 .skeleton-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
-    padding: 0 0 2rem;
+    padding-bottom: 3rem;
 }
 
 .skeleton-card {
     background: var(--bg-white);
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-light);
 }
 
-.skeleton-img {
-    width: 100%;
-    height: 200px;
-    border-radius: 0;
+.skeleton-img { width: 100%; height: 200px; border-radius: 0; }
+.skeleton-body { padding: 1.1rem 1.25rem; display: flex; flex-direction: column; gap: 10px; }
+.skeleton-title { height: 18px; width: 75%; }
+.skeleton-text { height: 12px; width: 100%; }
+.skeleton-text.short { width: 55%; }
+.skeleton-btn { height: 30px; width: 88px; border-radius: 6px; align-self: flex-end; }
+
+/* ── 空狀態 ─────────────────────────────────── */
+.activity-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
 }
 
-.skeleton-body {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.activity-empty i { font-size: 3.5rem; opacity: 0.35; margin-bottom: 1rem; }
+.activity-empty p { font-size: 0.95rem; margin: 0; }
+
+/* ── 響應式 ─────────────────────────────────── */
+@media (max-width: 992px) {
+    .activity-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .activity-item:first-child {
+        grid-column: span 2;
+        grid-row: span 1;
+    }
+
+    .activity-item:first-child .activity-card__image { height: 260px; }
+    .activity-item:first-child .activity-card__title { font-size: 1.25rem; }
+
+    .skeleton-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-.skeleton-title {
-    height: 18px;
-    width: 80%;
-}
-
-.skeleton-text {
-    height: 12px;
-    width: 100%;
-}
-
-.skeleton-text.short {
-    width: 60%;
-}
-
-.skeleton-btn {
-    height: 30px;
-    width: 90px;
-    border-radius: 20px;
-    align-self: flex-end;
-}
-
-/* ── 響應式 ────────────────────────────────────── */
 @media (max-width: 576px) {
-    .activity-hero__title {
-        font-size: 2rem;
+    .activity-editorial-header { padding: 2rem 0 1.5rem; }
+    .activity-headline { font-size: 2.2rem; }
+
+    .activity-toolbar__inner { flex-direction: column; align-items: stretch; }
+    .search-box { max-width: 100%; }
+
+    .activity-grid {
+        grid-template-columns: 1fr;
     }
 
-    .search-box {
-        width: 100%;
-        max-width: 340px;
+    .activity-item:first-child {
+        grid-column: span 1;
+        grid-row: span 1;
     }
 
-    .activity-controls__inner {
-        flex-direction: column;
-        align-items: stretch;
-    }
+    .activity-item:first-child .activity-card__image { height: 200px; }
+    .activity-item:first-child .activity-card__title { font-size: 1.05rem; }
 
-    .filter-group {
-        justify-content: flex-start;
-    }
+    .skeleton-grid { grid-template-columns: 1fr; }
 }

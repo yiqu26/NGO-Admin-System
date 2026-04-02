@@ -14,12 +14,14 @@ namespace NGOPlatformWeb.Controllers
         private readonly NGODbContext _context;
         private readonly EcpayService _ecpayService;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<PurchaseController> _logger;
 
-        public PurchaseController(NGODbContext context, EcpayService ecpayService, IConfiguration configuration)
+        public PurchaseController(NGODbContext context, EcpayService ecpayService, IConfiguration configuration, ILogger<PurchaseController> logger)
         {
             _context = context;
             _ecpayService = ecpayService;
             _configuration = configuration;
+            _logger = logger;
         }
 
         // 主要捐贈頁面 - 顯示緊急需求和常規物資供民眾認購
@@ -43,20 +45,20 @@ namespace NGOPlatformWeb.Controllers
                         .Take(6) // 限制顯示6個緊急需求項目
                         .ToList();
 
-                    // 轉換為顯示格式，加入 null 值保護
-                    emergencyNeeds = rawEmergencyNeeds.Select(e => new 
-                        {
-                            Id = e.EmergencyNeedId,
-                            CaseId = e.CaseId,
-                            SupplyName = e.SupplyName ?? "未知物資",
-                            NeededQuantity = e.Quantity,
-                            RemainingQuantity = Math.Max(0, e.Quantity - e.CollectedQuantity),
-                            ImageUrl = !string.IsNullOrEmpty(e.ImageUrl) ? e.ImageUrl : GetDefaultEmergencyImage(e.SupplyName ?? ""),
-                            Status = e.Status ?? "未知狀態",
-                            Priority = e.Priority ?? "Normal",
-                            Description = e.Description ?? "無描述"
-                        })
-                        .ToList<object>();
+                    // 轉換為顯示格式，用 ExpandoObject 確保 dynamic 跨 assembly 存取
+                    emergencyNeeds = rawEmergencyNeeds.Select(e => {
+                        dynamic obj = new System.Dynamic.ExpandoObject();
+                        obj.Id = e.EmergencyNeedId;
+                        obj.CaseId = e.CaseId;
+                        obj.SupplyName = e.SupplyName ?? "未知物資";
+                        obj.NeededQuantity = e.Quantity;
+                        obj.RemainingQuantity = Math.Max(0, e.Quantity - e.CollectedQuantity);
+                        obj.ImageUrl = !string.IsNullOrEmpty(e.ImageUrl) ? e.ImageUrl : GetDefaultEmergencyImage(e.SupplyName ?? "");
+                        obj.Status = e.Status ?? "未知狀態";
+                        obj.Priority = e.Priority ?? "Normal";
+                        obj.Description = e.Description ?? "無描述";
+                        return (object)obj;
+                    }).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -83,13 +85,12 @@ namespace NGOPlatformWeb.Controllers
 
                 return View();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // 錯誤處理 - 提供空資料避免頁面崩潰
+                // 提供空資料避免頁面崩潰
                 ViewBag.EmergencyNeeds = new List<object>();
                 ViewBag.RegularSupplies = new List<object>();
-                ViewBag.Error = "頁面載入發生錯誤: " + ex.Message;
-                ViewBag.ErrorDetail = ex.ToString();
+                ViewBag.Error = "頁面載入發生錯誤，請稍後再試";
                 return View();
             }
         }
@@ -787,26 +788,7 @@ namespace NGOPlatformWeb.Controllers
         public IActionResult EcpayCallback()
         {
             var parameters = Request.Form.ToDictionary(x => x.Key, x => x.Value.ToString());
-            
-            // 記錄回調參數供調試
-            var merchantTradeNo = parameters.GetValueOrDefault("MerchantTradeNo");
-            var rtnCode = parameters.GetValueOrDefault("RtnCode");
-            var tradeNo = parameters.GetValueOrDefault("TradeNo");
-            
-            Console.WriteLine($"=== ECPay 回調 ===");
-            Console.WriteLine($"MerchantTradeNo: {merchantTradeNo}");
-            Console.WriteLine($"RtnCode: {rtnCode}");
-            Console.WriteLine($"TradeNo: {tradeNo}");
-            Console.WriteLine($"所有回調參數:");
-            foreach (var param in parameters)
-            {
-                Console.WriteLine($"  {param.Key} = {param.Value}");
-            }
-            
             var success = _ecpayService.ProcessCallback(parameters);
-            
-            Console.WriteLine($"回調處理結果: {(success ? "成功" : "失敗")}");
-            
             return Content(success ? "1|OK" : "0|ERROR");
         }
 
@@ -1022,20 +1004,16 @@ namespace NGOPlatformWeb.Controllers
         [Authorize(Roles = "User")]
         public async Task<IActionResult> RetryPayment(int orderId)
         {
-            // 調試信息
-            Console.WriteLine($"RetryPayment 被調用，OrderId: {orderId}");
-            
+            _logger.LogInformation("RetryPayment 被調用，OrderId: {OrderId}", orderId);
+
             var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine($"UserIdStr: {userIdStr}");
-            
+
             if (!int.TryParse(userIdStr, out int userId))
             {
-                Console.WriteLine("用戶身份驗證失敗");
+                _logger.LogWarning("RetryPayment 用戶身份驗證失敗，OrderId: {OrderId}", orderId);
                 TempData["Error"] = "用戶身份驗證失敗";
                 return RedirectToAction("Login", "Auth");
             }
-            
-            Console.WriteLine($"UserId: {userId}");
 
             // 查找用戶的未付款訂單
             var order = await _context.UserOrders

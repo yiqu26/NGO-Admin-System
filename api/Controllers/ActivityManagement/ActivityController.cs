@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -41,7 +42,7 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 if (!await _context.Database.CanConnectAsync())
                 {
                     _logger.LogError("數據庫連接失敗");
-                    return StatusCode(500, new { message = "數據庫連接失敗", error = "Database connection failed" });
+                    return StatusCode(500, ApiResponse<object>.ErrorResponse("數據庫連接失敗", "Database connection failed"));
                 }
 
                 var activitiesData = await _context.Activities
@@ -71,17 +72,17 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 }).ToList();
 
                 _logger.LogInformation($"成功獲取 {activities.Count} 個活動");
-                return Ok(activities);
+                return Ok(ApiResponse<IEnumerable<ActivityResponse>>.SuccessResponse(activities, "查詢成功"));
             }
             catch (SqlException sqlEx)
             {
                 _logger.LogError(sqlEx, "SQL 錯誤: {ErrorMessage}", sqlEx.Message);
-                return StatusCode(500, new { message = "數據庫查詢失敗", error = sqlEx.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("數據庫查詢失敗", sqlEx.Message));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "獲取活動列表時發生錯誤: {ErrorMessage}", ex.Message);
-                return StatusCode(500, new { message = "獲取活動列表失敗", error = ex.Message, stackTrace = ex.StackTrace });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取活動列表失敗", ex.Message));
             }
         }
 
@@ -102,7 +103,7 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 if (activity == null)
                 {
                     _logger.LogWarning($"找不到活動 ID: {id}");
-                    return NotFound(new { message = "找不到指定的活動" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的活動"));
                 }
 
                 var response = new ActivityResponse
@@ -126,12 +127,12 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 };
 
                 _logger.LogInformation($"成功獲取活動 ID: {id}");
-                return Ok(response);
+                return Ok(ApiResponse<ActivityResponse>.SuccessResponse(response, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"獲取活動 ID: {id} 時發生錯誤");
-                return StatusCode(500, new { message = "獲取活動詳情失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取活動詳情失敗", ex.Message));
             }
         }
 
@@ -149,17 +150,17 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 // 驗證分類
                 if (!ActivityCategory.IsValidCategory(request.Category))
                 {
-                    return BadRequest(new { message = "無效的活動分類" });
+                    return BadRequest(ApiResponse<object>.ErrorResponse("無效的活動分類"));
                 }
 
                 // 從 JWT token 中取得 WorkerId
                 int? workerIdFromToken = JwtHelper.GetWorkerIdFromToken(this);
                 _logger.LogInformation($"從 JWT token 中取得的 WorkerId: {workerIdFromToken}");
-                
+
                 if (!workerIdFromToken.HasValue)
                 {
                     _logger.LogWarning("無法從 JWT token 中取得 WorkerId");
-                    return Unauthorized(new { message = "無法從 token 中取得使用者資訊" });
+                    return Unauthorized(ApiResponse<object>.ErrorResponse("無法從 token 中取得使用者資訊"));
                 }
 
                 // 使用 JWT token 中的 WorkerId，忽略請求中的 WorkerId
@@ -169,11 +170,11 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 // 驗證 WorkerId 是否存在
                 var workerExists = await _context.Workers.AnyAsync(w => w.WorkerId == actualWorkerId);
                 _logger.LogInformation($"WorkerId {actualWorkerId} 是否存在於資料庫: {workerExists}");
-                
+
                 if (!workerExists)
                 {
                     _logger.LogError($"工作人員 ID {actualWorkerId} 不存在於資料庫");
-                    return BadRequest(new { message = $"工作人員 ID {actualWorkerId} 不存在" });
+                    return BadRequest(ApiResponse<object>.ErrorResponse($"工作人員 ID {actualWorkerId} 不存在"));
                 }
 
                 var newActivity = new Activity
@@ -222,12 +223,13 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 };
 
                 _logger.LogInformation($"成功建立活動 ID: {newActivity.ActivityId}");
-                return CreatedAtAction(nameof(GetActivityById), new { id = newActivity.ActivityId }, response);
+                return CreatedAtAction(nameof(GetActivityById), new { id = newActivity.ActivityId },
+                    ApiResponse<ActivityResponse>.SuccessResponse(response, "活動建立成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "建立活動時發生錯誤");
-                return StatusCode(500, new { message = "建立活動失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("建立活動失敗", ex.Message));
             }
         }
 
@@ -245,7 +247,7 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 if (activity == null)
                 {
                     _logger.LogWarning($"找不到活動 ID: {id}");
-                    return NotFound(new { message = "找不到指定的活動" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的活動"));
                 }
 
                 if (request.ActivityName != null) activity.ActivityName = request.ActivityName;
@@ -259,11 +261,11 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 if (request.EndDate.HasValue) activity.EndDate = request.EndDate.Value;
                 if (request.SignupDeadline.HasValue) activity.SignupDeadline = DateOnly.FromDateTime(request.SignupDeadline.Value);
                 if (request.TargetAudience != null) activity.TargetAudience = request.TargetAudience;
-                if (request.Category != null) 
+                if (request.Category != null)
                 {
                     if (!ActivityCategory.IsValidCategory(request.Category))
                     {
-                        return BadRequest(new { message = "無效的活動分類" });
+                        return BadRequest(ApiResponse<object>.ErrorResponse("無效的活動分類"));
                     }
                     activity.Category = request.Category;
                 }
@@ -277,7 +279,7 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"更新活動 ID: {id} 時發生錯誤");
-                return StatusCode(500, new { message = "更新活動失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("更新活動失敗", ex.Message));
             }
         }
 
@@ -295,7 +297,7 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 if (activity == null)
                 {
                     _logger.LogWarning($"找不到活動 ID: {id}");
-                    return NotFound(new { message = "找不到指定的活動" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的活動"));
                 }
 
                 _context.Activities.Remove(activity);
@@ -307,7 +309,7 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"刪除活動 ID: {id} 時發生錯誤");
-                return StatusCode(500, new { message = "刪除活動失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("刪除活動失敗", ex.Message));
             }
         }
 
@@ -384,17 +386,12 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                     WorkerName = a.Worker?.Name
                 }).ToList();
 
-                return Ok(new {
-                    data = activities,
-                    total,
-                    page,
-                    pageSize
-                });
+                return Ok(ApiResponse<object>.SuccessResponse(new { data = activities, total, page, pageSize }, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "分頁查詢活動時發生錯誤");
-                return StatusCode(500, new { message = "分頁查詢活動失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("分頁查詢活動失敗", ex.Message));
             }
         }
 
@@ -573,12 +570,12 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
             {
                 _logger.LogInformation("取得活動分類選項");
                 var categories = ActivityCategory.GetAllCategories();
-                return Ok(categories);
+                return Ok(ApiResponse<List<CategoryOption>>.SuccessResponse(categories, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "取得活動分類選項失敗");
-                return StatusCode(500, new { message = "取得分類選項失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得分類選項失敗", ex.Message));
             }
         }
 

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 
 namespace NGO_WebAPI_Backend.Controllers.AccountManagement
 {
@@ -16,9 +17,6 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
         }
 
         // GET: api/UserOrderDetail/{orderId}
-        /// <summary>
-        /// 取得指定訂單的所有詳情
-        /// </summary>
         [HttpGet("{orderId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetUserOrderDetails(int orderId)
         {
@@ -39,18 +37,15 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                     })
                     .ToListAsync();
 
-                return Ok(orderDetails);
+                return Ok(ApiResponse<IEnumerable<object>>.SuccessResponse(orderDetails, "查詢成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "取得用戶訂單詳情失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得用戶訂單詳情失敗", ex.Message));
             }
         }
 
         // GET: api/UserOrderDetail/detail/{id}
-        /// <summary>
-        /// 取得單一訂單詳情
-        /// </summary>
         [HttpGet("detail/{id}")]
         public async Task<ActionResult<object>> GetUserOrderDetail(int id)
         {
@@ -72,22 +67,17 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                     .FirstOrDefaultAsync();
 
                 if (orderDetail == null)
-                {
-                    return NotFound(new { message = "找不到指定的訂單詳情" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的訂單詳情"));
 
-                return Ok(orderDetail);
+                return Ok(ApiResponse<object>.SuccessResponse(orderDetail, "查詢成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "取得訂單詳情失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得訂單詳情失敗", ex.Message));
             }
         }
 
         // POST: api/UserOrderDetail
-        /// <summary>
-        /// 新增訂單詳情
-        /// </summary>
         [HttpPost]
         public async Task<ActionResult<object>> PostUserOrderDetail([FromBody] CreateUserOrderDetailRequest request)
         {
@@ -104,19 +94,16 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 _context.UserOrderDetails.Add(orderDetail);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetUserOrderDetail), new { id = orderDetail.DetailId }, 
-                    new { message = "訂單詳情新增成功", detailId = orderDetail.DetailId });
+                return CreatedAtAction(nameof(GetUserOrderDetail), new { id = orderDetail.DetailId },
+                    ApiResponse<object>.SuccessResponse(new { detailId = orderDetail.DetailId }, "訂單詳情新增成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "新增訂單詳情失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("新增訂單詳情失敗", ex.Message));
             }
         }
 
         // PUT: api/UserOrderDetail/5
-        /// <summary>
-        /// 更新訂單詳情
-        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUserOrderDetail(int id, [FromBody] UpdateUserOrderDetailRequest request)
         {
@@ -124,9 +111,7 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
             {
                 var orderDetail = await _context.UserOrderDetails.FindAsync(id);
                 if (orderDetail == null)
-                {
-                    return NotFound(new { message = "找不到指定的訂單詳情" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的訂單詳情"));
 
                 orderDetail.SupplyId = request.SupplyId ?? orderDetail.SupplyId;
                 orderDetail.Quantity = request.Quantity ?? orderDetail.Quantity;
@@ -135,18 +120,15 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 _context.Entry(orderDetail).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "訂單詳情更新成功" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "訂單詳情更新成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "更新訂單詳情失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("更新訂單詳情失敗", ex.Message));
             }
         }
 
         // DELETE: api/UserOrderDetail/5
-        /// <summary>
-        /// 刪除訂單詳情
-        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserOrderDetail(int id)
         {
@@ -154,18 +136,16 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
             {
                 var orderDetail = await _context.UserOrderDetails.FindAsync(id);
                 if (orderDetail == null)
-                {
-                    return NotFound(new { message = "找不到指定的訂單詳情" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的訂單詳情"));
 
                 _context.UserOrderDetails.Remove(orderDetail);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "訂單詳情刪除成功" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "訂單詳情刪除成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "刪除訂單詳情失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("刪除訂單詳情失敗", ex.Message));
             }
         }
     }

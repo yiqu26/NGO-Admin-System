@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGOPlatformWeb.Models.Entity;
@@ -19,15 +20,13 @@ namespace NGOPlatformWeb.Controllers
         private readonly EmailService _emailService;
         private readonly PasswordService _passwordService;
         private readonly AchievementService _achievementService;
-        private readonly PasswordMigrationService _passwordMigrationService;
 
-        public AuthController(NGODbContext context, EmailService emailService, PasswordService passwordService, AchievementService achievementService, PasswordMigrationService passwordMigrationService)
+        public AuthController(NGODbContext context, EmailService emailService, PasswordService passwordService, AchievementService achievementService)
         {
             _context = context;
             _emailService = emailService;
             _passwordService = passwordService;
             _achievementService = achievementService;
-            _passwordMigrationService = passwordMigrationService;
         }
 
         // GET: /Auth/Login
@@ -392,7 +391,7 @@ namespace NGOPlatformWeb.Controllers
             return await ExternalLoginCallback();
         }
 
-        // GET: /Auth/ExternalLoginCallback
+        [HttpGet]
         public async Task<IActionResult> ExternalLoginCallback()
         {
             try
@@ -507,37 +506,15 @@ namespace NGOPlatformWeb.Controllers
             }
         }
 
-        // 密碼驗證輔助方法 - 支援 BCrypt 和明文密碼
+        // 密碼驗證輔助方法
         private bool ValidatePassword(string inputPassword, string storedPassword)
         {
             // Google OAuth 用戶不能用傳統方式登入
             if (storedPassword == "GOOGLE_OAUTH_USER")
-            {
                 return false;
-            }
-            
-            // BCrypt 加密密碼驗證
-            if (storedPassword.StartsWith("$2a$"))
-            {
-                return _passwordService.VerifyPassword(inputPassword, storedPassword);
-            }
-            // 向下兼容明文密碼
-            return inputPassword == storedPassword;
-        }
 
-        // 管理端點：執行Case密碼遷移
-        [HttpPost]
-        public async Task<IActionResult> MigrateCasePasswords()
-        {
-            try
-            {
-                await _passwordMigrationService.MigrateCasePasswordsAsync();
-                return Json(new { success = true, message = "Case密碼遷移完成" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = $"密碼遷移失敗: {ex.Message}" });
-            }
+            // BCrypt 加密密碼驗證（$2a$、$2b$、$2y$ 均為合法 BCrypt 格式）
+            return _passwordService.VerifyPassword(inputPassword, storedPassword);
         }
 
     }

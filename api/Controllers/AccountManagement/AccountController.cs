@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -73,11 +74,11 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 _logger.LogInformation("Getting all accounts");
 
                 var workers = await _context.Workers.ToListAsync();
-                
+
                 if (!workers.Any())
                 {
                     _logger.LogInformation("No accounts found");
-                    return Ok(new List<AccountDto>());
+                    return Ok(ApiResponse<IEnumerable<AccountDto>>.SuccessResponse(new List<AccountDto>(), "查詢成功"));
                 }
 
                 var accounts = workers.Select(w => new AccountDto
@@ -86,20 +87,20 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                     Name = w.Name ?? string.Empty,
                     Email = w.Email ?? string.Empty,
                     Role = w.Role ?? "staff",
-                    LoginSource = "database", // Default since Worker table doesn't have this field yet
-                    Status = "active", // Default since Worker table doesn't have this field yet
-                    CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"), // Default since Worker table doesn't have this field yet
+                    LoginSource = "database",
+                    Status = "active",
+                    CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
                     WorkerId = w.WorkerId,
-                    Phone = null // Default since Worker table doesn't have this field yet
+                    Phone = null
                 }).ToList();
 
                 _logger.LogInformation($"Retrieved {accounts.Count} accounts");
-                return Ok(accounts);
+                return Ok(ApiResponse<IEnumerable<AccountDto>>.SuccessResponse(accounts, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving accounts");
-                return StatusCode(500, new { message = "取得帳號列表時發生錯誤", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得帳號列表時發生錯誤", ex.Message));
             }
         }
 
@@ -114,7 +115,7 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 if (worker == null)
                 {
                     _logger.LogWarning($"Account with ID {id} not found");
-                    return NotFound(new { message = $"找不到ID為 {id} 的帳號" });
+                    return NotFound(ApiResponse<object>.ErrorResponse($"找不到ID為 {id} 的帳號"));
                 }
 
                 var account = new AccountDto
@@ -130,12 +131,12 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                     Phone = null
                 };
 
-                return Ok(account);
+                return Ok(ApiResponse<AccountDto>.SuccessResponse(account, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error retrieving account {id}");
-                return StatusCode(500, new { message = "取得帳號時發生錯誤", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得帳號時發生錯誤", ex.Message));
             }
         }
 
@@ -147,33 +148,21 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
             {
                 _logger.LogInformation($"Creating new account for email: {request.Email}");
 
-                // 驗證必要欄位
                 if (string.IsNullOrWhiteSpace(request.Name))
-                {
-                    return BadRequest(new { message = "姓名為必填欄位" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("姓名為必填欄位"));
 
                 if (string.IsNullOrWhiteSpace(request.Email))
-                {
-                    return BadRequest(new { message = "電子信箱為必填欄位" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("電子信箱為必填欄位"));
 
-                // 檢查電子信箱是否已存在
                 var existingWorker = await _context.Workers
                     .FirstOrDefaultAsync(w => w.Email == request.Email);
 
                 if (existingWorker != null)
-                {
-                    return Conflict(new { message = "此電子信箱已被使用" });
-                }
+                    return Conflict(ApiResponse<object>.ErrorResponse("此電子信箱已被使用"));
 
-                // 本地帳戶需要密碼
                 if (request.LoginSource == "database" && string.IsNullOrWhiteSpace(request.Password))
-                {
-                    return BadRequest(new { message = "本地帳戶需要設定密碼" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("本地帳戶需要設定密碼"));
 
-                // 創建新的Worker
                 var worker = new Worker
                 {
                     Name = request.Name,
@@ -199,12 +188,13 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 };
 
                 _logger.LogInformation($"Successfully created account with ID: {worker.WorkerId}");
-                return CreatedAtAction(nameof(GetAccount), new { id = worker.WorkerId }, account);
+                return CreatedAtAction(nameof(GetAccount), new { id = worker.WorkerId },
+                    ApiResponse<AccountDto>.SuccessResponse(account, "帳號建立成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating account");
-                return StatusCode(500, new { message = "建立帳號時發生錯誤", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("建立帳號時發生錯誤", ex.Message));
             }
         }
 
@@ -218,37 +208,24 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
 
                 var worker = await _context.Workers.FindAsync(id);
                 if (worker == null)
-                {
-                    return NotFound(new { message = $"找不到ID為 {id} 的帳號" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse($"找不到ID為 {id} 的帳號"));
 
-                // 更新允許修改的欄位
                 if (!string.IsNullOrWhiteSpace(request.Name))
-                {
                     worker.Name = request.Name;
-                }
 
                 if (!string.IsNullOrWhiteSpace(request.Email))
                 {
-                    // 檢查新的電子信箱是否已被其他帳號使用
                     var existingWorker = await _context.Workers
                         .FirstOrDefaultAsync(w => w.Email == request.Email && w.WorkerId != id);
 
                     if (existingWorker != null)
-                    {
-                        return Conflict(new { message = "此電子信箱已被其他帳號使用" });
-                    }
+                        return Conflict(ApiResponse<object>.ErrorResponse("此電子信箱已被其他帳號使用"));
 
                     worker.Email = request.Email;
                 }
 
                 if (!string.IsNullOrWhiteSpace(request.Role))
-                {
                     worker.Role = request.Role;
-                }
-
-                // 注意：Status, Phone, Department 欄位目前在Worker模型中不存在
-                // 這些會在前端顯示，但不會實際更新到資料庫
 
                 await _context.SaveChangesAsync();
 
@@ -266,12 +243,12 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 };
 
                 _logger.LogInformation($"Successfully updated account {id}");
-                return Ok(account);
+                return Ok(ApiResponse<AccountDto>.SuccessResponse(account, "帳號更新成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error updating account {id}");
-                return StatusCode(500, new { message = "更新帳號時發生錯誤", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("更新帳號時發生錯誤", ex.Message));
             }
         }
 
@@ -285,19 +262,14 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
 
                 var worker = await _context.Workers.FindAsync(id);
                 if (worker == null)
-                {
-                    return NotFound(new { message = $"找不到ID為 {id} 的帳號" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse($"找不到ID為 {id} 的帳號"));
 
-                // 檢查是否有相關聯的資料
                 var hasActivities = await _context.Activities.AnyAsync(a => a.WorkerId == id);
                 var hasCases = await _context.Cases.AnyAsync(c => c.WorkerId == id);
                 var hasSchedules = await _context.Schedules.AnyAsync(s => s.WorkerId == id);
 
                 if (hasActivities || hasCases || hasSchedules)
-                {
-                    return BadRequest(new { message = "此帳號仍有相關聯的資料，無法刪除。請先處理相關的活動、個案或排程記錄。" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("此帳號仍有相關聯的資料，無法刪除。請先處理相關的活動、個案或排程記錄。"));
 
                 _context.Workers.Remove(worker);
                 await _context.SaveChangesAsync();
@@ -308,7 +280,7 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error deleting account {id}");
-                return StatusCode(500, new { message = "刪除帳號時發生錯誤", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("刪除帳號時發生錯誤", ex.Message));
             }
         }
 
@@ -322,11 +294,8 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
 
                 var worker = await _context.Workers.FindAsync(id);
                 if (worker == null)
-                {
-                    return NotFound(new { message = $"找不到ID為 {id} 的帳號" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse($"找不到ID為 {id} 的帳號"));
 
-                // 由於Worker模型目前沒有Status欄位，這裡只返回成功訊息
                 var account = new AccountDto
                 {
                     Id = worker.WorkerId,
@@ -340,12 +309,12 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 };
 
                 _logger.LogInformation($"Successfully activated account {id}");
-                return Ok(account);
+                return Ok(ApiResponse<AccountDto>.SuccessResponse(account, "帳號已啟用"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error activating account {id}");
-                return StatusCode(500, new { message = "啟用帳號時發生錯誤", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("啟用帳號時發生錯誤", ex.Message));
             }
         }
 
@@ -359,9 +328,7 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
 
                 var worker = await _context.Workers.FindAsync(id);
                 if (worker == null)
-                {
-                    return NotFound(new { message = $"找不到ID為 {id} 的帳號" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse($"找不到ID為 {id} 的帳號"));
 
                 var account = new AccountDto
                 {
@@ -376,12 +343,12 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 };
 
                 _logger.LogInformation($"Successfully deactivated account {id}");
-                return Ok(account);
+                return Ok(ApiResponse<AccountDto>.SuccessResponse(account, "帳號已停用"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error deactivating account {id}");
-                return StatusCode(500, new { message = "停用帳號時發生錯誤", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("停用帳號時發生錯誤", ex.Message));
             }
         }
 
@@ -395,30 +362,24 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
 
                 var worker = await _context.Workers.FindAsync(id);
                 if (worker == null)
-                {
-                    return NotFound(new { message = $"找不到ID為 {id} 的帳號" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse($"找不到ID為 {id} 的帳號"));
 
                 if (string.IsNullOrWhiteSpace(request.NewPassword))
-                {
-                    return BadRequest(new { message = "新密碼不能為空" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("新密碼不能為空"));
 
                 if (request.NewPassword.Length < 6)
-                {
-                    return BadRequest(new { message = "密碼長度至少需要6個字符" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("密碼長度至少需要6個字符"));
 
                 worker.Password = request.NewPassword;
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation($"Successfully reset password for account {id}");
-                return Ok(new { message = "密碼重置成功" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "密碼重置成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error resetting password for account {id}");
-                return StatusCode(500, new { message = "重置密碼時發生錯誤", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("重置密碼時發生錯誤", ex.Message));
             }
         }
 
@@ -429,17 +390,15 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
             try
             {
                 if (string.IsNullOrWhiteSpace(email))
-                {
-                    return BadRequest(new { message = "電子信箱參數為必填" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("電子信箱參數為必填"));
 
                 var exists = await _context.Workers.AnyAsync(w => w.Email == email);
-                return Ok(new CheckEmailResponse { Exists = exists });
+                return Ok(ApiResponse<CheckEmailResponse>.SuccessResponse(new CheckEmailResponse { Exists = exists }, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error checking email existence");
-                return StatusCode(500, new { message = "檢查電子信箱時發生錯誤", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("檢查電子信箱時發生錯誤", ex.Message));
             }
         }
 
@@ -454,21 +413,21 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 var stats = new AccountStatsDto
                 {
                     TotalAccounts = workers.Count,
-                    ActiveAccounts = workers.Count, // 目前所有帳號都視為啟用
+                    ActiveAccounts = workers.Count,
                     InactiveAccounts = 0,
                     AdminCount = workers.Count(w => w.Role == "admin"),
                     SupervisorCount = workers.Count(w => w.Role == "supervisor"),
                     StaffCount = workers.Count(w => w.Role == "staff"),
-                    AzureAccounts = 0, // 目前沒有Azure帳號追踪
+                    AzureAccounts = 0,
                     LocalAccounts = workers.Count
                 };
 
-                return Ok(stats);
+                return Ok(ApiResponse<AccountStatsDto>.SuccessResponse(stats, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting account statistics");
-                return StatusCode(500, new { message = "取得帳號統計時發生錯誤", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得帳號統計時發生錯誤", ex.Message));
             }
         }
 

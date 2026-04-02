@@ -7,13 +7,11 @@ using NGOPlatformWeb.Models.ViewModels.Profile;
 using NGOPlatformWeb.Models.ViewModels.ActivityRegistrations;
 using NGOPlatformWeb.Services;
 using System.Security.Claims;
-// 個案身份操作功能，例如查看適用活動或可領取物資
-
 namespace NGOPlatformWeb.Controllers
 {
+    [Authorize(Roles = "Case")]
     public class CaseController : Controller
     {
-        //目的：讓 Controller 能透過 DbContext 從資料庫撈資料，給 View 顯示。
         private readonly NGODbContext _context;
         private readonly PasswordService _passwordService;
         private readonly ImageUploadService _imageUploadService;
@@ -37,11 +35,6 @@ namespace NGOPlatformWeb.Controllers
             }
 
             var supplies = query.ToList();
-
-            // 傳遞使用者身份資訊給 View
-            ViewBag.IsAuthenticated = User.Identity?.IsAuthenticated ?? false;
-            ViewBag.UserRole = User.FindFirstValue(ClaimTypes.Role);
-
             return View(supplies);
         }
 
@@ -81,8 +74,9 @@ namespace NGOPlatformWeb.Controllers
             }
 
             int caseId = int.Parse(caseIdClaim.Value);
+            var caseName = _context.Cases.Where(c => c.CaseId == caseId).Select(c => c.Name).FirstOrDefault() ?? "個案";
 
-            // 🔹 撈出未領取
+            // 待領取紀錄
             var unreceived = _context.RegularSuppliesNeeds
                 .Include(r => r.Supply)
                     .ThenInclude(s => s!.SupplyCategory)
@@ -100,7 +94,7 @@ namespace NGOPlatformWeb.Controllers
                 .OrderByDescending(r => r.ApplyDate)
                 .ToList();
 
-            // 🔹 撈出已領取 + 訪談物資
+            // 已領取 + 訪談物資
             var received = _context.RegularSuppliesNeeds
                 .Include(r => r.Supply)
                     .ThenInclude(s => s!.SupplyCategory)
@@ -132,7 +126,7 @@ namespace NGOPlatformWeb.Controllers
                 .OrderByDescending(s => s.PickupDate)
                 .ToList();
 
-            // 🔹 合併全部，用來統計，但排除掉「訪談物資」
+            // 統計用（排除訪談物資）
             var allSupplies = unreceived
                 .Concat(received.Where(s => s.Status != "訪談物資"))
                 .ToList();
@@ -148,12 +142,11 @@ namespace NGOPlatformWeb.Controllers
                 })
                 .ToList();
 
-            // 🔹 填入 ViewModel
             var viewModel = new SupplyRecordViewModel
             {
+                CaseName = caseName,
                 UnreceivedSupplies = unreceived,
                 ReceivedSupplies = received,
-                // 如果有 EmergencySupplies 要另外撈的話可以加
                 CategoryStats = categoryStats
             };
 
@@ -162,7 +155,6 @@ namespace NGOPlatformWeb.Controllers
 
 
         [HttpGet]
-        // 個案活動清單頁面 - 顯示已報名的活動（使用rich UI pattern）
         public async Task<IActionResult> CaseActivityList()
         {
             // 取得當前登入個案的 Email

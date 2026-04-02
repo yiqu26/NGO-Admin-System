@@ -282,34 +282,6 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
         }
 
         /// <summary>
-        /// 取得所有工作人員列表
-        /// </summary>
-        /// <returns>工作人員列表</returns>
-        [HttpGet("workers")]
-        public async Task<ActionResult<IEnumerable<WorkerInfo>>> GetWorkers()
-        {
-            try
-            {
-                var workers = await _context.Workers
-                    .Select(w => new WorkerInfo
-                    {
-                        WorkerId = w.WorkerId,
-                        Email = w.Email ?? string.Empty,
-                        Name = w.Name ?? string.Empty,
-                        Role = w.Role ?? string.Empty
-                    })
-                    .ToListAsync();
-
-                return Ok(workers);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "取得工作人員列表時發生錯誤");
-                return StatusCode(500, "取得工作人員列表時發生錯誤");
-            }
-        }
-
-        /// <summary>
         /// 生成 JWT Token
         /// </summary>
         /// <param name="worker">工作人員資訊</param>

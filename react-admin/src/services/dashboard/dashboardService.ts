@@ -55,8 +55,8 @@ export const dashboardService = {
   // 獲取Dashboard統計數據
   getStats: async (): Promise<DashboardStats> => {
     try {
-      const response = await api.get<DashboardStats>('/Dashboard/stats');
-      return response;
+      const response = await api.get<{ data: DashboardStats }>('/Dashboard/stats');
+      return response.data;
     } catch (error: any) {
       // 對於統計數據，404/204 表示沒有數據，返回默認值
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -77,8 +77,8 @@ export const dashboardService = {
   // 獲取性別分佈數據
   getGenderDistribution: async (): Promise<GenderDistribution[]> => {
     try {
-      const response = await api.get<GenderDistribution[]>('/Dashboard/gender-distribution');
-      return response || [];
+      const response = await api.get<{ data: GenderDistribution[] }>('/Dashboard/gender-distribution');
+      return response.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -95,8 +95,8 @@ export const dashboardService = {
   // 獲取個案城市分佈數據
   getCaseDistribution: async (): Promise<CaseDistribution[]> => {
     try {
-      const response = await api.get<CaseDistribution[]>('/Dashboard/case-distribution');
-      return response || [];
+      const response = await api.get<{ data: CaseDistribution[] }>('/Dashboard/case-distribution');
+      return response.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -113,8 +113,8 @@ export const dashboardService = {
   // 獲取困難類型分析數據
   getDifficultyAnalysis: async (): Promise<DifficultyAnalysis[]> => {
     try {
-      const response = await api.get<DifficultyAnalysis[]>('/Dashboard/difficulty-analysis');
-      return response || [];
+      const response = await api.get<{ data: DifficultyAnalysis[] }>('/Dashboard/difficulty-analysis');
+      return response.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -131,8 +131,8 @@ export const dashboardService = {
   // 獲取用戶近期活動數據
   getRecentActivities: async (workerId: number): Promise<RecentActivity[]> => {
     try {
-      const response = await api.get<RecentActivity[]>(`/Dashboard/recent-activities/${workerId}`);
-      return response || [];
+      const response = await api.get<{ data: RecentActivity[] }>(`/Dashboard/recent-activities/${workerId}`);
+      return response.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -149,8 +149,8 @@ export const dashboardService = {
   // 獲取個案縣市分佈數據 (用於地圖顯示)
   getCountyDistribution: async (): Promise<CountyDistribution[]> => {
     try {
-      const response = await api.get<CountyDistribution[]>('/Dashboard/county-distribution');
-      return response;
+      const response = await api.get<{ data: CountyDistribution[] }>('/Dashboard/county-distribution');
+      return response.data;
     } catch (error) {
       console.error('獲取縣市分佈數據失敗:', error);
       throw error;

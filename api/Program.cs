@@ -17,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 // 了解更多關於配置 OpenAPI 的資訊：https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddHttpContextAccessor();
+
 // 添加控制器支援
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -132,6 +134,29 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+// Global Exception Handler — 統一攔截未處理例外，回傳一致 JSON，避免 stack trace 外洩
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        var exceptionFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        if (exceptionFeature != null)
+        {
+            logger.LogError(exceptionFeature.Error, "未處理的例外：{Path}", context.Request.Path);
+        }
+
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new
+        {
+            success = false,
+            message = "伺服器發生錯誤，請稍後再試",
+            traceId = context.TraceIdentifier
+        });
+    });
+});
 
 // 啟用 CORS
 app.UseCors("AllowAll");

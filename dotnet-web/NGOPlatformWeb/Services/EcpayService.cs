@@ -1,9 +1,7 @@
 using NGOPlatformWeb.Models.Entity;
-using System.Text.Json;
 using System.Text;
-using System.Security.Cryptography;
+using System.Text.Json;
 using System.Net;
-using System.Web;
 using Microsoft.EntityFrameworkCore;
 
 namespace NGOPlatformWeb.Services
@@ -12,16 +10,18 @@ namespace NGOPlatformWeb.Services
     {
         private readonly NGODbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<EcpayService> _logger;
 
         private readonly string _merchantId;
         private readonly string _hashKey;
         private readonly string _hashIv;
         private readonly string _paymentUrl;
 
-        public EcpayService(NGODbContext context, IConfiguration configuration)
+        public EcpayService(NGODbContext context, IConfiguration configuration, ILogger<EcpayService> logger)
         {
             _context = context;
             _configuration = configuration;
+            _logger = logger;
 
             // 從 appsettings.json 讀取，方便日後切換測試/正式環境不需修改程式碼
             _merchantId = configuration["ECPay:MerchantId"] ?? throw new InvalidOperationException("ECPay:MerchantId 未設定");
@@ -176,108 +176,18 @@ namespace NGOPlatformWeb.Services
             }
             catch (Exception ex)
             {
-                // 記錄錯誤以供監控和調試
-                Console.WriteLine($"ECPay 回調處理錯誤: {ex.Message}");
+                _logger.LogError(ex, "ECPay 回調處理錯誤");
                 return false;
             }
         }
 
-        // 付款創建時的 CheckMacValue 計算（保持原有邏輯不變）
+        // 付款創建時的 CheckMacValue 計算 — 委派給可測試的靜態 helper
         private string GenerateCheckMacValue(Dictionary<string, string> parameters, string hashKey, string hashIv)
-        {
-            try
-            {
-                // 1. 複製參數並轉換為字串
-                var stringParams = new Dictionary<string, string>();
-                foreach (var param in parameters)
-                {
-                    if (param.Key != "CheckMacValue" && !string.IsNullOrEmpty(param.Value))
-                    {
-                        stringParams[param.Key] = param.Value.ToString();
-                    }
-                }
-                
-                // 2. 排序參數 (嚴格按照字典順序)
-                var sortedParams = stringParams.OrderBy(x => x.Key).ToList();
-                
-                // 3. 建立查詢字串
-                var queryString = string.Join("&", sortedParams.Select(p => $"{p.Key}={p.Value}"));
-                
-                // 4. 組合最終字串
-                var checkString = $"HashKey={hashKey}&{queryString}&HashIV={hashIv}";
-                
-                // 5. URL 編碼 (統一使用 HttpUtility.UrlEncode)
-                var encoded = System.Web.HttpUtility.UrlEncode(checkString, Encoding.UTF8);
-                
-                // 6. 轉小寫
-                encoded = encoded.ToLower();
-                
-                // 7. 字符替換 (按照 ECPay 規範)
-                encoded = encoded.Replace("%21", "!")
-                               .Replace("%2a", "*")
-                               .Replace("%28", "(") 
-                               .Replace("%29", ")")
-                               .Replace("%2d", "-")
-                               .Replace("%5f", "_")
-                               .Replace("%2e", ".");
-                
-                // 8. SHA256 加密
-                using (var sha256 = SHA256.Create())
-                {
-                    var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(encoded));
-                    var result = BitConverter.ToString(hashBytes).Replace("-", "").ToUpper();
-                    return result;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"CheckMacValue 計算錯誤: {ex.Message}", ex);
-            }
-        }
+            => EcpayCheckMacHelper.Compute(parameters, hashKey, hashIv, excludeEmpty: true);
 
-        // 專門處理 ECPay 回調的 CheckMacValue 驗證
+        // 回調驗證的 CheckMacValue 計算（保留空值欄位）
         private string GenerateCallbackCheckMacValue(Dictionary<string, string> parameters, string hashKey, string hashIv)
-        {
-            try
-            {
-                // 1. 移除 CheckMacValue 參數，但保留所有其他參數（包括空值）
-                var filteredParams = parameters
-                    .Where(kv => kv.Key != "CheckMacValue")
-                    .OrderBy(kv => kv.Key)
-                    .ToList();
-                
-                // 2. 組合查詢字串（保留空值欄位）
-                var queryString = string.Join("&", filteredParams.Select(kv => $"{kv.Key}={kv.Value}"));
-                
-                // 3. 組合最終字串
-                var checkString = $"HashKey={hashKey}&{queryString}&HashIV={hashIv}";
-                
-                // 4. URL 編碼
-                var encoded = System.Web.HttpUtility.UrlEncode(checkString, Encoding.UTF8).ToLower();
-                
-                // 5. 字符替換（按照 ECPay 規範）
-                encoded = encoded
-                    .Replace("%21", "!")
-                    .Replace("%28", "(")
-                    .Replace("%29", ")")
-                    .Replace("%2a", "*")
-                    .Replace("%2d", "-")
-                    .Replace("%2e", ".")
-                    .Replace("%5f", "_");
-                
-                // 6. SHA256 加密
-                using (var sha256 = SHA256.Create())
-                {
-                    var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(encoded));
-                    var result = BitConverter.ToString(hashBytes).Replace("-", "").ToUpper();
-                    return result;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"回調 CheckMacValue 計算錯誤: {ex.Message}", ex);
-            }
-        }
+            => EcpayCheckMacHelper.Compute(parameters, hashKey, hashIv, excludeEmpty: false);
 
 
         private string GeneratePaymentForm(Dictionary<string, string> parameters)

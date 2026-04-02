@@ -166,7 +166,7 @@
 }
 
 .purchase-amount {
-    color: #28a745;
+    color: var(--primary-color);
     font-weight: 600;
     font-size: 0.9rem;
 }
@@ -184,76 +184,80 @@
 
 /* 活動總覽特殊樣式 */
 .activity-overview .stat-number {
-    color: #28a745;
+    color: var(--primary-color);
 }
 
 .activity-overview .overview-header h5 {
-    color: #28a745;
+    color: var(--primary-color);
 }
 
 .activity-overview .view-all-btn {
-    color: #28a745;
+    color: var(--primary-color);
 }
 
 .activity-overview .view-all-btn:hover {
-    color: #1e7e34;
+    color: var(--primary-dark);
 }
 
 /* 認購總覽特殊樣式 */
 .purchase-overview .stat-number {
-    color: #6f42c1;
+    color: var(--primary-color);
 }
 
 .purchase-overview .overview-header h5 {
-    color: #6f42c1;
+    color: var(--primary-color);
 }
 
 .purchase-overview .view-all-btn {
-    color: #6f42c1;
+    color: var(--primary-color);
 }
 
 .purchase-overview .view-all-btn:hover {
-    color: #5a2d91;
+    color: var(--primary-dark);
 }
 
-/* Case主題的活動總覽 */
-.case-theme .activity-overview .stat-number {
-    color: #20c997;
+/* Case 主題的活動總覽（sage） */
+.case-page .activity-overview .stat-number,
+.case-page .case-activity-overview .stat-number {
+    color: var(--secondary-color);
 }
 
-.case-theme .activity-overview .overview-header h5 {
-    color: #20c997;
+.case-page .activity-overview .overview-header h5,
+.case-page .case-activity-overview .overview-header h5 {
+    color: var(--secondary-color);
 }
 
-.case-theme .activity-overview .view-all-btn {
-    color: #20c997;
+.case-page .activity-overview .view-all-btn,
+.case-page .case-activity-overview .view-all-btn {
+    color: var(--secondary-color);
 }
 
-.case-theme .activity-overview .view-all-btn:hover {
-    color: #17a2b8;
+.case-page .activity-overview .view-all-btn:hover,
+.case-page .case-activity-overview .view-all-btn:hover {
+    color: var(--secondary-dark);
 }
 
-/* Case主題的認購總覽 */
-.case-theme .purchase-overview .stat-number {
-    color: #17a2b8;
+/* Case 主題的物資申請總覽（sage） */
+.case-page .case-application-overview .stat-number {
+    color: var(--secondary-color);
 }
 
-.case-theme .purchase-overview .overview-header h5 {
-    color: #17a2b8;
+.case-page .case-application-overview .overview-header h5 {
+    color: var(--secondary-color);
 }
 
-.case-theme .purchase-overview .view-all-btn {
-    color: #17a2b8;
+.case-page .case-application-overview .view-all-btn {
+    color: var(--secondary-color);
 }
 
-.case-theme .purchase-overview .view-all-btn:hover {
-    color: #138496;
+.case-page .case-application-overview .view-all-btn:hover {
+    color: var(--secondary-dark);
 }
 
-/* Case活動項目特殊樣式 */
+/* Case 活動項目狀態標籤 */
 .case-activity-item .activity-status.status-active {
-    background: #d1ecf1;
-    color: #0c5460;
+    background: rgba(92, 122, 94, 0.1);
+    color: var(--secondary-color);
 }
 
 /* 響應式調整 */

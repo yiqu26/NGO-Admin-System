@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 
 namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
 {
@@ -38,13 +38,12 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                     .ToListAsync();
 
                 _logger.LogInformation($"成功查詢到 {registrations.Count} 筆個案報名資料");
-                
-                return Ok(registrations);
+                return Ok(ApiResponse<IEnumerable<object>>.SuccessResponse(registrations, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "查詢個案報名資料時發生錯誤");
-                return StatusCode(500, new { message = "查詢個案報名資料失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("查詢個案報名資料失敗", ex.Message));
             }
         }
 
@@ -71,13 +70,12 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                     .ToListAsync();
 
                 _logger.LogInformation($"成功查詢到 {registrations.Count} 筆民眾報名資料");
-                
-                return Ok(registrations);
+                return Ok(ApiResponse<IEnumerable<object>>.SuccessResponse(registrations, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "查詢民眾報名資料時發生錯誤");
-                return StatusCode(500, new { message = "查詢民眾報名資料失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("查詢民眾報名資料失敗", ex.Message));
             }
         }
 
@@ -93,45 +91,41 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 if (reg == null)
                 {
                     _logger.LogWarning($"找不到個案報名 ID: {id}");
-                    return NotFound(new { message = "找不到指定的個案報名" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的個案報名"));
                 }
 
                 var activity = await _context.Activities.FindAsync(reg.ActivityId);
                 if (activity == null)
                 {
                     _logger.LogWarning($"找不到活動 ID: {reg.ActivityId}");
-                    return NotFound(new { message = "找不到相關的活動" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到相關的活動"));
                 }
 
                 string oldStatus = reg.Status ?? string.Empty;
 
-                // 步驟1：更新報名狀態
                 reg.Status = req.Status;
                 await _context.SaveChangesAsync();
 
-                // 步驟2：分別更新活動參與人數，避免觸發器衝突
                 if (oldStatus == "Approved" && req.Status == "cancelled")
                 {
-                    // 從批准改為取消，減少參與人數
                     await _context.Database.ExecuteSqlRawAsync(
                         "UPDATE Activities SET CurrentParticipants = CASE WHEN CurrentParticipants >= 1 THEN CurrentParticipants - 1 ELSE 0 END WHERE ActivityId = {0}",
                         reg.ActivityId ?? 0);
                 }
                 else if (oldStatus != "Approved" && req.Status == "Approved")
                 {
-                    // 從未批准改為批准，增加參與人數
                     await _context.Database.ExecuteSqlRawAsync(
                         "UPDATE Activities SET CurrentParticipants = ISNULL(CurrentParticipants, 0) + 1 WHERE ActivityId = {0}",
                         reg.ActivityId ?? 0);
                 }
 
                 _logger.LogInformation($"成功更新個案報名狀態，ID: {id}");
-                return Ok(new { message = "狀態更新成功" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "狀態更新成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"更新個案報名狀態時發生錯誤，ID: {id}");
-                return StatusCode(500, new { message = "更新狀態失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("更新狀態失敗", ex.Message));
             }
         }
 
@@ -147,54 +141,48 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
                 if (reg == null)
                 {
                     _logger.LogWarning($"找不到民眾報名 ID: {id}");
-                    return NotFound(new { message = "找不到指定的民眾報名" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的民眾報名"));
                 }
 
                 var activity = await _context.Activities.FindAsync(reg.ActivityId);
                 if (activity == null)
                 {
                     _logger.LogWarning($"找不到活動 ID: {reg.ActivityId}");
-                    return NotFound(new { message = "找不到相關的活動" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到相關的活動"));
                 }
 
                 int delta = 1 + (reg.NumberOfCompanions ?? 0);
                 string oldStatus = reg.Status ?? string.Empty;
 
-                // 步驟1：更新報名狀態
                 reg.Status = req.Status;
                 await _context.SaveChangesAsync();
 
-                // 步驟2：分別更新活動參與人數，避免觸發器衝突
                 if (oldStatus == "Approved" && req.Status == "cancelled")
                 {
-                    // 從批准改為取消，減少參與人數
                     await _context.Database.ExecuteSqlRawAsync(
                         "UPDATE Activities SET CurrentParticipants = CASE WHEN CurrentParticipants >= {0} THEN CurrentParticipants - {0} ELSE 0 END WHERE ActivityId = {1}",
                         delta, reg.ActivityId ?? 0);
                 }
                 else if (oldStatus != "Approved" && req.Status == "Approved")
                 {
-                    // 從未批准改為批准，增加參與人數
                     await _context.Database.ExecuteSqlRawAsync(
                         "UPDATE Activities SET CurrentParticipants = ISNULL(CurrentParticipants, 0) + {0} WHERE ActivityId = {1}",
                         delta, reg.ActivityId ?? 0);
                 }
 
                 _logger.LogInformation($"成功更新民眾報名狀態，ID: {id}");
-                return Ok(new { message = "狀態更新成功" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "狀態更新成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"更新民眾報名狀態時發生錯誤，ID: {id}");
-                return StatusCode(500, new { message = "更新狀態失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("更新狀態失敗", ex.Message));
             }
         }
-
-
     }
 
     public class UpdateStatusRequest
     {
         public string Status { get; set; } = string.Empty;
     }
-} 
+}

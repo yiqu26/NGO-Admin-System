@@ -1,110 +1,152 @@
-﻿@model List<NGOPlatformWeb.Models.Entity.Supply>
-
-<!-- 滿版背景 -->
-<div class="caseshopping-hero mb-4">
-    <div class="hero-content">
-        <h1>物資選購</h1>
-        <p>數量有限，登記時以 1 份為單位。</p>
-    </div>
-</div>
-<link rel="stylesheet" href="~/css/case/caseshopping.css" />
-
-<div class="container mb-4">
-    <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
-        <input type="text" class="form-control search-box" placeholder="搜尋物資名稱…" style="max-width:300px;" />
-        <button class="btn btn-outline-success btn-filter" data-category="全部">全部</button>
-        <button class="btn btn-outline-success btn-filter" data-category="食品">食品</button>
-        <button class="btn btn-outline-secondary btn-filter" data-category="衣物">衣物</button>
-        <button class="btn btn-outline-secondary btn-filter" data-category="醫療">醫療</button>
-        <button class="btn btn-outline-secondary btn-filter" data-category="清潔">清潔</button>
-        <button class="btn btn-outline-secondary btn-filter" data-category="文具">文具</button>
-    </div>
-</div>
-
-<div class="container">
-      <div class="row g-4">
-
-    @foreach (var item in Model)
-    {
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 supply-card"
-                 data-category="@item.SupplyCategory?.SupplyCategoryName">
-                <div class="card h-100 shadow-sm search-card">
-                <img src="@item.ImageUrl" class="card-img-top" alt="@item.SupplyName" />
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">@item.SupplyName</h5>
-                    <p class="card-text text-muted">@item.SupplyDescription</p>
-                    <p class="text-muted small">分類：@item.SupplyCategory?.SupplyCategoryName</p>
-                    <p class="text-muted small">剩餘數量：@item.SupplyQuantity 份</p>
-                        <div class="mt-auto d-flex justify-content-end mb-1">
-                        <button type="button"
-                                class="btn btn-success btn-sm "
-                                data-bs-toggle="modal"
-                                data-bs-target="#infoModal@(item.SupplyId)">
-                            <i class="fas fa-hand-holding-heart me-1"></i>領取物資
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal 彈窗 -->
-        <div class="modal fade" id="infoModal@(item.SupplyId)" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <form asp-controller="Case" asp-action="ApplySupply" method="post">
-                        <div class="modal-header">
-                            <h5 class="modal-title">@item.SupplyName</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" name="supplyId" value="@item.SupplyId" />
-                            <label class="form-label">申請數量</label>
-                            <input type="number" name="quantity" value="1" min="1" max="@item.SupplyQuantity" class="form-control mb-3" />
-                            <p class="mt-2">確定要領取 <strong>@item.SupplyName</strong> 嗎？</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">確認</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    }
-</div>
-
-
-@section Scripts {
-        <script>
-            $(document).ready(function () {
-                // 🔍 即時搜尋
-                $(".search-box").on("keyup", function () {
-                    var value = $(this).val().toLowerCase();
-                    $(".supply-card").each(function () {
-                        const text = $(this).text().toLowerCase();
-                        $(this).toggle(text.includes(value));
-                    });
-                });
-
-                // 🏷️ 分類篩選
-                $(".btn-filter").on("click", function () {
-                    const category = $(this).data("category"); // 取得按鈕上的 data-category
-
-                    // 🔹 按鈕樣式切換 (使用 .active)
-                    $(".btn-filter").removeClass("active"); // 移除其他按鈕的 active
-                    $(this).addClass("active");            // 給目前點擊的按鈕加上 active
-
-                    // 🔹 篩選卡片
-                    $(".supply-card").each(function () {
-                        const cardCategory = $(this).data("category"); // 取得卡片上的 data-category
-                        if (category === "全部" || cardCategory === category) {
-                            $(this).show();
-                        } else {
-                            $(this).hide();
-                        }
-                    });
-                });
-            });
-        </script>
+@model List<NGOPlatformWeb.Models.Entity.Supply>
+@{
+    ViewData["Title"] = "物資申請";
+    var grouped = Model
+        .GroupBy(s => s.SupplyCategory?.SupplyCategoryName ?? "其他")
+        .OrderBy(g => g.Key);
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/case/caseshopping.css" asp-append-version="true" />
+}
+
+<!-- Page Header -->
+<div class="supply-page-header">
+    <div class="container">
+        <p class="header-eyebrow">個案服務</p>
+        <h1>本期可申領物資</h1>
+        <p class="header-desc">以下為目前基金會提供的物資項目，每次申請以 1 份為單位，數量有限，先申請先保留。</p>
+    </div>
+</div>
+
+<!-- Search -->
+<div class="container supply-search-wrap">
+    <input type="text"
+           id="supplySearch"
+           class="supply-search-input"
+           placeholder="搜尋物資名稱…"
+           autocomplete="off" />
+</div>
+
+<!-- Category Sections -->
+@foreach (var group in grouped)
+{
+    var availableCount = group.Count(s => s.SupplyQuantity > 0);
+    <section class="supply-category-section">
+        <div class="container">
+            <div class="category-header">
+                <h2>@group.Key</h2>
+                <span class="category-count">@availableCount 項可申領</span>
+            </div>
+            <div class="supply-list">
+                @foreach (var item in group.OrderByDescending(s => s.SupplyQuantity))
+                {
+                    <div class="supply-row @(item.SupplyQuantity == 0 ? "supply-row--empty" : "")"
+                         data-name="@item.SupplyName?.ToLower()">
+                        <div class="supply-thumb">
+                            <img src="@(item.ImageUrl ?? "/images/case-default.svg")"
+                                 alt="@item.SupplyName"
+                                 onerror="this.src='/images/case-default.svg'" />
+                        </div>
+                        <div class="supply-info">
+                            <h3>@item.SupplyName</h3>
+                            <p>@item.SupplyDescription</p>
+                        </div>
+                        <div class="supply-status">
+                            @if (item.SupplyQuantity > 5)
+                            {
+                                <span class="qty-badge qty-plenty">剩 @item.SupplyQuantity 份</span>
+                            }
+                            else if (item.SupplyQuantity > 0)
+                            {
+                                <span class="qty-badge qty-low">剩 @item.SupplyQuantity 份</span>
+                            }
+                            else
+                            {
+                                <span class="qty-badge qty-empty">暫無庫存</span>
+                            }
+                        </div>
+                        <div class="supply-action">
+                            @if (item.SupplyQuantity > 0)
+                            {
+                                <button type="button"
+                                        class="btn-apply"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal@(item.SupplyId)">
+                                    申請此物資
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn-apply btn-apply--disabled" disabled>
+                                    暫無庫存
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<p class="supply-no-results container" id="noResults">找不到符合的物資</p>
+
+<!-- Modals -->
+@foreach (var item in Model.Where(s => s.SupplyQuantity > 0))
+{
+    <div class="modal fade" id="modal@(item.SupplyId)" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form asp-controller="Case" asp-action="ApplySupply" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@item.SupplyName</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="supplyId" value="@item.SupplyId" />
+                        <label class="form-label fw-semibold">申請數量</label>
+                        <input type="number" name="quantity" value="1"
+                               min="1" max="@item.SupplyQuantity"
+                               class="form-control mb-3" />
+                        <p class="mb-0 text-muted" style="font-size:0.9rem;">
+                            確認申請 <strong class="text-dark">@item.SupplyName</strong>？申請後將由工作人員安排發放。
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn-confirm">確認申請</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            const input = document.getElementById('supplySearch');
+            const noResults = document.getElementById('noResults');
+
+            input.addEventListener('input', function () {
+                const q = this.value.toLowerCase().trim();
+                let anyVisible = false;
+
+                document.querySelectorAll('.supply-category-section').forEach(section => {
+                    let sectionHasMatch = false;
+                    section.querySelectorAll('.supply-row').forEach(row => {
+                        const name = (row.dataset.name || '');
+                        const match = !q || name.includes(q);
+                        row.style.display = match ? '' : 'none';
+                        if (match) sectionHasMatch = true;
+                    });
+                    section.style.display = sectionHasMatch ? '' : 'none';
+                    if (sectionHasMatch) anyVisible = true;
+                });
+
+                noResults.style.display = anyVisible ? 'none' : 'block';
+            });
+        })();
+    </script>
+}

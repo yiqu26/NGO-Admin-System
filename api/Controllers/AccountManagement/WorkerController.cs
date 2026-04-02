@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 using NGO_WebAPI_Backend.Services;
 
 namespace NGO_WebAPI_Backend.Controllers.AccountManagement
@@ -40,15 +41,13 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                     .FirstOrDefaultAsync();
 
                 if (worker == null)
-                {
-                    return NotFound(new { message = "找不到對應的工作人員" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到對應的工作人員"));
 
-                return Ok(worker);
+                return Ok(ApiResponse<object>.SuccessResponse(worker, "查詢成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "查詢工作人員資訊失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("查詢工作人員資訊失敗", ex.Message));
             }
         }
 
@@ -74,15 +73,13 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                     .FirstOrDefaultAsync();
 
                 if (worker == null)
-                {
-                    return NotFound(new { message = "找不到對應的工作人員" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到對應的工作人員"));
 
-                return Ok(worker);
+                return Ok(ApiResponse<object>.SuccessResponse(worker, "查詢成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "查詢工作人員資訊失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("查詢工作人員資訊失敗", ex.Message));
             }
         }
 
@@ -104,14 +101,10 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                     .FirstOrDefaultAsync();
 
                 if (existingWorker != null)
-                {
-                    return BadRequest(new { success = false, message = "此Email已被使用" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("此Email已被使用"));
 
-                // 雜湊密碼
                 var hashedPassword = _passwordService.HashPassword(request.Password);
 
-                // 創建新工作人員
                 var worker = new Worker
                 {
                     Email = request.Email,
@@ -123,22 +116,18 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 _context.Workers.Add(worker);
                 await _context.SaveChangesAsync();
 
-                return Ok(new
+                var result = new
                 {
-                    success = true,
-                    message = "工作人員創建成功",
-                    worker = new
-                    {
-                        workerId = worker.WorkerId,
-                        email = worker.Email,
-                        name = worker.Name,
-                        role = worker.Role
-                    }
-                });
+                    workerId = worker.WorkerId,
+                    email = worker.Email,
+                    name = worker.Name,
+                    role = worker.Role
+                };
+                return StatusCode(201, ApiResponse<object>.SuccessResponse(result, "工作人員創建成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "創建工作人員失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("創建工作人員失敗", ex.Message));
             }
         }
 
@@ -155,19 +144,16 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
             {
                 var worker = await _context.Workers.FindAsync(id);
                 if (worker == null)
-                {
-                    return NotFound(new { success = false, message = "找不到工作人員" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到工作人員"));
 
-                // 雜湊新密碼
                 worker.Password = _passwordService.HashPassword(request.NewPassword);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { success = true, message = "密碼更新成功" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "密碼更新成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { success = false, message = "密碼更新失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("密碼更新失敗", ex.Message));
             }
         }
     }

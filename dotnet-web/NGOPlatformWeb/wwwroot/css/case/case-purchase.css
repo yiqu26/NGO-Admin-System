@@ -1,16 +1,9 @@
 ﻿/* ====== 頁面背景與全域字型 ====== */
-body {
-    background: #fafafa;
-    font-family: "Microsoft JhengHei", sans-serif;
-    color: #333;
-    margin: 0;
-    padding: 0;
+body.case-purchase-page {
+    background: var(--bg-light);
+    padding-bottom: 4rem;
+    min-height: calc(100vh - 300px);
 }
-    body.case-purchase-page {
-        background: url("/images/dustbacking.png") center top / cover no-repeat fixed;
-        padding-bottom: 4rem; /* 自由調整數值 */
-        min-height: calc(100vh - 300px); /* 300px 自行調整，減去 header+footer 大小 */
-    }
 .top-card {
     background: #f8f9fb;
     max-width: 1200px; /* 和下面 page-layout 一樣 */
@@ -36,11 +29,10 @@ body {
 
 .top-icon {
     font-size: 2rem;
-    background: #e3e7ff;
-    color: #3f51b5;
+    background: rgba(92, 122, 94, 0.12);
+    color: var(--secondary-color);
     padding: 0.8rem;
     border-radius: 12px;
-    box-shadow: inset 0 0 6px rgba(0,0,0,0.05);
 }
 
 .top-info {
@@ -63,20 +55,21 @@ body {
 
 .top-card-right .back-btn {
     display: inline-block;
-    background: linear-gradient(135deg, #7b4fff, #9a68ff);
-    color: #fff;
-    font-weight: 600;
+    background: transparent;
+    color: var(--secondary-color);
+    font-weight: 500;
+    font-size: 0.875rem;
     text-decoration: none;
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 1rem;
     border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    transition: background 0.3s ease, transform 0.2s ease;
+    border: 1.5px solid var(--secondary-color);
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
-    .top-card-right .back-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
+.top-card-right .back-btn:hover {
+    background: var(--secondary-color);
+    color: #fff;
+}
 
 /* ====== 左右容器，跟 top-card 對齊 ====== */
 .page-layout {
@@ -130,12 +123,12 @@ body {
 
 
 .status-card.active {
-    box-shadow: 0 0 0 3px rgba(98, 102, 241, 0.3); /* 紫色主題高亮 */
-    background-color: #E6E0F8; /* 紫色主題高亮 */
+    box-shadow: 0 0 0 3px rgba(92, 122, 94, 0.25);
+    background-color: rgba(92, 122, 94, 0.08);
 }
 
 .status-card:hover {
-    box-shadow: 0 0 0 3px rgba(98, 102, 241, 0.3); /* 紫色主題高亮 */
+    box-shadow: 0 0 0 3px rgba(92, 122, 94, 0.2);
     transform: translateY(-2px);
 }
 .status-card-icon {
@@ -151,16 +144,15 @@ body {
 }
     /* 顏色 */
     .status-card-icon.blue {
-        background: #2563eb;
+        background: var(--gradient-primary);
     }
 
     .status-card-icon.green {
-        background: #22c55e;
+        background: var(--secondary-color);
     }
 
     .status-card-icon.purple {
-        background: linear-gradient(135deg,#a855f7,#ec4899);
-
+        background: linear-gradient(135deg, #c4956a, #8b6347);
     }
 
 /* ====== 左側外層清單背景 ====== */

@@ -37,18 +37,18 @@ export const aiService = {
     try {
       console.log('發送 AI 優化請求:', { description: description.substring(0, 50) + '...' });
       
-      const response = await api.post<OptimizeDescriptionResponse>('/ActivityAIOptimizer/optimize-description', {
+      const response = await api.post<{ data: OptimizeDescriptionResponse }>('/ActivityAIOptimizer/optimize-description', {
         description: description.trim()
       }, {
-        timeout: 30000, // AI 處理可能需要較長時間，設為 30 秒
+        timeout: 30000,
       });
 
       console.log('AI 優化成功:', {
-        originalLength: response.originalLength,
-        optimizedLength: response.optimizedLength
+        originalLength: response.data.originalLength,
+        optimizedLength: response.data.optimizedLength
       });
 
-      return response;
+      return response.data;
     } catch (error: any) {
       console.error('AI 優化失敗:', error);
       console.error('錯誤詳情:', error.response?.data);
@@ -75,8 +75,8 @@ export const aiService = {
    */
   checkServiceStatus: async (): Promise<AIServiceStatusResponse> => {
     try {
-      const response = await api.get<AIServiceStatusResponse>('/ActivityAIOptimizer/status');
-      return response;
+      const response = await api.get<{ data: AIServiceStatusResponse }>('/ActivityAIOptimizer/status');
+      return response.data;
     } catch (error) {
       console.error('檢查 AI 服務狀態失敗:', error);
       return {

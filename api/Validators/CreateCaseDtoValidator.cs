@@ -27,12 +27,11 @@ namespace NGO_WebAPI_Backend.Validators
                 .Matches(@"^09\d{8}$").WithMessage("請輸入正確的手機號碼格式 (09xxxxxxxx)")
                 .When(x => !string.IsNullOrEmpty(x.Phone));
 
-            // 身分證字號驗證
+            // 身分證字號驗證（格式檢查，不做 checksum 驗證以允許居留證等特殊情形）
             RuleFor(x => x.IdentityNumber)
                 .NotEmpty().WithMessage("身分證字號不能為空")
                 .Length(10).WithMessage("身分證字號必須為 10 位數")
-                .Matches(@"^[A-Z][0-9]{9}$").WithMessage("身分證字號格式錯誤，應為 1 個英文字母加 9 個數字")
-                .Must(BeValidTaiwanIdentityNumber).WithMessage("身分證字號驗證碼錯誤");
+                .Matches(@"^[A-Z][0-9]{9}$").WithMessage("身分證字號格式錯誤，應為 1 個英文字母加 9 個數字");
 
             // 生日驗證
             RuleFor(x => x.Birthday)
@@ -85,56 +84,6 @@ namespace NGO_WebAPI_Backend.Validators
             RuleFor(x => x.SpeechToTextAudioUrl)
                 .Must(BeValidUrl).WithMessage("語音檔案必須是有效的 URL")
                 .When(x => !string.IsNullOrEmpty(x.SpeechToTextAudioUrl));
-        }
-
-        /// <summary>
-        /// 驗證台灣身分證字號
-        /// </summary>
-        private static bool BeValidTaiwanIdentityNumber(string identityNumber)
-        {
-            if (string.IsNullOrEmpty(identityNumber) || identityNumber.Length != 10)
-                return false;
-
-            // 台灣身分證字號驗證規則
-            var letterValues = new Dictionary<char, int>
-            {
-                {'A', 10}, {'B', 11}, {'C', 12}, {'D', 13}, {'E', 14},
-                {'F', 15}, {'G', 16}, {'H', 17}, {'I', 34}, {'J', 18},
-                {'K', 19}, {'L', 20}, {'M', 21}, {'N', 22}, {'O', 35},
-                {'P', 23}, {'Q', 24}, {'R', 25}, {'S', 26}, {'T', 27},
-                {'U', 28}, {'V', 29}, {'W', 32}, {'X', 30}, {'Y', 31}, {'Z', 33}
-            };
-
-            char firstLetter = identityNumber[0];
-            if (!letterValues.ContainsKey(firstLetter))
-                return false;
-
-            try
-            {
-                // 取得字母對應的數字
-                int letterValue = letterValues[firstLetter];
-                
-                // 計算驗證碼
-                int sum = (letterValue / 10) + (letterValue % 10) * 9;
-                
-                // 加上後9位數字的權重
-                for (int i = 1; i < 9; i++)
-                {
-                    int digit = int.Parse(identityNumber[i].ToString());
-                    sum += digit * (9 - i);
-                }
-                
-                // 加上最後一位數字
-                int lastDigit = int.Parse(identityNumber[9].ToString());
-                sum += lastDigit;
-
-                // 檢查是否能被10整除
-                return sum % 10 == 0;
-            }
-            catch
-            {
-                return false;
-            }
         }
 
         /// <summary>

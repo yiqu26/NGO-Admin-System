@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using NGOPlatformWeb.Models;
 using NGOPlatformWeb.Models.Entity;
@@ -10,10 +10,29 @@ namespace NGOPlatformWeb.Controllers
     public class HomeController : Controller
     {
         private readonly NGODbContext _context;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(NGODbContext context)
+        public HomeController(NGODbContext context, ILogger<HomeController> logger)
         {
             _context = context;
+            _logger = logger;
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error(int? statusCode = null)
+        {
+            var exceptionFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+            if (exceptionFeature != null)
+            {
+                _logger.LogError(exceptionFeature.Error, "未處理的例外：{Path}", exceptionFeature.Path);
+            }
+
+            var model = new ErrorViewModel
+            {
+                RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                StatusCode = statusCode ?? 500
+            };
+            return View(model);
         }
 
         public IActionResult Index()
@@ -37,14 +56,10 @@ namespace NGOPlatformWeb.Controllers
 
                 return View(model);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // 記錄詳細錯誤信息
                 ViewBag.ErrorMessage = "首頁載入發生錯誤，請稍後再試。";
-                
-                // 回傳一個空的模型，避免頁面完全無法顯示
-                var emptyModel = new HomeViewModel();
-                return View(emptyModel);
+                return View(new HomeViewModel());
             }
         }
 

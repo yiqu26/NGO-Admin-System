@@ -213,13 +213,22 @@ namespace NGO_WebAPI_Backend.Repositories
         public async Task<bool> IsIdentityNumberExistsAsync(string identityNumber, int? excludeCaseId = null)
         {
             var query = _context.Cases.Where(c => c.IdentityNumber == identityNumber);
-            
+
             if (excludeCaseId.HasValue)
             {
                 query = query.Where(c => c.CaseId != excludeCaseId.Value);
             }
 
             return await query.AnyAsync();
+        }
+
+        /// <summary>
+        /// 建立個案登入帳號
+        /// </summary>
+        public async Task CreateCaseLoginAsync(CaseLogin caseLogin)
+        {
+            _context.CaseLogins.Add(caseLogin);
+            await _context.SaveChangesAsync();
         }
     }
 }

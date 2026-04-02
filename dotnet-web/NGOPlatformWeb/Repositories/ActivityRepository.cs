@@ -14,8 +14,11 @@ namespace NGOPlatformWeb.Repositories
 
         public async Task<List<Activity>> GetActivitiesWithFiltersAsync(string targetAudience, string? category = null, string? keyword = null)
         {
+            var today = DateTime.Today;
             var query = _context.Activities
-                .Where(a => a.TargetAudience != null && a.TargetAudience == targetAudience);
+                .Where(a => a.TargetAudience != null && a.TargetAudience == targetAudience
+                         && a.Status == "open"
+                         && a.EndDate >= today);
 
             if (!string.IsNullOrEmpty(category))
             {

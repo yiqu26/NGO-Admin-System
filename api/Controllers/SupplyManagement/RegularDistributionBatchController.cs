@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 
 namespace NGO_WebAPI_Backend.Controllers;
 
@@ -23,12 +24,11 @@ public class RegularDistributionBatchController : ControllerBase
         {
             IQueryable<RegularDistributionBatch> query = _context.RegularDistributionBatches;
 
-            // 根據workerId過濾 - 員工只能看到包含自己管理案例的分配批次
             if (workerId.HasValue)
             {
                 query = query.Where(b => _context.RegularSuppliesNeeds
-                    .Any(n => n.BatchId == b.DistributionBatchId && 
-                              n.Case != null && 
+                    .Any(n => n.BatchId == b.DistributionBatchId &&
+                              n.Case != null &&
                               n.Case.WorkerId == workerId.Value));
             }
 
@@ -48,14 +48,14 @@ public class RegularDistributionBatchController : ControllerBase
                 notes = b.Notes,
                 createdByWorker = "系統管理員",
                 approvedByWorker = b.ApprovedAt != null ? "系統管理員" : null,
-                matchCount = 0 // 暫時固定，後續可加入實際配對數量計算
+                matchCount = 0
             }).ToList();
 
-            return Ok(result);
+            return Ok(ApiResponse<IEnumerable<object>>.SuccessResponse(result, "查詢成功"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { error = "無法獲取分發批次資料", detail = ex.Message });
+            return BadRequest(ApiResponse<object>.ErrorResponse("無法獲取分發批次資料", ex.Message));
         }
     }
 
@@ -70,9 +70,7 @@ public class RegularDistributionBatchController : ControllerBase
                 .FirstOrDefaultAsync();
 
             if (batch == null)
-            {
-                return NotFound(new { error = "找不到指定的分發批次" });
-            }
+                return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的分發批次"));
 
             var result = new
             {
@@ -87,14 +85,14 @@ public class RegularDistributionBatchController : ControllerBase
                 createdByWorker = "系統管理員",
                 approvedByWorker = batch.ApprovedAt != null ? "系統管理員" : null,
                 matchCount = 0,
-                matches = new List<object>() // 空的配對清單，後續可擴展
+                matches = new List<object>()
             };
 
-            return Ok(result);
+            return Ok(ApiResponse<object>.SuccessResponse(result, "查詢成功"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { error = "無法獲取分發批次詳情", detail = ex.Message });
+            return BadRequest(ApiResponse<object>.ErrorResponse("無法獲取分發批次詳情", ex.Message));
         }
     }
 
@@ -112,20 +110,16 @@ public class RegularDistributionBatchController : ControllerBase
                 CreatedByWorkerId = request.CreatedByWorkerId,
                 Status = "pending",
                 Notes = request.Notes
-                // CreatedAt 會由資料庫自動設置預設值
             };
 
             _context.RegularDistributionBatches.Add(batch);
             await _context.SaveChangesAsync();
 
-            return Ok(new { 
-                message = "分發批次創建成功", 
-                id = batch.DistributionBatchId 
-            });
+            return Ok(ApiResponse<object>.SuccessResponse(new { id = batch.DistributionBatchId }, "分發批次創建成功"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { error = "無法創建分發批次", detail = ex.Message });
+            return BadRequest(ApiResponse<object>.ErrorResponse("無法創建分發批次", ex.Message));
         }
     }
 
@@ -137,22 +131,20 @@ public class RegularDistributionBatchController : ControllerBase
         {
             var batch = await _context.RegularDistributionBatches.FindAsync(id);
             if (batch == null)
-            {
-                return NotFound(new { error = "找不到指定的分發批次" });
-            }
+                return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的分發批次"));
 
             batch.Status = "approved";
             batch.ApprovedAt = DateTime.Now;
-            batch.ApprovedByWorkerId = request.ApprovedByWorkerId; // 使用請求中的 ID
-            
+            batch.ApprovedByWorkerId = request.ApprovedByWorkerId;
+
             _context.Entry(batch).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "分發批次批准成功" });
+            return Ok(ApiResponse<object>.SuccessResponse(null!, "分發批次批准成功"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { error = "無法批准分發批次", detail = ex.Message });
+            return BadRequest(ApiResponse<object>.ErrorResponse("無法批准分發批次", ex.Message));
         }
     }
 
@@ -164,41 +156,34 @@ public class RegularDistributionBatchController : ControllerBase
         {
             var batch = await _context.RegularDistributionBatches.FindAsync(id);
             if (batch == null)
-            {
-                return NotFound(new { error = "找不到指定的分發批次" });
-            }
+                return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的分發批次"));
 
-            // 將批次狀態設為拒絕
             batch.Status = "rejected";
             batch.ApprovedAt = DateTime.Now;
             batch.ApprovedByWorkerId = request.RejectedByWorkerId;
             batch.Notes = request.RejectReason ?? "主管拒絕";
-            
-            // 重點：將批次內的所有物資需求重新設回 "approved" 狀態
-            // 這樣員工就可以重新處理這些申請，避免一個老鼠屎壞了一鍋粥
+
             var needsInBatch = await _context.RegularSuppliesNeeds
                 .Where(n => n.BatchId == id)
                 .ToListAsync();
 
             foreach (var need in needsInBatch)
             {
-                need.Status = "approved"; // 重新設回已批准狀態
-                need.BatchId = null;      // 清除批次關聯，讓它們可以重新分配
+                need.Status = "approved";
+                need.BatchId = null;
                 _context.Entry(need).State = EntityState.Modified;
             }
-            
+
             _context.Entry(batch).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return Ok(new { 
-                message = "分發批次已拒絕", 
-                affectedRequests = needsInBatch.Count,
-                detail = $"批次內的 {needsInBatch.Count} 個物資需求已重新設為等待處理狀態"
-            });
+            return Ok(ApiResponse<object>.SuccessResponse(
+                new { affectedRequests = needsInBatch.Count },
+                $"分發批次已拒絕，批次內的 {needsInBatch.Count} 個物資需求已重新設為等待處理狀態"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { error = "無法拒絕分發批次", detail = ex.Message });
+            return BadRequest(ApiResponse<object>.ErrorResponse("無法拒絕分發批次", ex.Message));
         }
     }
 
@@ -210,22 +195,18 @@ public class RegularDistributionBatchController : ControllerBase
         {
             var batch = await _context.RegularDistributionBatches.FindAsync(id);
             if (batch == null)
-            {
-                return NotFound(new { error = "找不到指定的分發批次" });
-            }
+                return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的分發批次"));
 
             _context.RegularDistributionBatches.Remove(batch);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "分發批次刪除成功" });
+            return Ok(ApiResponse<object>.SuccessResponse(null!, "分發批次刪除成功"));
         }
         catch (Exception ex)
         {
-            return BadRequest(new { error = "無法刪除分發批次", detail = ex.Message });
+            return BadRequest(ApiResponse<object>.ErrorResponse("無法刪除分發批次", ex.Message));
         }
     }
-
-
 }
 
 // 請求模型
@@ -248,4 +229,4 @@ public class RejectDistributionBatchRequest
 {
     public int RejectedByWorkerId { get; set; }
     public string? RejectReason { get; set; }
-} 
+}

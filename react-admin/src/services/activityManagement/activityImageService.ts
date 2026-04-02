@@ -26,14 +26,14 @@ class ImageGenerationService {
       console.log('🚀 開始調用 AI 圖片生成 API，描述:', prompt);
       
       // 使用更長的超時時間（120秒）來處理 AI 圖片生成
-      const response = await api.post('/ActivityImageGenerator/generate', {
+      const response = await api.post<{ success: boolean; data: string; message: string }>('/ActivityImageGenerator/generate', {
         prompt: prompt
       }, {
-        timeout: 120000 // 120秒超時
+        timeout: 120000
       });
 
       console.log('✅ API 調用成功，響應:', response);
-      return response;
+      return { success: response.success, imageData: response.data, message: response.message };
     } catch (error: any) {
       console.error('❌ 圖片生成 API 調用失敗:', error);
       console.error('錯誤詳情:', {
@@ -70,8 +70,8 @@ class ImageGenerationService {
    */
   async testConnection(): Promise<TestConnectionResponse> {
     try {
-      const response = await api.post('/ActivityImageGenerator/test-connection');
-      return response.data;
+      const response = await api.post<{ success: boolean; message: string }>('/ActivityImageGenerator/test-connection');
+      return { success: response.success, message: response.message };
     } catch (error: any) {
       console.error('連接測試失敗:', error);
       

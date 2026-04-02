@@ -47,8 +47,8 @@ class AccountService {
    */
   async getAccounts(): Promise<Account[]> {
     try {
-      const response = await api.get<Account[]>('/Account');
-      return response || [];
+      const response = await api.get<{ data: Account[] }>('/Account');
+      return response.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -65,8 +65,8 @@ class AccountService {
    */
   async getAccountById(id: number): Promise<Account> {
     try {
-      const response = await api.get<Account>(`/Account/${id}`);
-      return response;
+      const response = await api.get<{ data: Account }>(`/Account/${id}`);
+      return response.data;
     } catch (error) {
       console.error(`取得帳號 ${id} 失敗:`, error);
       throw error;
@@ -78,8 +78,8 @@ class AccountService {
    */
   async createAccount(accountData: CreateAccountRequest): Promise<Account> {
     try {
-      const response = await api.post<Account>('/Account', accountData);
-      return response;
+      const response = await api.post<{ data: Account }>('/Account', accountData);
+      return response.data;
     } catch (error) {
       console.error('建立帳號失敗:', error);
       throw error;
@@ -91,8 +91,8 @@ class AccountService {
    */
   async updateAccount(id: number, accountData: UpdateAccountRequest): Promise<Account> {
     try {
-      const response = await api.put<Account>(`/Account/${id}`, accountData);
-      return response;
+      const response = await api.put<{ data: Account }>(`/Account/${id}`, accountData);
+      return response.data;
     } catch (error) {
       console.error(`更新帳號 ${id} 失敗:`, error);
       throw error;
@@ -116,8 +116,8 @@ class AccountService {
    */
   async activateAccount(id: number): Promise<Account> {
     try {
-      const response = await api.patch<Account>(`/Account/${id}/activate`);
-      return response;
+      const response = await api.patch<{ data: Account }>(`/Account/${id}/activate`);
+      return response.data;
     } catch (error) {
       console.error(`啟用帳號 ${id} 失敗:`, error);
       throw error;
@@ -129,8 +129,8 @@ class AccountService {
    */
   async deactivateAccount(id: number): Promise<Account> {
     try {
-      const response = await api.patch<Account>(`/Account/${id}/deactivate`);
-      return response;
+      const response = await api.patch<{ data: Account }>(`/Account/${id}/deactivate`);
+      return response.data;
     } catch (error) {
       console.error(`停用帳號 ${id} 失敗:`, error);
       throw error;
@@ -154,8 +154,8 @@ class AccountService {
    */
   async checkEmailExists(email: string): Promise<boolean> {
     try {
-      const response = await api.get<{ exists: boolean }>(`/Account/check-email?email=${encodeURIComponent(email)}`);
-      return response.exists;
+      const response = await api.get<{ data: { exists: boolean } }>(`/Account/check-email?email=${encodeURIComponent(email)}`);
+      return response.data.exists;
     } catch (error) {
       console.error('檢查電子信箱失敗:', error);
       throw error;
@@ -176,8 +176,8 @@ class AccountService {
     localAccounts: number;
   }> {
     try {
-      const response = await api.get('/Account/stats');
-      return response;
+      const response = await api.get<{ data: any }>('/Account/stats');
+      return response.data;
     } catch (error: any) {
       // 如果沒有統計資料，返回預設值
       if (error.response?.status === 404 || error.response?.status === 204) {

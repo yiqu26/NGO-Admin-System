@@ -316,8 +316,28 @@ export const caseService = {
     try {
       const response = await api.post<ApiResponse<CaseResponse>>('/case', caseData);
       return response.data!;
-    } catch (error) {
+    } catch (error: any) {
       console.error('創建案例失敗:', error);
+
+      if (error.response?.status === 400) {
+        const errorData = error.response.data;
+        // FluentValidation 格式：{ errors: { Phone: ["msg"], ... } }
+        if (errorData?.errors && typeof errorData.errors === 'object' && !Array.isArray(errorData.errors)) {
+          const messages: string[] = [];
+          Object.entries(errorData.errors).forEach(([, fieldErrors]) => {
+            if (Array.isArray(fieldErrors)) {
+              fieldErrors.forEach((msg: string) => messages.push(msg));
+            }
+          });
+          if (messages.length > 0) throw new Error(messages.join('\n'));
+        }
+        // ApiResponse 格式：{ message: "...", errors: ["msg", ...] }
+        if (errorData?.errors && Array.isArray(errorData.errors) && errorData.errors.length > 0) {
+          throw new Error(errorData.errors.join('\n'));
+        }
+        if (errorData?.message) throw new Error(errorData.message);
+      }
+
       throw error;
     }
   },
@@ -332,31 +352,25 @@ export const caseService = {
       console.log('✅ 更新成功:', response.data);
     } catch (error: any) {
       console.error(`❌ 更新案例 ${id} 失敗:`, error);
-      
-      // 如果是 400 錯誤，嘗試解析詳細錯誤信息
+
       if (error.response?.status === 400) {
         const errorData = error.response.data;
-        console.error('📋 詳細錯誤信息:', errorData);
-        
-        // 處理 ASP.NET Core 模型驗證錯誤
-        if (errorData.errors && typeof errorData.errors === 'object') {
-          const errorMessages: string[] = [];
-          Object.keys(errorData.errors).forEach(field => {
-            const fieldErrors = errorData.errors[field];
+        // FluentValidation 格式：{ errors: { FieldName: [...] }, title, status }
+        if (errorData?.errors && typeof errorData.errors === 'object' && !Array.isArray(errorData.errors)) {
+          const messages: string[] = [];
+          Object.entries(errorData.errors).forEach(([, fieldErrors]) => {
             if (Array.isArray(fieldErrors)) {
-              fieldErrors.forEach(errorMsg => {
-                errorMessages.push(`${field}: ${errorMsg}`);
-              });
+              fieldErrors.forEach((msg: string) => messages.push(msg));
             }
           });
-          throw new Error(`驗證錯誤：${errorMessages.join(', ')}`);
-        } else if (errorData.message) {
-          throw new Error(errorData.message);
-        } else if (errorData.errors && Array.isArray(errorData.errors)) {
-          throw new Error(errorData.errors.join(', '));
+          if (messages.length > 0) throw new Error(messages.join('\n'));
         }
+        if (errorData?.errors && Array.isArray(errorData.errors) && errorData.errors.length > 0) {
+          throw new Error(errorData.errors.join('\n'));
+        }
+        if (errorData?.message) throw new Error(errorData.message);
       }
-      
+
       throw error;
     }
   },

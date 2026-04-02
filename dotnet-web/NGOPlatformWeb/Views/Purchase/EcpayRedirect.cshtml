@@ -63,46 +63,18 @@
 </div>
 
 <script>
-        // 本地測試模式 - 可選擇模擬或真實測試
         document.addEventListener('DOMContentLoaded', function() {
-            // 最後一次嘗試真實ECPay測試
-            if (false) {
-                let countdown = 3;
-                
-                // 更新頁面標題和倒數時間
-                document.getElementById('countdown').textContent = countdown;
-                const countdownElement = document.getElementById('countdown');
-                
-                // 顯示模擬測試提示
-                document.querySelector('h2').textContent = '付款處理中 - 模擬成功付款';
-                document.querySelector('p').textContent = '正在處理您的付款，請稍候...';
-                
-                const timer = setInterval(() => {
-                    countdown--;
-                    countdownElement.textContent = countdown;
-                    
-                    if (countdown <= 0) {
-                        clearInterval(timer);
-                        // 直接跳轉到成功頁面而不是提交到ECPay
-                        const clientBackUrl = '@ViewBag.DebugClientBackUrl';
-                        window.location.href = clientBackUrl;
-                    }
-                }, 1000);
-            } else {
-                // 正常的ECPay流程
-                let countdown = 60;
-                const countdownElement = document.getElementById('countdown');
-                
-                const timer = setInterval(() => {
-                    countdown--;
-                    countdownElement.textContent = countdown;
-                    
-                    if (countdown <= 0) {
-                        clearInterval(timer);
-                        submitNow(); // 使用動態表單提交
-                    }
-                }, 1000);
-            }
+            let countdown = 60;
+            const countdownElement = document.getElementById('countdown');
+
+            const timer = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    submitNow();
+                }
+            }, 1000);
         });
         
         // 手動提交按鈕 - 直接提交已渲染在 DOM 中的表單，避免在 JS 中重新嵌入 HTML（XSS 風險）

@@ -51,42 +51,39 @@ export interface RejectDistributionBatchRequest {
 const distributionBatchService = {
   // 获取所有分发批次 (根據權限過濾)
   async getDistributionBatches(workerId?: number): Promise<DistributionBatch[]> {
-    const url = workerId 
+    const url = workerId
       ? `/RegularDistributionBatch?workerId=${workerId}`
       : '/RegularDistributionBatch';
-    const response = await api.get<DistributionBatch[]>(url);
-    return response;
+    const response = await api.get<{ data: DistributionBatch[] }>(url);
+    return response.data;
   },
 
   // 获取特定批次的详细信息
   async getDistributionBatch(id: number): Promise<DistributionBatchDetail> {
-    const response = await api.get<DistributionBatchDetail>(`/RegularDistributionBatch/${id}`);
-    return response;
+    const response = await api.get<{ data: DistributionBatchDetail }>(`/RegularDistributionBatch/${id}`);
+    return response.data;
   },
 
   // 创建新的分发批次
   async createDistributionBatch(data: CreateDistributionBatchRequest): Promise<{ id: number }> {
-    const response = await api.post<{ id: number }>('/RegularDistributionBatch', data);
-    return response;
+    const response = await api.post<{ data: { id: number } }>('/RegularDistributionBatch', data);
+    return response.data;
   },
 
   // 批准分发批次
-  async approveDistributionBatch(id: number, data: ApproveDistributionBatchRequest): Promise<{ message: string }> {
-    const response = await api.post<{ message: string }>(`/RegularDistributionBatch/${id}/approve`, data);
-    return response;
+  async approveDistributionBatch(id: number, data: ApproveDistributionBatchRequest): Promise<void> {
+    await api.post(`/RegularDistributionBatch/${id}/approve`, data);
   },
 
   // 拒絕分發批次
-  async rejectDistributionBatch(id: number, data: RejectDistributionBatchRequest): Promise<{ message: string }> {
-    const response = await api.post<{ message: string }>(`/RegularDistributionBatch/${id}/reject`, data);
-    return response;
+  async rejectDistributionBatch(id: number, data: RejectDistributionBatchRequest): Promise<void> {
+    await api.post(`/RegularDistributionBatch/${id}/reject`, data);
   },
 
   // 删除分发批次
-  async deleteDistributionBatch(id: number): Promise<{ message: string }> {
-    const response = await api.delete<{ message: string }>(`/RegularDistributionBatch/${id}`);
-    return response;
+  async deleteDistributionBatch(id: number): Promise<void> {
+    await api.delete(`/RegularDistributionBatch/${id}`);
   },
 };
 
-export default distributionBatchService; 
+export default distributionBatchService;

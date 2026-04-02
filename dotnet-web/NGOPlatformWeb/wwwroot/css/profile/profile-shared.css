@@ -20,44 +20,39 @@ body.profile-page .container:last-of-type {
 
 /* 頁面標題和標頭區域 */
 .page-header {
-    background: linear-gradient(135deg, rgba(241, 245, 249, 0.8) 0%, rgba(226, 232, 240, 0.8) 100%);
+    background: var(--bg-white);
     padding: 2rem;
-    border-radius: 20px;
-    box-shadow: var(--card-shadow);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+    box-shadow: var(--shadow-sm);
     margin-bottom: 2rem;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(203, 213, 225, 0.3);
 }
 
 .page-title {
-    color: #2c3e50;
-    font-weight: 700;
+    font-family: var(--font-display);
+    color: var(--text-primary);
+    font-weight: 400;
     margin: 0;
     display: flex;
     align-items: center;
+    font-size: 1.6rem;
 }
 
 .page-subtitle {
-    color: #6c757d;
+    color: var(--text-muted);
     margin: 0.5rem 0 0 0;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
 }
 
 /* 個人資料側邊欄 */
 .profile-sidebar {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
-    border-radius: 20px;
+    background: var(--bg-white);
+    border-radius: 12px;
     padding: 2rem;
-    box-shadow: var(--card-shadow-hover);
+    box-shadow: var(--shadow-sm);
     text-align: center;
-    transition: transform 0.3s ease;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(203, 213, 225, 0.3);
-}
-
-.profile-sidebar:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-hover);
+    border: 1px solid var(--border-light);
+    border-top: 3px solid var(--primary-color);
 }
 
 .profile-avatar {
@@ -71,8 +66,8 @@ body.profile-page .container:last-of-type {
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid #fff;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border: 4px solid var(--bg-white);
+    box-shadow: 0 0 0 3px var(--primary-color), 0 6px 20px rgba(184, 92, 56, 0.18);
 }
 
 .avatar-overlay {
@@ -149,7 +144,7 @@ body.profile-page .container:last-of-type {
 /* 上傳中狀態 */
 .avatar-overlay.uploading {
     opacity: 1 !important;
-    background: #28a745;
+    background: var(--secondary-color);
 }
 
 .avatar-overlay.uploading::after,
@@ -214,7 +209,7 @@ body.profile-page .container:last-of-type {
 
 /* Case專用樣式 */
 .case-badge {
-    background: linear-gradient(135deg, #17a2b8, #138496);
+    background: var(--gradient-secondary);
     color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -225,37 +220,41 @@ body.profile-page .container:last-of-type {
 }
 
 .case-page .avatar-overlay {
-    background: linear-gradient(135deg, #17a2b8, #138496);
+    background: var(--secondary-color);
+}
+
+.case-page .profile-sidebar {
+    border-top-color: var(--secondary-color);
 }
 
 /* Case頁面的導航樣式覆蓋 */
 .case-page .profile-nav .nav-item:hover,
 .case-page .profile-nav .nav-item.active {
-    background: linear-gradient(135deg, #17a2b8, #138496);
-    box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+    background: var(--gradient-secondary);
+    box-shadow: 0 5px 15px rgba(92, 122, 94, 0.3);
 }
 
 /* 主要內容區域 */
 .profile-content {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    box-shadow: var(--card-shadow-hover);
+    background: var(--bg-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(203, 213, 225, 0.3);
+    border: 1px solid var(--border-light);
 }
 
 .content-header {
-    background: linear-gradient(135deg, rgba(241, 245, 249, 0.8), rgba(226, 232, 240, 0.8));
-    padding: 2rem;
-    backdrop-filter: blur(5px);
-    border-bottom: 1px solid #dee2e6;
+    background: var(--bg-light);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .content-header h4 {
     margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.25rem;
     color: var(--text-primary);
-    font-weight: 600;
 }
 
 /* 資料欄位 */
@@ -272,7 +271,7 @@ body.profile-page .container:last-of-type {
 }
 
 .field-row:hover {
-    background-color: #f8f9fa;
+    background-color: rgba(250, 247, 242, 0.7);
 }
 
 .field-row:last-child {
@@ -281,28 +280,65 @@ body.profile-page .container:last-of-type {
 
 .field-label {
     flex: 0 0 140px;
-    font-weight: 600;
-    color: #495057;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
 }
 
 .field-value {
     flex: 1;
-    color: #2c3e50;
+    color: var(--text-primary);
     padding-left: 1rem;
+    font-size: 0.95rem;
 }
 
 .password-dots {
     font-size: 1.2rem;
     letter-spacing: 2px;
-    color: #6c757d;
+    color: var(--text-muted);
+}
+
+/* Google 帳號完善提示 */
+.profile-google-alert {
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    color: var(--text-primary);
+}
+
+.profile-google-alert__icon {
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    margin-top: 2px;
+}
+
+.profile-google-alert__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.profile-google-alert p,
+.profile-google-alert ul {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
 }
 
 /* 內容底部 */
 .content-footer {
-    padding: 2rem;
-    background: #f8f9fa;
+    padding: 1.5rem 2rem;
+    background: var(--bg-white);
+    border-top: 1px solid var(--border-light);
     text-align: right;
 }
 
@@ -367,40 +403,36 @@ body.profile-page .container:last-of-type {
     font-weight: 500;
 }
 
-/* 統計卡片顏色主題 */
+/* 統計卡片顏色主題 — Warm Editorial */
 .total-registrations .stat-icon {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    background: var(--gradient-primary);
 }
 
 .active-registrations .stat-icon {
-    background: linear-gradient(135deg, #28a745, #20c997);
+    background: var(--gradient-secondary);
 }
 
 .upcoming-activities .stat-icon {
-    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    background: linear-gradient(135deg, var(--warning-color), var(--warning-light));
 }
 
 .completed-activities .stat-icon {
-    background: linear-gradient(135deg, #6f42c1, #e83e8c);
+    background: linear-gradient(135deg, var(--text-secondary), var(--text-primary));
 }
 
 /* Case主題的統計卡片 */
 .case-theme .stat-icon {
-    background: linear-gradient(135deg, #20c997, #17a2b8);
+    background: var(--gradient-secondary);
 }
 
 /* 總覽卡片 */
 .overview-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: var(--bg-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
     padding: 1.5rem;
     height: 100%;
-    transition: transform 0.3s ease;
-}
-
-.overview-card:hover {
-    transform: translateY(-3px);
 }
 
 .overview-header {
@@ -409,13 +441,15 @@ body.profile-page .container:last-of-type {
     align-items: center;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #f8f9fa;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .overview-header h5 {
     margin: 0;
-    color: #2c3e50;
-    font-weight: 600;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.1rem;
+    color: var(--text-primary);
 }
 
 .view-all-btn {
@@ -441,15 +475,18 @@ body.profile-page .container:last-of-type {
 }
 
 .stat-item .stat-number {
-    font-size: 2rem;
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 400;
     color: var(--primary-color);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.1rem;
+    line-height: 1;
 }
 
 .stat-item .stat-label {
-    color: #6c757d;
-    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
 }
 
 /* 最近項目列表 */
@@ -546,8 +583,8 @@ body.profile-page .container:last-of-type {
 /* Case主題的篩選按鈕 */
 .case-theme .filter-btn:hover,
 .case-theme .filter-btn.active {
-    background: #20c997;
-    border-color: #20c997;
+    background: var(--secondary-color);
+    border-color: var(--secondary-color);
 }
 
 /* 表單相關樣式 */
@@ -616,12 +653,12 @@ body.profile-page .container:last-of-type {
 
 /* Case頁面的更新按鈕 */
 .case-page .update-btn {
-    background: linear-gradient(135deg, #17a2b8, #138496);
-    box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+    background: var(--gradient-secondary);
+    box-shadow: 0 4px 15px rgba(92, 122, 94, 0.3);
 }
 
 .case-page .update-btn:hover {
-    box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+    box-shadow: 0 6px 20px rgba(92, 122, 94, 0.4);
 }
 
 /* Coming Soon 樣式 */
@@ -638,7 +675,7 @@ body.profile-page .container:last-of-type {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     opacity: 0.6;
-    color: #17a2b8;
+    color: var(--secondary-color);
 }
 
 .coming-soon h6 {
@@ -654,37 +691,37 @@ body.profile-page .container:last-of-type {
 }
 
 /* Case活動總覽特殊樣式 */
-.case-activity-overview .stat-number { 
-    color: #17a2b8; 
+.case-activity-overview .stat-number {
+    color: var(--secondary-color);
 }
 
-.case-activity-overview .overview-header h5 { 
-    color: #17a2b8; 
+.case-activity-overview .overview-header h5 {
+    color: var(--secondary-color);
 }
 
 .case-activity-overview .view-all-btn {
-    color: #17a2b8;
+    color: var(--secondary-color);
 }
 
 .case-activity-overview .view-all-btn:hover {
-    color: #138496;
+    color: var(--secondary-dark);
 }
 
 /* Case物資申請總覽特殊樣式 */
-.case-application-overview .stat-number { 
-    color: #6f42c1; 
+.case-application-overview .stat-number {
+    color: var(--secondary-color);
 }
 
-.case-application-overview .overview-header h5 { 
-    color: #6f42c1; 
+.case-application-overview .overview-header h5 {
+    color: var(--secondary-color);
 }
 
 .case-application-overview .view-all-btn {
-    color: #6f42c1;
+    color: var(--secondary-color);
 }
 
 .case-application-overview .view-all-btn:hover {
-    color: #5a2d91;
+    color: var(--secondary-dark);
 }
 
 /* 狀態徽章 */

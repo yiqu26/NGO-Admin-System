@@ -45,14 +45,14 @@ export const caseSpeechService = {
       formData.append('audioFile', audioFile);
       // 移除 language 參數，後端已固定使用 zh-TW
 
-      const response = await api.post<SpeechToTextResponse>('/CaseSpeechToText/transcribe', formData, {
+      const response = await api.post<{ data: SpeechToTextResponse }>('/CaseSpeechToText/transcribe', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 60000, // 語音轉文字需要更長時間，設為 60 秒
+        timeout: 60000,
       });
 
-      return response;
+      return response.data;
     } catch (error: any) {
       console.error('語音轉文字失敗:', error);
       console.error('錯誤詳情:', error.response?.data);
@@ -75,14 +75,14 @@ export const caseSpeechService = {
       formData.append('audioFile', audioBlob, 'recording.wav');
       // 移除 language 參數，後端已固定使用 zh-TW
 
-      const response = await api.post<SpeechToTextResponse>('/CaseSpeechToText/transcribe', formData, {
+      const response = await api.post<{ data: SpeechToTextResponse }>('/CaseSpeechToText/transcribe', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 60000, // 語音轉文字需要更長時間，設為 60 秒
+        timeout: 60000,
       });
 
-      return response;
+      return response.data;
     } catch (error: any) {
       console.error('錄音轉文字失敗:', error);
       console.error('錯誤詳情:', error.response?.data);
@@ -107,14 +107,14 @@ export const caseSpeechService = {
         formData.append('caseId', caseId.toString());
       }
 
-      const response = await api.post<AudioUploadResponse>('/CaseSpeechToText/upload-audio', formData, {
+      const response = await api.post<{ data: AudioUploadResponse }>('/CaseSpeechToText/upload-audio', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 30000, // 上傳需要較長時間
+        timeout: 30000,
       });
 
-      return response;
+      return response.data;
     } catch (error: any) {
       console.error('音檔上傳失敗:', error);
       console.error('錯誤詳情:', error.response?.data);
@@ -134,11 +134,11 @@ export const caseSpeechService = {
     try {
       const request: TranscribeFromUrlRequest = { audioUrl };
 
-      const response = await api.post<SpeechToTextResponse>('/CaseSpeechToText/transcribe-from-url', request, {
-        timeout: 60000, // 語音轉文字需要更長時間
+      const response = await api.post<{ data: SpeechToTextResponse }>('/CaseSpeechToText/transcribe-from-url', request, {
+        timeout: 60000,
       });
 
-      return response;
+      return response.data;
     } catch (error: any) {
       console.error('從 URL 語音轉文字失敗:', error);
       console.error('錯誤詳情:', error.response?.data);

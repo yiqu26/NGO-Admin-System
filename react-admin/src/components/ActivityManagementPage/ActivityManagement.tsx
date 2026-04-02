@@ -415,7 +415,13 @@ const ActivityManagement: React.FC = () => {
 
 
   // 狀態標籤顏色
-  const getStatusColor = (status: string) => {
+  const isExpired = (endDate: string | null | undefined) => {
+    if (!endDate) return false;
+    return new Date(endDate) < new Date();
+  };
+
+  const getStatusColor = (status: string, endDate?: string | null) => {
+    if (status === 'open' && isExpired(endDate)) return '#f57c00'; // amber for expired-open
     switch (status) {
       case 'open': return THEME_COLORS.SUCCESS;
       case 'closed': return THEME_COLORS.ERROR;
@@ -428,7 +434,8 @@ const ActivityManagement: React.FC = () => {
   const getAudienceColor = (aud: string) => aud === 'case' ? THEME_COLORS.PRIMARY : THEME_COLORS.INFO;
 
   // 狀態中文映射
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: string, endDate?: string | null) => {
+    if (status === 'open' && isExpired(endDate)) return '已過期';
     const statusMap: { [key: string]: string } = {
       'open': '開放報名',
       'full': '人數已滿',
@@ -627,11 +634,11 @@ const ActivityManagement: React.FC = () => {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Chip 
-                        label={getStatusLabel(record.status)}
+                      <Chip
+                        label={getStatusLabel(record.status, record.endDate)}
                         size="small"
                         sx={{
-                          backgroundColor: getStatusColor(record.status),
+                          backgroundColor: getStatusColor(record.status, record.endDate),
                           color: 'white',
                         }}
                       />

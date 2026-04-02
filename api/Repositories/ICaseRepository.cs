@@ -51,5 +51,10 @@ namespace NGO_WebAPI_Backend.Repositories
         /// 檢查身分證字號是否已存在
         /// </summary>
         Task<bool> IsIdentityNumberExistsAsync(string identityNumber, int? excludeCaseId = null);
+
+        /// <summary>
+        /// 建立個案登入帳號
+        /// </summary>
+        Task CreateCaseLoginAsync(CaseLogin caseLogin);
     }
 }

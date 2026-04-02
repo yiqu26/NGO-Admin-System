@@ -74,8 +74,8 @@ class ScheduleService {
    */
   async getAllSchedules(): Promise<Schedule[]> {
     try {
-      const response = await api.get<Schedule[]>('/schedule');
-      return response;
+      const response = await api.get<{ data: Schedule[] }>('/schedule');
+      return response.data;
     } catch (error) {
       console.error('取得所有排程失敗:', error);
       throw error;
@@ -87,10 +87,10 @@ class ScheduleService {
    */
   async getSchedulesByWorker(workerId: number): Promise<Schedule[]> {
     try {
-      const response = await api.get<Schedule[]>(
+      const response = await api.get<{ data: Schedule[] }>(
         `/schedule/select/${workerId}`
       );
-      return response;
+      return response.data;
     } catch (error) {
       console.error(`取得工作者 ${workerId} 排程失敗:`, error);
       throw error;
@@ -108,16 +108,14 @@ class ScheduleService {
       ...scheduleData,
     };
 
-    const responseData = await api.post<Schedule>("/schedule", defaultData);
+    const responseData = await api.post<{ data: Schedule }>("/schedule", defaultData);
 
-    // 後端回傳的 schedule 資料
-
-    if (!responseData || typeof responseData.scheduleId === "undefined") {
+    if (!responseData.data || typeof responseData.data.scheduleId === "undefined") {
       console.error("❌ 回傳資料不含有效 scheduleId：", responseData);
       throw new Error("API 回傳的排程資料不完整");
     }
 
-    return responseData;
+    return responseData.data;
   } catch (error) {
     console.error("❌ createSchedule 發生錯誤，送出資料如下：", scheduleData);
     throw error;

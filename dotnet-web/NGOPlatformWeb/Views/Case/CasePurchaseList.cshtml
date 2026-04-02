@@ -2,7 +2,10 @@
 @{
     ViewBag.BodyClass = "case-purchase-page";
 }
-<link href="~/css/case/case-purchase.css" rel="stylesheet" />
+
+@section Styles {
+    <link href="~/css/case/case-purchase.css" rel="stylesheet" asp-append-version="true" />
+}
 
 <div class="top-card">
     <div class="top-card-inner">
@@ -10,11 +13,11 @@
             <div class="top-icon">📦</div>
             <div class="top-info">
                 <h2 class="top-title">物資申請紀錄</h2>
-                <p class="top-subtitle">李大仁 的物資申請歷程</p>
+                <p class="top-subtitle">@Model.CaseName 的物資申請歷程</p>
             </div>
         </div>
         <div class="top-card-right">
-            <a href="/Account/Profile" class="back-btn">返回個人資料</a>
+            <a asp-controller="Case" asp-action="CaseProfile" class="back-btn">返回個人資料</a>
         </div>
     </div>
 </div>

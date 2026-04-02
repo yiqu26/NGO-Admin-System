@@ -5,23 +5,8 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/profile/profile-shared.css" />
-    <link rel="stylesheet" href="~/css/activities/activity-records.css" />
-    <style>
-        /* 僅針對頁面主要內容區域設置白色背景，避免影響導航列 */
-        body {
-            background: white;
-        }
-        
-        main {
-            background: white;
-        }
-        
-        .container.py-5 {
-            background: white;
-            background-image: none;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/profile/profile-shared.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/activities/activity-records.css" asp-append-version="true" />
 }
 
 <div class="container py-5">
@@ -194,53 +179,30 @@
 
 @section Scripts {
     <script>
-        // 輕量化的背景設置，僅針對主要內容區域
-        document.addEventListener('DOMContentLoaded', function() {
-            // 僅設置頁面主要內容的背景
-            const mainContent = document.querySelector('main');
-            const container = document.querySelector('.container.py-5');
-            
-            if (mainContent) {
-                mainContent.style.background = 'white';
-            }
-            
-            if (container) {
-                container.style.background = 'white';
-                container.style.backgroundImage = 'none';
-            }
-        });
-    </script>
-}
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const activityCards = document.querySelectorAll('.activity-card');
 
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // 篩選功能
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const activityCards = document.querySelectorAll('.activity-card');
-    
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // 更新按鈕狀態
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            const filter = this.dataset.filter;
-            
-            // 篩選卡片
-            activityCards.forEach(card => {
-                if (filter === 'all') {
-                    card.classList.remove('hidden');
-                } else {
-                    const category = card.dataset.category;
-                    if (category === filter || (filter === 'all' && category !== 'cancelled')) {
+                const filter = this.dataset.filter;
+                activityCards.forEach(card => {
+                    if (filter === 'all') {
                         card.classList.remove('hidden');
                     } else {
-                        card.classList.add('hidden');
+                        const category = card.dataset.category;
+                        if (category === filter) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
                     }
-                }
+                });
             });
         });
     });
-});
-</script>
+    </script>
+}

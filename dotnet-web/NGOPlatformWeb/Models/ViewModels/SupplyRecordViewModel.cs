@@ -4,11 +4,10 @@ namespace NGOPlatformWeb.Models.ViewModels
 {
     public class SupplyRecordViewModel
     {
+        public string CaseName { get; set; } = string.Empty;
         public List<SupplyRecordItem>? UnreceivedSupplies { get; set; }
         public List<SupplyRecordItem>? ReceivedSupplies { get; set; }
         public List<SupplyRecordItem>? EmergencySupplies { get; set; }
-
-        // ✅ 新增：右邊統計用
         public List<CategoryStat>? CategoryStats { get; set; }
     }
 

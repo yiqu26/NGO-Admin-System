@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +33,6 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
             {
                 _logger.LogInformation("開始獲取緊急物資需求列表");
 
-                // 完全避免關聯查詢，使用投影來避免 SupplyId 問題
                 var emergencyNeedsData = await _context.EmergencySupplyNeeds
                     .AsNoTracking()
                     .Select(e => new
@@ -75,12 +75,12 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 }).ToList();
 
                 _logger.LogInformation($"成功獲取 {response.Count} 個緊急物資需求");
-                return Ok(response);
+                return Ok(ApiResponse<IEnumerable<EmergencySupplyNeedResponse>>.SuccessResponse(response, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "獲取緊急物資需求失敗");
-                return StatusCode(500, new { message = "獲取緊急物資需求失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取緊急物資需求失敗", ex.Message));
             }
         }
 
@@ -94,23 +94,15 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
             {
                 _logger.LogInformation("開始獲取緊急物資需求統計");
 
-                // 完全避免關聯查詢，只取基本資料
                 var emergencyNeeds = await _context.EmergencySupplyNeeds
                     .AsNoTracking()
                     .Select(e => new
                     {
                         e.EmergencyNeedId,
-                        e.CaseId,
-                        e.WorkerId,
                         e.Quantity,
                         e.CollectedQuantity,
-                        e.SupplyName,
                         e.Status,
-                        e.Priority,
-                        e.Description,
-                        e.ImageUrl,
-                        e.CreatedDate,
-                        e.UpdatedDate
+                        e.Priority
                     })
                     .ToListAsync();
 
@@ -127,12 +119,12 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 };
 
                 _logger.LogInformation("成功獲取緊急物資需求統計");
-                return Ok(statistics);
+                return Ok(ApiResponse<EmergencySupplyNeedStatistics>.SuccessResponse(statistics, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "獲取緊急物資需求統計失敗");
-                return StatusCode(500, new { message = "獲取緊急物資需求統計失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取緊急物資需求統計失敗", ex.Message));
             }
         }
 
@@ -154,7 +146,7 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 if (emergencyNeed == null)
                 {
                     _logger.LogWarning($"找不到緊急物資需求 ID: {id}");
-                    return NotFound(new { message = "找不到指定的緊急物資需求" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的緊急物資需求"));
                 }
 
                 var response = new EmergencySupplyNeedResponse
@@ -178,12 +170,12 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 };
 
                 _logger.LogInformation($"成功獲取緊急物資需求 ID: {id}");
-                return Ok(response);
+                return Ok(ApiResponse<EmergencySupplyNeedResponse>.SuccessResponse(response, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"獲取緊急物資需求 ID: {id} 失敗");
-                return StatusCode(500, new { message = "獲取緊急物資需求失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取緊急物資需求失敗", ex.Message));
             }
         }
 
@@ -198,9 +190,7 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 _logger.LogInformation("開始創建緊急物資需求");
 
                 if (request == null)
-                {
-                    return BadRequest(new { message = "請求資料不能為空" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("請求資料不能為空"));
 
                 var emergencyNeed = new EmergencySupplyNeed
                 {
@@ -220,13 +210,8 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 _context.EmergencySupplyNeeds.Add(emergencyNeed);
                 await _context.SaveChangesAsync();
 
-                // 重新載入關聯資料
-                await _context.Entry(emergencyNeed)
-                    .Reference(e => e.Case)
-                    .LoadAsync();
-                await _context.Entry(emergencyNeed)
-                    .Reference(e => e.Worker)
-                    .LoadAsync();
+                await _context.Entry(emergencyNeed).Reference(e => e.Case).LoadAsync();
+                await _context.Entry(emergencyNeed).Reference(e => e.Worker).LoadAsync();
 
                 var response = new EmergencySupplyNeedResponse
                 {
@@ -249,12 +234,13 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 };
 
                 _logger.LogInformation($"成功創建緊急物資需求 ID: {emergencyNeed.EmergencyNeedId}");
-                return CreatedAtAction(nameof(GetEmergencySupplyNeed), new { id = emergencyNeed.EmergencyNeedId }, response);
+                return CreatedAtAction(nameof(GetEmergencySupplyNeed), new { id = emergencyNeed.EmergencyNeedId },
+                    ApiResponse<EmergencySupplyNeedResponse>.SuccessResponse(response, "緊急物資需求創建成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "創建緊急物資需求失敗");
-                return StatusCode(500, new { message = "創建緊急物資需求失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("創建緊急物資需求失敗", ex.Message));
             }
         }
 
@@ -268,55 +254,38 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
             try
             {
                 if (file == null || file.Length == 0)
-                {
-                    return BadRequest(new { message = "請選擇圖片檔案" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("請選擇圖片檔案"));
 
-                // 驗證檔案類型
                 var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif" };
                 if (!allowedTypes.Contains(file.ContentType.ToLower()))
-                {
-                    return BadRequest(new { message = "只支援 JPG、PNG、GIF 格式的圖片" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("只支援 JPG、PNG、GIF 格式的圖片"));
 
-                // 驗證檔案大小 (5MB)
                 if (file.Length > 5 * 1024 * 1024)
-                {
-                    return BadRequest(new { message = "圖片檔案大小不能超過 5MB" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("圖片檔案大小不能超過 5MB"));
 
-                // 從配置中獲取 Azure Storage 設定
                 var connectionString = _configuration.GetConnectionString("AzureStorage");
                 var containerName = _configuration.GetValue<string>("AzureStorage:ContainerName");
                 var emergencySupplyFolder = _configuration.GetValue<string>("AzureStorage:EmergencySupplyFolder") ?? "emergency-supply/";
 
                 if (string.IsNullOrEmpty(connectionString))
-                {
-                    return StatusCode(500, new { message = "Azure Storage 連接字串未配置" });
-                }
+                    return StatusCode(500, ApiResponse<object>.ErrorResponse("Azure Storage 連接字串未配置"));
 
-                // 建立 Azure Blob Service Client
                 var blobServiceClient = new BlobServiceClient(connectionString);
                 var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
-                // 確保容器存在
                 await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
-                // 生成唯一的檔案名稱
                 var fileExtension = Path.GetExtension(file.FileName).ToLower();
                 var fileName = $"{Guid.NewGuid()}{fileExtension}";
                 var blobName = $"{emergencySupplyFolder}{fileName}";
 
-                // 獲取 Blob Client
                 var blobClient = containerClient.GetBlobClient(blobName);
 
-                // 設定 Blob 的 Content-Type
                 var blobHttpHeaders = new BlobHttpHeaders
                 {
                     ContentType = file.ContentType
                 };
 
-                // 上傳檔案到 Azure Blob Storage
                 using (var stream = file.OpenReadStream())
                 {
                     await blobClient.UploadAsync(stream, new BlobUploadOptions
@@ -325,9 +294,7 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                     });
                 }
 
-                // 回傳 Azure Blob URL
                 var imageUrl = blobClient.Uri.ToString();
-                
                 _logger.LogInformation($"緊急物資需求圖片上傳成功: {fileName}, URL: {imageUrl}");
 
                 return Ok(new { imageUrl = imageUrl });
@@ -335,7 +302,7 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
             catch (Exception ex)
             {
                 _logger.LogError(ex, "緊急物資需求圖片上傳失敗");
-                return StatusCode(500, new { message = "緊急物資需求圖片上傳失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("緊急物資需求圖片上傳失敗", ex.Message));
             }
         }
 
@@ -349,21 +316,15 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
             {
                 _logger.LogInformation("開始創建測試數據");
 
-                // 檢查是否已有測試數據
                 var existingData = await _context.EmergencySupplyNeeds.AnyAsync();
                 if (existingData)
-                {
-                    return Ok(new { message = "測試數據已存在" });
-                }
+                    return Ok(ApiResponse<object>.SuccessResponse(null!, "測試數據已存在"));
 
-                // 先獲取一些現有的Case、Worker數據
                 var cases = await _context.Cases.Take(3).ToListAsync();
                 var workers = await _context.Workers.Take(3).ToListAsync();
 
                 if (!cases.Any() || !workers.Any())
-                {
-                    return BadRequest(new { message = "缺少必要的基礎數據（Case、Worker）" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("缺少必要的基礎數據（Case、Worker）"));
 
                 var testData = new List<EmergencySupplyNeed>
                 {
@@ -412,12 +373,12 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation($"成功創建 {testData.Count} 筆測試數據");
-                return Ok(new { message = $"成功創建 {testData.Count} 筆測試數據" });
+                return Ok(ApiResponse<object>.SuccessResponse(new { count = testData.Count }, $"成功創建 {testData.Count} 筆測試數據"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "創建測試數據失敗");
-                return StatusCode(500, new { message = "創建測試數據失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("創建測試數據失敗", ex.Message));
             }
         }
 
@@ -435,19 +396,19 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 if (emergencyNeed == null)
                 {
                     _logger.LogWarning($"找不到緊急物資需求 ID: {id}");
-                    return NotFound(new { message = "找不到指定的緊急物資需求" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的緊急物資需求"));
                 }
 
                 emergencyNeed.Status = "approved";
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation($"成功批准緊急物資需求 ID: {id}");
-                return Ok(new { message = "緊急物資需求已批准" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "緊急物資需求已批准"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"批准緊急物資需求 ID: {id} 失敗");
-                return StatusCode(500, new { message = "批准緊急物資需求失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("批准緊急物資需求失敗", ex.Message));
             }
         }
 
@@ -465,19 +426,19 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 if (emergencyNeed == null)
                 {
                     _logger.LogWarning($"找不到緊急物資需求 ID: {id}");
-                    return NotFound(new { message = "找不到指定的緊急物資需求" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的緊急物資需求"));
                 }
 
                 emergencyNeed.Status = "rejected";
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation($"成功拒絕緊急物資需求 ID: {id}");
-                return Ok(new { message = "緊急物資需求已拒絕" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "緊急物資需求已拒絕"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"拒絕緊急物資需求 ID: {id} 失敗");
-                return StatusCode(500, new { message = "拒絕緊急物資需求失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("拒絕緊急物資需求失敗", ex.Message));
             }
         }
 
@@ -495,19 +456,19 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 if (emergencyNeed == null)
                 {
                     _logger.LogWarning($"找不到緊急物資需求 ID: {id}");
-                    return NotFound(new { message = "找不到指定的緊急物資需求" });
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的緊急物資需求"));
                 }
 
                 _context.EmergencySupplyNeeds.Remove(emergencyNeed);
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation($"成功刪除緊急物資需求 ID: {id}");
-                return Ok(new { message = "緊急物資需求已刪除" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "緊急物資需求已刪除"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"刪除緊急物資需求 ID: {id} 失敗");
-                return StatusCode(500, new { message = "刪除緊急物資需求失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("刪除緊急物資需求失敗", ex.Message));
             }
         }
     }
@@ -556,4 +517,4 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         public int TotalQuantity { get; set; }
         public int CollectedQuantity { get; set; }
     }
-} 
+}

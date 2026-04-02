@@ -4,6 +4,7 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using Azure.Storage.Blobs;
 using System.Text;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 using NGO_WebAPI_Backend.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -44,26 +45,20 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                 _logger.LogInformation("開始處理音檔上傳請求 - caseId: {CaseId}", caseId);
 
                 if (audioFile == null || audioFile.Length == 0)
-                {
-                    return BadRequest(new { message = "未提供音檔" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("未提供音檔"));
 
                 if (audioFile.Length > 25 * 1024 * 1024)
-                {
-                    return BadRequest(new { message = "音檔大小不能超過 25MB" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("音檔大小不能超過 25MB"));
 
                 var allowedExtensions = new[] { ".wav", ".mp3", ".m4a", ".webm", ".ogg" };
                 var fileExtension = Path.GetExtension(audioFile.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(fileExtension))
-                {
-                    return BadRequest(new { message = "不支援的音檔格式，請使用 WAV、MP3、M4A、WEBM 或 OGG 格式" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("不支援的音檔格式，請使用 WAV、MP3、M4A、WEBM 或 OGG 格式"));
 
                 if (!_fileStorageService.IsAvailable)
                 {
                     _logger.LogError("檔案儲存服務不可用");
-                    return StatusCode(500, new { message = "檔案儲存服務未配置" });
+                    return StatusCode(500, ApiResponse<object>.ErrorResponse("檔案儲存服務未配置"));
                 }
 
                 string audioUrl;
@@ -75,11 +70,7 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                 catch (Exception uploadEx)
                 {
                     _logger.LogError(uploadEx, "音檔上傳失敗");
-                    return StatusCode(500, new
-                    {
-                        message = "音檔上傳失敗",
-                        error = uploadEx.Message
-                    });
+                    return StatusCode(500, ApiResponse<object>.ErrorResponse("音檔上傳失敗", uploadEx.Message));
                 }
 
                 // 如果提供了 caseId，更新個案的音檔 URL
@@ -98,18 +89,19 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                     }
                 }
 
-                return Ok(new AudioUploadResponse
+                var uploadResult = new AudioUploadResponse
                 {
                     AudioUrl = audioUrl,
                     FileName = audioFile.FileName,
                     FileSize = audioFile.Length,
                     UploadTime = DateTime.UtcNow
-                });
+                };
+                return Ok(ApiResponse<AudioUploadResponse>.SuccessResponse(uploadResult, "音檔上傳成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "音檔上傳處理失敗");
-                return StatusCode(500, new { message = "音檔上傳失敗，請稍後再試" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("音檔上傳失敗，請稍後再試"));
             }
         }
 
@@ -124,21 +116,15 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                 _logger.LogInformation("開始處理語音轉文字請求");
 
                 if (audioFile == null || audioFile.Length == 0)
-                {
-                    return BadRequest(new { message = "未提供音檔" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("未提供音檔"));
 
                 if (audioFile.Length > 25 * 1024 * 1024)
-                {
-                    return BadRequest(new { message = "音檔大小不能超過 25MB" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("音檔大小不能超過 25MB"));
 
                 var allowedExtensions = new[] { ".wav", ".mp3", ".m4a", ".webm", ".ogg" };
                 var fileExtension = Path.GetExtension(audioFile.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(fileExtension))
-                {
-                    return BadRequest(new { message = "不支援的音檔格式，請使用 WAV、MP3、M4A、WEBM 或 OGG 格式" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("不支援的音檔格式，請使用 WAV、MP3、M4A、WEBM 或 OGG 格式"));
 
                 // 優先使用 OpenAI Whisper
                 if (_whisperService.IsAvailable)
@@ -148,12 +134,13 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                     using var stream = audioFile.OpenReadStream();
                     var whisperResult = await _whisperService.TranscribeAsync(stream, audioFile.FileName);
 
-                    return Ok(new SpeechToTextResponse
+                    var whisperDto = new SpeechToTextResponse
                     {
                         Text = whisperResult.Text,
                         Confidence = whisperResult.Confidence,
                         Duration = whisperResult.Duration
-                    });
+                    };
+                    return Ok(ApiResponse<SpeechToTextResponse>.SuccessResponse(whisperDto, "語音轉文字成功"));
                 }
 
                 // Fallback: Azure Speech Service
@@ -165,7 +152,7 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                 if (string.IsNullOrEmpty(speechKey) || string.IsNullOrEmpty(speechRegion))
                 {
                     _logger.LogError("語音轉文字服務未配置（Whisper 和 Azure Speech 均不可用）");
-                    return StatusCode(500, new { message = "語音服務未配置，請設定 OpenAI API Key 或 Azure Speech Key" });
+                    return StatusCode(500, ApiResponse<object>.ErrorResponse("語音服務未配置，請設定 OpenAI API Key 或 Azure Speech Key"));
                 }
 
                 _logger.LogInformation("使用 Azure Speech Service 進行語音轉文字");
@@ -174,14 +161,13 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                 await audioFile.CopyToAsync(memoryStream);
                 var audioBytes = memoryStream.ToArray();
 
-                var result = await TranscribeAudioWithAzureSpeechAsync(audioBytes, speechKey, speechRegion);
-
-                return Ok(result);
+                var azureResult = await TranscribeAudioWithAzureSpeechAsync(audioBytes, speechKey, speechRegion);
+                return Ok(ApiResponse<SpeechToTextResponse>.SuccessResponse(azureResult, "語音轉文字成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "語音轉文字處理失敗");
-                return StatusCode(500, new { message = "語音轉文字失敗，請稍後再試" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("語音轉文字失敗，請稍後再試"));
             }
         }
 
@@ -198,14 +184,10 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                 var audioFolder = _configuration["AzureStorage:AudioFolder"] ?? "case_audio/";
 
                 if (string.IsNullOrEmpty(connectionString))
-                {
-                    return BadRequest(new { message = "Azure Storage 連接字串未配置" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("Azure Storage 連接字串未配置"));
 
                 if (string.IsNullOrEmpty(containerName))
-                {
-                    return BadRequest(new { message = "Azure Storage 容器名稱未配置" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("Azure Storage 容器名稱未配置"));
 
                 _logger.LogInformation("測試 Azure Blob Storage 連線... Container: {Container}, AudioFolder: {Folder}",
                     containerName, audioFolder);
@@ -225,24 +207,20 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                     blobs.Add(blobItem.Name);
                 }
 
-                return Ok(new
+                var blobInfo = new
                 {
-                    message = "Azure Blob Storage 連線測試成功",
                     containerName,
                     audioFolder,
                     containerExists = containerExists.Value,
                     blobCount = blobs.Count,
                     blobs = blobs.Take(10).ToList()
-                });
+                };
+                return Ok(ApiResponse<object>.SuccessResponse(blobInfo, "Azure Blob Storage 連線測試成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Azure Blob Storage 連線測試失敗");
-                return StatusCode(500, new
-                {
-                    message = "Azure Blob Storage 連線測試失敗",
-                    error = ex.Message
-                });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("Azure Blob Storage 連線測試失敗", ex.Message));
             }
         }
 
@@ -254,43 +232,32 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
         {
             try
             {
-                // 檢查 Whisper
                 if (_whisperService.IsAvailable)
                 {
-                    return Ok(new
-                    {
-                        message = "語音轉文字服務正常 (OpenAI Whisper)",
-                        provider = "OpenAI Whisper"
-                    });
+                    var whisperInfo = new { provider = "OpenAI Whisper" };
+                    return Ok(ApiResponse<object>.SuccessResponse(whisperInfo, "語音轉文字服務正常 (OpenAI Whisper)"));
                 }
 
-                // 檢查 Azure Speech
                 var speechKey = _configuration["AI:AzureSpeech:Key"]
                                 ?? _configuration["AzureSpeech:Key"];
                 var speechRegion = _configuration["AI:AzureSpeech:Region"]
                                    ?? _configuration["AzureSpeech:Region"];
 
                 if (string.IsNullOrEmpty(speechKey) || string.IsNullOrEmpty(speechRegion))
-                {
-                    return BadRequest(new { message = "語音服務未配置（Whisper 和 Azure Speech 均不可用）" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("語音服務未配置（Whisper 和 Azure Speech 均不可用）"));
 
                 var config = SpeechConfig.FromSubscription(speechKey, speechRegion);
                 config.SpeechRecognitionLanguage = "zh-TW";
 
                 await Task.Delay(100);
 
-                return Ok(new
-                {
-                    message = "Azure Speech Service 連線設定正常",
-                    provider = "Azure Speech",
-                    region = speechRegion
-                });
+                var azureInfo = new { provider = "Azure Speech", region = speechRegion };
+                return Ok(ApiResponse<object>.SuccessResponse(azureInfo, "Azure Speech Service 連線設定正常"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "語音服務連線測試失敗");
-                return StatusCode(500, new { message = "連線測試失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("連線測試失敗", ex.Message));
             }
         }
 
@@ -305,9 +272,7 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                 _logger.LogInformation("開始從 URL 進行語音轉文字: {Url}", request.AudioUrl);
 
                 if (string.IsNullOrEmpty(request.AudioUrl))
-                {
-                    return BadRequest(new { message = "未提供音檔 URL" });
-                }
+                    return BadRequest(ApiResponse<object>.ErrorResponse("未提供音檔 URL"));
 
                 // 優先使用 Whisper
                 if (_whisperService.IsAvailable)
@@ -324,9 +289,7 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                         var localPath = Path.Combine(Directory.GetCurrentDirectory(),
                             request.AudioUrl.TrimStart('/'));
                         if (!System.IO.File.Exists(localPath))
-                        {
-                            return BadRequest(new { message = "找不到本地音檔" });
-                        }
+                            return BadRequest(ApiResponse<object>.ErrorResponse("找不到本地音檔"));
                         audioStream = System.IO.File.OpenRead(localPath);
                         fileName = Path.GetFileName(localPath);
                     }
@@ -344,38 +307,36 @@ namespace NGO_WebAPI_Backend.Controllers.CaseManagement
                     using (audioStream)
                     {
                         var whisperResult = await _whisperService.TranscribeAsync(audioStream, fileName);
-                        return Ok(new SpeechToTextResponse
+                        var whisperDto = new SpeechToTextResponse
                         {
                             Text = whisperResult.Text,
                             Confidence = whisperResult.Confidence,
                             Duration = whisperResult.Duration
-                        });
+                        };
+                        return Ok(ApiResponse<SpeechToTextResponse>.SuccessResponse(whisperDto, "語音轉文字成功"));
                     }
                 }
 
-                // Fallback: Azure Speech
                 var speechKey = _configuration["AI:AzureSpeech:Key"]
                                 ?? _configuration["AzureSpeech:Key"];
                 var speechRegion = _configuration["AI:AzureSpeech:Region"]
                                    ?? _configuration["AzureSpeech:Region"];
 
                 if (string.IsNullOrEmpty(speechKey) || string.IsNullOrEmpty(speechRegion))
-                {
-                    return StatusCode(500, new { message = "語音服務未配置" });
-                }
+                    return StatusCode(500, ApiResponse<object>.ErrorResponse("語音服務未配置"));
 
                 _logger.LogInformation("使用 Azure Speech Service 從 URL 進行語音轉文字");
 
                 using var client = new HttpClient();
                 var bytes = await client.GetByteArrayAsync(request.AudioUrl);
 
-                var result = await TranscribeAudioWithAzureSpeechAsync(bytes, speechKey, speechRegion);
-                return Ok(result);
+                var azureResult = await TranscribeAudioWithAzureSpeechAsync(bytes, speechKey, speechRegion);
+                return Ok(ApiResponse<SpeechToTextResponse>.SuccessResponse(azureResult, "語音轉文字成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "從 URL 語音轉文字處理失敗");
-                return StatusCode(500, new { message = "語音轉文字失敗，請稍後再試" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("語音轉文字失敗，請稍後再試"));
             }
         }
 

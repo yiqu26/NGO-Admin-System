@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 
 namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
 {
@@ -20,7 +21,7 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         /// 取得所有物資清單
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetSupplies()
+        public async Task<ActionResult<ApiResponse<IEnumerable<object>>>> GetSupplies()
         {
             try
             {
@@ -33,22 +34,22 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                         categoryId = s.SupplyCategoryId,
                         categoryName = s.SupplyCategory != null ? s.SupplyCategory.SupplyCategoryName : "未分類",
                         currentStock = s.SupplyQuantity ?? 0,
-                        unit = "個", // 暫時固定單位，後續可加入資料庫欄位
-                        location = "倉庫", // 暫時固定位置，後續可加入資料庫欄位
-                        supplier = "系統供應商", // 暫時固定供應商，後續可加入資料庫欄位
+                        unit = "個",
+                        location = "倉庫",
+                        supplier = "系統供應商",
                         cost = s.SupplyPrice ?? 0,
-                        addedDate = DateTime.Now.ToString("yyyy-MM-dd"), // 暫時使用當前日期
+                        addedDate = DateTime.Now.ToString("yyyy-MM-dd"),
                         expiryDate = (string?)null,
                         description = s.SupplyDescription,
                         supplyType = s.SupplyType ?? "regular"
                     })
                     .ToListAsync();
 
-                return Ok(supplies);
+                return Ok(ApiResponse<IEnumerable<object>>.SuccessResponse(supplies, "查詢成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "取得物資清單失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得物資清單失敗", ex.Message));
             }
         }
 
@@ -57,7 +58,7 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         /// 取得單一物資詳細資訊
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<object>> GetSupply(int id)
+        public async Task<ActionResult<ApiResponse<object>>> GetSupply(int id)
         {
             try
             {
@@ -84,15 +85,13 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                     .FirstOrDefaultAsync();
 
                 if (supply == null)
-                {
-                    return NotFound(new { message = "找不到指定的物資" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的物資"));
 
-                return Ok(supply);
+                return Ok(ApiResponse<object>.SuccessResponse(supply, "查詢成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "取得物資詳細資訊失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得物資詳細資訊失敗", ex.Message));
             }
         }
 
@@ -101,7 +100,7 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         /// 新增物資
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<object>> PostSupply([FromBody] CreateSupplyRequest request)
+        public async Task<ActionResult<ApiResponse<object>>> PostSupply([FromBody] CreateSupplyRequest request)
         {
             try
             {
@@ -119,7 +118,6 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 _context.Supplies.Add(supply);
                 await _context.SaveChangesAsync();
 
-                // 重新查詢以取得完整資訊
                 var createdSupply = await _context.Supplies
                     .Include(s => s.SupplyCategory)
                     .Where(s => s.SupplyId == supply.SupplyId)
@@ -141,11 +139,11 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                     })
                     .FirstOrDefaultAsync();
 
-                return CreatedAtAction(nameof(GetSupply), new { id = supply.SupplyId }, createdSupply);
+                return StatusCode(201, ApiResponse<object>.SuccessResponse(createdSupply!, "新增成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "新增物資失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("新增物資失敗", ex.Message));
             }
         }
 
@@ -154,15 +152,13 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         /// 更新物資資訊
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSupply(int id, [FromBody] UpdateSupplyRequest request)
+        public async Task<ActionResult<ApiResponse<object>>> PutSupply(int id, [FromBody] UpdateSupplyRequest request)
         {
             try
             {
                 var supply = await _context.Supplies.FindAsync(id);
                 if (supply == null)
-                {
-                    return NotFound(new { message = "找不到指定的物資" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的物資"));
 
                 if (request.Name != null) supply.SupplyName = request.Name;
                 if (request.CategoryId.HasValue) supply.SupplyCategoryId = request.CategoryId;
@@ -175,11 +171,11 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 _context.Entry(supply).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "物資更新成功" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "物資更新成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "更新物資失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("更新物資失敗", ex.Message));
             }
         }
 
@@ -188,24 +184,22 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         /// 刪除物資
         /// </summary>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSupply(int id)
+        public async Task<ActionResult<ApiResponse<object>>> DeleteSupply(int id)
         {
             try
             {
                 var supply = await _context.Supplies.FindAsync(id);
                 if (supply == null)
-                {
-                    return NotFound(new { message = "找不到指定的物資" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的物資"));
 
                 _context.Supplies.Remove(supply);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "物資刪除成功" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "物資刪除成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "刪除物資失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("刪除物資失敗", ex.Message));
             }
         }
 
@@ -214,7 +208,7 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         /// 取得所有物資分類
         /// </summary>
         [HttpGet("categories")]
-        public async Task<ActionResult<IEnumerable<object>>> GetSupplyCategories()
+        public async Task<ActionResult<ApiResponse<IEnumerable<object>>>> GetSupplyCategories()
         {
             try
             {
@@ -226,11 +220,11 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                     })
                     .ToListAsync();
 
-                return Ok(categories);
+                return Ok(ApiResponse<IEnumerable<object>>.SuccessResponse(categories, "查詢成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "取得物資分類失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得物資分類失敗", ex.Message));
             }
         }
 
@@ -239,7 +233,7 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         /// 取得物資統計資料
         /// </summary>
         [HttpGet("stats")]
-        public async Task<ActionResult<object>> GetSupplyStats()
+        public async Task<ActionResult<ApiResponse<object>>> GetSupplyStats()
         {
             try
             {
@@ -252,16 +246,16 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
 
                 var stats = new
                 {
-                    totalItems = totalItems,
-                    lowStockItems = lowStockItems,
-                    totalValue = totalValue
+                    totalItems,
+                    lowStockItems,
+                    totalValue
                 };
 
-                return Ok(stats);
+                return Ok(ApiResponse<object>.SuccessResponse(stats, "查詢成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "取得物資統計失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得物資統計失敗", ex.Message));
             }
         }
 
@@ -270,7 +264,7 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         /// 新增物資分類
         /// </summary>
         [HttpPost("categories")]
-        public async Task<ActionResult<object>> PostSupplyCategory([FromBody] CreateCategoryRequest request)
+        public async Task<ActionResult<ApiResponse<object>>> PostSupplyCategory([FromBody] CreateCategoryRequest request)
         {
             try
             {
@@ -288,11 +282,11 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                     name = category.SupplyCategoryName
                 };
 
-                return CreatedAtAction(nameof(GetSupplyCategories), result);
+                return StatusCode(201, ApiResponse<object>.SuccessResponse(result, "新增分類成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "新增物資分類失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("新增物資分類失敗", ex.Message));
             }
         }
     }
@@ -324,4 +318,4 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
     {
         public string Name { get; set; } = null!;
     }
-} 
+}

@@ -20,7 +20,7 @@
                 <p class="page-subtitle">@Model.CaseName 的活動參與歷程</p>
             </div>
             <div class="col-md-4 text-end">
-                <a asp-action="CaseProfile" class="btn btn-outline-info">
+                <a asp-action="CaseProfile" class="btn btn-outline-primary">
                     <i class="fas fa-arrow-left me-2"></i>返回個人資料
                 </a>
             </div>
@@ -186,34 +186,32 @@
 </div>
 
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // 篩選功能
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const activityCards = document.querySelectorAll('.activity-card');
-    
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // 更新按鈕狀態
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            const filter = this.dataset.filter;
-            
-            // 篩選卡片
-            activityCards.forEach(card => {
-                if (filter === 'all') {
-                    card.classList.remove('hidden');
-                } else {
-                    const category = card.dataset.category;
-                    if (category === filter || (filter === 'all' && category !== 'cancelled')) {
+@section Scripts {
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const activityCards = document.querySelectorAll('.activity-card');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                const filter = this.dataset.filter;
+                activityCards.forEach(card => {
+                    if (filter === 'all') {
                         card.classList.remove('hidden');
                     } else {
-                        card.classList.add('hidden');
+                        const category = card.dataset.category;
+                        if (category === filter) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
                     }
-                }
+                });
             });
         });
     });
-});
-</script>
+    </script>
+}

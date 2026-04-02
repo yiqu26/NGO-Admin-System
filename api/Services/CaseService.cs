@@ -1,10 +1,8 @@
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
+using System.Text.RegularExpressions;
 using NGO_WebAPI_Backend.Models.Shared;
 using NGO_WebAPI_Backend.Models.Domain.CaseManagement;
 using NGO_WebAPI_Backend.DTOs;
 using NGO_WebAPI_Backend.Repositories;
-using System.Text.RegularExpressions;
 
 namespace NGO_WebAPI_Backend.Services
 {
@@ -14,12 +12,14 @@ namespace NGO_WebAPI_Backend.Services
     public class CaseService : ICaseService
     {
         private readonly ICaseRepository _caseRepository;
+        private readonly IFileStorageService _fileStorageService;
         private readonly IConfiguration _configuration;
         private readonly ILogger<CaseService> _logger;
 
-        public CaseService(ICaseRepository caseRepository, IConfiguration configuration, ILogger<CaseService> logger)
+        public CaseService(ICaseRepository caseRepository, IFileStorageService fileStorageService, IConfiguration configuration, ILogger<CaseService> logger)
         {
             _caseRepository = caseRepository;
+            _fileStorageService = fileStorageService;
             _configuration = configuration;
             _logger = logger;
         }
@@ -161,6 +161,21 @@ namespace NGO_WebAPI_Backend.Services
                 };
 
                 var createdCase = await _caseRepository.CreateCaseAsync(caseEntity);
+
+                // 若有提供 Email，自動建立登入帳號，初始密碼為身分證後6碼
+                if (!string.IsNullOrEmpty(createCaseDto.Email) && !string.IsNullOrEmpty(createCaseDto.IdentityNumber) && createCaseDto.IdentityNumber.Length >= 6)
+                {
+                    var initialPassword = createCaseDto.IdentityNumber[^6..];
+                    var caseLogin = new CaseLogin
+                    {
+                        CaseId = createdCase.CaseId,
+                        Email = createCaseDto.Email,
+                        Password = BCrypt.Net.BCrypt.HashPassword(initialPassword)
+                    };
+                    await _caseRepository.CreateCaseLoginAsync(caseLogin);
+                    _logger.LogInformation("成功建立個案 {CaseId} 的登入帳號", createdCase.CaseId);
+                }
+
                 var caseDto = MapToCaseDto(createdCase);
 
                 _logger.LogInformation($"成功建立個案 ID: {createdCase.CaseId}");
@@ -284,67 +299,17 @@ namespace NGO_WebAPI_Backend.Services
             try
             {
                 if (file == null || file.Length == 0)
-                {
                     return ApiResponse<string>.ErrorResponse("請選擇圖片檔案");
-                }
 
-                // 驗證檔案類型
                 var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif" };
                 if (!allowedTypes.Contains(file.ContentType.ToLower()))
-                {
                     return ApiResponse<string>.ErrorResponse("只支援 JPG、PNG、GIF 格式的圖片");
-                }
 
-                // 驗證檔案大小 (5MB)
                 if (file.Length > 5 * 1024 * 1024)
-                {
                     return ApiResponse<string>.ErrorResponse("圖片檔案大小不能超過 5MB");
-                }
 
-                // 從配置中獲取 Azure Storage 設定
-                var connectionString = _configuration.GetConnectionString("AzureStorage");
-                var containerName = _configuration.GetValue<string>("AzureStorage:ContainerName");
-                var casePhotosFolder = _configuration.GetValue<string>("AzureStorage:CasePhotosFolder");
-
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    return ApiResponse<string>.ErrorResponse("Azure Storage 連接字串未配置");
-                }
-
-                // 建立 Azure Blob Service Client
-                var blobServiceClient = new BlobServiceClient(connectionString);
-                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
-                // 確保容器存在
-                await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
-
-                // 生成唯一的檔案名稱
-                var fileExtension = Path.GetExtension(file.FileName).ToLower();
-                var fileName = $"{Guid.NewGuid()}{fileExtension}";
-                var blobName = $"{casePhotosFolder}{fileName}";
-
-                // 獲取 Blob Client
-                var blobClient = containerClient.GetBlobClient(blobName);
-
-                // 設定 Blob 的 Content-Type
-                var blobHttpHeaders = new BlobHttpHeaders
-                {
-                    ContentType = file.ContentType
-                };
-
-                // 上傳檔案到 Azure Blob Storage
-                using (var stream = file.OpenReadStream())
-                {
-                    await blobClient.UploadAsync(stream, new BlobUploadOptions
-                    {
-                        HttpHeaders = blobHttpHeaders
-                    });
-                }
-
-                // 回傳 Azure Blob URL
-                var imageUrl = blobClient.Uri.ToString();
-                
-                _logger.LogInformation($"個案圖片上傳成功: {fileName}, URL: {imageUrl}");
+                var imageUrl = await _fileStorageService.UploadImageAsync(file);
+                _logger.LogInformation("個案圖片上傳成功: {Url}", imageUrl);
                 return ApiResponse<string>.SuccessResponse(imageUrl, "圖片上傳成功");
             }
             catch (Exception ex)

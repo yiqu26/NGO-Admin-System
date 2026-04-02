@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 
 namespace NGO_WebAPI_Backend.Controllers.Dashboard
 {
@@ -26,16 +27,14 @@ namespace NGO_WebAPI_Backend.Controllers.Dashboard
             try
             {
                 _logger.LogInformation("Dashboard API 運作正常");
-                return Ok(new { 
-                    message = "Dashboard API 運作正常", 
-                    timestamp = DateTime.Now,
-                    version = "1.0.0"
-                });
+                return Ok(ApiResponse<object>.SuccessResponse(
+                    new { timestamp = DateTime.Now, version = "1.0.0" },
+                    "Dashboard API 運作正常"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Dashboard API 發生錯誤");
-                return StatusCode(500, new { message = "服務器錯誤" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("服務器錯誤"));
             }
         }
 
@@ -98,12 +97,12 @@ namespace NGO_WebAPI_Backend.Controllers.Dashboard
                 };
 
                 _logger.LogInformation($"統計數據獲取成功: 個案{stats.TotalCases}(今年新增{stats.ThisYearNewCases}), 志工{stats.TotalWorkers}(今年新增{stats.ThisYearNewWorkers}), 活動{stats.TotalActivities}, 本月完成{stats.MonthlyCompletedActivities}");
-                return Ok(stats);
+                return Ok(ApiResponse<DashboardStats>.SuccessResponse(stats, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "獲取Dashboard統計數據時發生錯誤");
-                return StatusCode(500, new { message = "獲取統計數據失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取統計數據失敗"));
             }
         }
 
@@ -127,12 +126,12 @@ namespace NGO_WebAPI_Backend.Controllers.Dashboard
                     .ToListAsync();
 
                 _logger.LogInformation($"性別分佈數據獲取成功，共{genderStats.Count}個分類");
-                return Ok(genderStats);
+                return Ok(ApiResponse<List<GenderDistribution>>.SuccessResponse(genderStats, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "獲取性別分佈數據時發生錯誤");
-                return StatusCode(500, new { message = "獲取性別分佈數據失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取性別分佈數據失敗"));
             }
         }
 
@@ -157,12 +156,12 @@ namespace NGO_WebAPI_Backend.Controllers.Dashboard
                     .ToListAsync();
 
                 _logger.LogInformation($"個案城市分佈數據獲取成功，共{caseStats.Count}個城市");
-                return Ok(caseStats);
+                return Ok(ApiResponse<List<CaseDistribution>>.SuccessResponse(caseStats, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "獲取個案城市分佈數據時發生錯誤");
-                return StatusCode(500, new { message = "獲取個案分佈數據失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取個案分佈數據失敗"));
             }
         }
 
@@ -192,12 +191,12 @@ namespace NGO_WebAPI_Backend.Controllers.Dashboard
                     .ToList();
 
                 _logger.LogInformation($"個案困難類型分析數據獲取成功，共{groupedStats.Count}個類型");
-                return Ok(groupedStats);
+                return Ok(ApiResponse<List<DifficultyAnalysis>>.SuccessResponse(groupedStats, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "獲取個案困難類型分析數據時發生錯誤");
-                return StatusCode(500, new { message = "獲取困難分析數據失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取困難分析數據失敗", ex.Message));
             }
         }
 
@@ -255,12 +254,12 @@ namespace NGO_WebAPI_Backend.Controllers.Dashboard
                 countyStats.AddRange(unmappedCities);
 
                 _logger.LogInformation($"個案縣市分佈數據獲取成功，共{countyStats.Count}個縣市");
-                return Ok(countyStats);
+                return Ok(ApiResponse<List<CountyDistribution>>.SuccessResponse(countyStats, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "獲取個案縣市分佈數據時發生錯誤");
-                return StatusCode(500, new { message = "獲取縣市分佈數據失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取縣市分佈數據失敗"));
             }
         }
 
@@ -291,12 +290,12 @@ namespace NGO_WebAPI_Backend.Controllers.Dashboard
                     .ToListAsync();
 
                 _logger.LogInformation($"用戶{workerId}近期活動數據獲取成功，共{recentActivities.Count}筆");
-                return Ok(recentActivities);
+                return Ok(ApiResponse<List<RecentActivity>>.SuccessResponse(recentActivities, "查詢成功"));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"獲取用戶{workerId}近期活動數據時發生錯誤");
-                return StatusCode(500, new { message = "獲取近期活動數據失敗" });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("獲取近期活動數據失敗"));
             }
         }
     }

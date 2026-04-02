@@ -2,135 +2,153 @@
 
 <link rel="stylesheet" href="~/css/case/activity-overview.css" asp-append-version="true" />
 
-<!-- Hero 區塊 -->
-<div class="activity-hero">
-    <div class="activity-hero__overlay"></div>
-    <div class="activity-hero__content">
-        <h1 class="activity-hero__title">活動總覽</h1>
-        <p class="activity-hero__subtitle">快找親朋好友一起參與活動吧～</p>
+<!-- 編輯排版 Header -->
+<div class="activity-editorial-header">
+    <div class="container">
+        <span class="activity-eyebrow">Activities</span>
+        <h1 class="activity-headline">活動總覽</h1>
+        <p class="activity-tagline">探索每一場溫暖的相聚，找到屬於您的故事</p>
+        <hr class="activity-header-rule" />
     </div>
 </div>
 
-<!-- 搜尋與篩選 -->
-<div class="container activity-controls">
-    <div class="activity-controls__inner">
-        <input type="text" class="search-box" placeholder="搜尋活動名稱…" aria-label="搜尋活動" />
-        <div class="filter-group">
-            <button class="btn-filter active" data-category="全部">全部</button>
-            <button class="btn-filter" data-category="生活">生活</button>
-            <button class="btn-filter" data-category="運動">運動</button>
-            <button class="btn-filter" data-category="娛樂">娛樂</button>
-            <button class="btn-filter" data-category="教育">教育</button>
-            <button class="btn-filter" data-category="心靈">心靈</button>
+<!-- 搜尋 & 篩選工具列 -->
+<div class="activity-toolbar">
+    <div class="container">
+        <div class="activity-toolbar__inner">
+            <input type="text" class="search-box" placeholder="搜尋活動名稱…" aria-label="搜尋活動" />
+            <div class="filter-group">
+                <button class="btn-filter active" data-category="全部">全部</button>
+                <button class="btn-filter" data-category="生活">生活</button>
+                <button class="btn-filter" data-category="運動">運動</button>
+                <button class="btn-filter" data-category="娛樂">娛樂</button>
+                <button class="btn-filter" data-category="教育">教育</button>
+                <button class="btn-filter" data-category="心靈">心靈</button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- 活動卡片列表 -->
-<div class="container">
-    <div class="row" id="activity-list">
-        @foreach (var item in Model.Activities)
-        {
-            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                <div class="activity-card search-card" data-category="@item.Category">
-                    <div class="activity-card__image">
-                        <img src="@item.ImageUrl" alt="@item.ActivityName" loading="lazy" />
-                        <div class="activity-card__image-overlay"></div>
-                        <span class="activity-card__category-tag">@item.Category</span>
-                    </div>
-                    <div class="activity-card__body">
-                        <h3 class="activity-card__title">@item.ActivityName</h3>
-                        <p class="activity-card__desc">@item.Description</p>
-                        <div class="activity-card__meta">
-                            <span class="activity-card__meta-item">
-                                <i class="fas fa-map-marker-alt"></i>@item.Location
-                            </span>
-                            <span class="activity-card__meta-item">
-                                <i class="fas fa-calendar-alt"></i>@item.StartDate.ToString("yyyy/MM/dd HH:mm")
-                            </span>
-                            <span class="activity-card__meta-item">
-                                <i class="fas fa-calendar-check"></i>@item.EndDate.ToString("yyyy/MM/dd HH:mm")
-                            </span>
-                            <span class="activity-card__meta-item activity-card__participants" data-activity-id="@item.ActivityId">
-                                <i class="fas fa-users"></i>
-                                <span class="current">@item.CurrentParticipants</span> / <span class="max">@item.MaxParticipants</span> 人
-                            </span>
-                        </div>
-                        <div class="activity-card__actions">
-                            @{
-                                var userType = Model.UserType;
-                                var isRegistered = Model.RegisteredActivityIds.Contains(item.ActivityId);
-                            }
-                            @if (userType == "Case")
-                            {
-                                @if (isRegistered)
-                                {
-                                    <button class="btn-join btn-cancel"
-                                            data-activity-id="@item.ActivityId"
-                                            data-activity-name="@item.ActivityName"
-                                            onclick="cancelRegistration(@item.ActivityId, '@item.ActivityName')">
-                                        取消報名
-                                    </button>
-                                }
-                                else
-                                {
-                                    <button class="btn-join"
-                                            data-activity-id="@item.ActivityId"
-                                            data-activity-name="@item.ActivityName"
-                                            onclick="showCaseRegistrationModal(@item.ActivityId, '@item.ActivityName')">
-                                        立即參與
-                                    </button>
-                                }
-                            }
-                            else if (userType == "User")
-                            {
-                                @if (isRegistered)
-                                {
-                                    <button class="btn-join btn-cancel"
-                                            data-activity-id="@item.ActivityId"
-                                            data-activity-name="@item.ActivityName"
-                                            onclick="cancelRegistration(@item.ActivityId, '@item.ActivityName')">
-                                        取消報名
-                                    </button>
-                                }
-                                else
-                                {
-                                    <button class="btn-join"
-                                            data-activity-id="@item.ActivityId"
-                                            data-activity-name="@item.ActivityName"
-                                            onclick="showRegistrationModal(@item.ActivityId, '@item.ActivityName')">
-                                        立即參與
-                                    </button>
-                                }
-                            }
-                            else
-                            {
-                                <a class="btn-join"
-                                   href="/Auth/Login?returnUrl=@Url.Action("PublicIndex", "Activity")">
-                                    立即參與
-                                </a>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
+<!-- 使命語橫幅 -->
+<div class="activity-mission-strip">
+    <div class="container">
+        <p class="activity-mission-text">每一場活動，都是一次相遇的機會。無論是伸出援手，還是接受溫暖，我們都在一起。</p>
     </div>
+</div>
 
-    <!-- 骨架卡片（JS 隱藏後顯示，可選用） -->
-    <div class="skeleton-grid" id="skeleton-grid" style="display:none">
-        @for (int s = 0; s < 4; s++)
-        {
-            <div class="skeleton-card">
-                <div class="skeleton skeleton-img"></div>
-                <div class="skeleton-body">
-                    <div class="skeleton skeleton-title"></div>
-                    <div class="skeleton skeleton-text"></div>
-                    <div class="skeleton skeleton-text short"></div>
-                    <div class="skeleton skeleton-btn"></div>
+<!-- 活動 Grid -->
+<div class="activity-grid-section">
+    <div class="container">
+        <div class="activity-grid" id="activity-list">
+            @foreach (var item in Model.Activities)
+            {
+                <div class="activity-item search-card" data-category="@item.Category">
+                    <div class="activity-card" data-category="@item.Category">
+                        <div class="activity-card__image">
+                            <img src="@item.ImageUrl" alt="@item.ActivityName" loading="lazy" />
+                            <div class="activity-card__image-overlay"></div>
+                            <span class="activity-card__category-tag">@item.Category</span>
+                        </div>
+                        <div class="activity-card__body">
+                            <h3 class="activity-card__title">@item.ActivityName</h3>
+                            <p class="activity-card__desc">@item.Description</p>
+                            <div class="activity-card__meta">
+                                <span class="activity-card__meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>@item.Location
+                                </span>
+                                <span class="activity-card__meta-item">
+                                    <i class="fas fa-calendar-alt"></i>@item.StartDate.ToString("yyyy/MM/dd HH:mm")
+                                </span>
+                                <span class="activity-card__meta-item">
+                                    <i class="fas fa-calendar-check"></i>@item.EndDate.ToString("yyyy/MM/dd HH:mm")
+                                </span>
+                                <span class="activity-card__meta-item activity-card__participants" data-activity-id="@item.ActivityId">
+                                    <i class="fas fa-users"></i>
+                                    <span class="current">@item.CurrentParticipants</span> / <span class="max">@item.MaxParticipants</span> 人
+                                </span>
+                            </div>
+                            <div class="activity-card__actions">
+                                @{
+                                    var userType = Model.UserType;
+                                    var isRegistered = Model.RegisteredActivityIds.Contains(item.ActivityId);
+                                }
+                                @if (userType == "Case")
+                                {
+                                    @if (isRegistered)
+                                    {
+                                        <button class="btn-join btn-cancel"
+                                                data-activity-id="@item.ActivityId"
+                                                data-activity-name="@item.ActivityName"
+                                                onclick="cancelRegistration(@item.ActivityId, '@item.ActivityName')">
+                                            取消報名
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn-join"
+                                                data-activity-id="@item.ActivityId"
+                                                data-activity-name="@item.ActivityName"
+                                                onclick="showCaseRegistrationModal(@item.ActivityId, '@item.ActivityName')">
+                                            立即參與
+                                        </button>
+                                    }
+                                }
+                                else if (userType == "User")
+                                {
+                                    @if (isRegistered)
+                                    {
+                                        <button class="btn-join btn-cancel"
+                                                data-activity-id="@item.ActivityId"
+                                                data-activity-name="@item.ActivityName"
+                                                onclick="cancelRegistration(@item.ActivityId, '@item.ActivityName')">
+                                            取消報名
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn-join"
+                                                data-activity-id="@item.ActivityId"
+                                                data-activity-name="@item.ActivityName"
+                                                onclick="showRegistrationModal(@item.ActivityId, '@item.ActivityName')">
+                                            立即參與
+                                        </button>
+                                    }
+                                }
+                                else
+                                {
+                                    <a class="btn-join"
+                                       href="/Auth/Login?returnUrl=@Url.Action("PublicIndex", "Activity")">
+                                        立即參與
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
+
+        <!-- 無結果提示 -->
+        <div class="activity-empty" id="activity-empty" style="display:none">
+            <i class="fas fa-search"></i>
+            <p>沒有找到符合條件的活動</p>
+        </div>
+
+        <!-- Skeleton 骨架卡片 -->
+        <div class="skeleton-grid" id="skeleton-grid" style="display:none">
+            @for (int s = 0; s < 3; s++)
+            {
+                <div class="skeleton-card">
+                    <div class="skeleton skeleton-img"></div>
+                    <div class="skeleton-body">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text short"></div>
+                        <div class="skeleton skeleton-btn"></div>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 </div>
 
@@ -167,7 +185,7 @@
     </div>
 </div>
 
-<!-- Case 報名 Modal (簡化版) -->
+<!-- Case 報名 Modal -->
 <div class="modal fade" id="caseRegistrationModal" tabindex="-1" aria-labelledby="caseRegistrationModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -200,8 +218,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="cancelConfirmModalLabel">
-                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
-                    確認取消報名
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>確認取消報名
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -243,7 +260,7 @@
                 <i class="fas fa-thumbs-up text-success me-2 fs-4"></i>
                 <div>
                     <div class="fw-bold" id="successMessage">恭喜您報名成功！</div>
-                    <small class="text-muted" id="successDetails">頁面將自動重新載入...</small>
+                    <small class="text-muted" id="successDetails">期待您的參與！</small>
                 </div>
             </div>
         </div>
@@ -251,7 +268,7 @@
 </div>
 
 <!-- 錯誤通知 Toast -->
-<div class="toast-container position-fixed top-0 end-0 p-3">
+<div class="toast-container position-fixed top-0 end-0 p-3" style="margin-top: 60px;">
     <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header bg-danger text-white">
             <i class="fas fa-exclamation-triangle me-2"></i>
@@ -273,7 +290,7 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // 🔍 搜尋活動名稱
+            // 搜尋活動名稱
             $(".search-box").on("keyup", function () {
                 var value = $(this).val().toLowerCase();
                 let hasVisible = false;
@@ -281,35 +298,28 @@
                 $(".search-card").each(function () {
                     const text = $(this).text().toLowerCase();
                     const match = text.includes(value);
-                    $(this).closest(".col-12").toggle(match);
+                    $(this).toggle(match);
                     if (match) hasVisible = true;
                 });
 
-                // 控制卡片容器靠左
-                const $container = $("#activity-list");
-                if (hasVisible) {
-                    $container.addClass("justify-content-start");
-                } else {
-                    $container.removeClass("justify-content-start");
-                }
+                $("#activity-empty").toggle(!hasVisible);
             });
 
-            // 🏷️ 點擊分類按鈕 (不跳頁，前端篩選)
+            // 點擊分類按鈕
             $(".btn-filter").on("click", function () {
                 const category = $(this).data("category");
-
                 $(".btn-filter").removeClass("active");
                 $(this).addClass("active");
 
-                // 篩選卡片
-                $(".activity-card").each(function () {
+                let hasVisible = false;
+                $(".activity-item").each(function () {
                     const cardCategory = $(this).data("category");
-                    if (category === "全部" || cardCategory === category) {
-                        $(this).closest(".col-12").show();
-                    } else {
-                        $(this).closest(".col-12").hide();
-                    }
+                    const show = category === "全部" || cardCategory === category;
+                    $(this).toggle(show);
+                    if (show) hasVisible = true;
                 });
+
+                $("#activity-empty").toggle(!hasVisible);
             });
         });
 
@@ -317,35 +327,25 @@
         let currentActivityId = null;
         let currentCaseActivityId = null;
 
-        // 動態生成同伴人數選項
         function generateCompanionOptions(maxCompanions) {
             const select = $('#numberOfCompanions');
             select.empty();
-
             for (let i = 0; i <= maxCompanions; i++) {
                 const text = i === 0 ? '僅自己參加' : `攜帶 ${i} 位同伴`;
                 select.append(`<option value="${i}">${text}</option>`);
             }
-
             updateTotalParticipants();
         }
 
-        // 更新總參與人數顯示
         function updateTotalParticipants() {
             const companions = parseInt($('#numberOfCompanions').val()) || 0;
-            const total = 1 + companions;
-            $('#totalParticipants').text(total);
+            $('#totalParticipants').text(1 + companions);
         }
 
-        // 同伴人數改變時更新總人數
-        $(document).on('change', '#numberOfCompanions', function () {
-            updateTotalParticipants();
-        });
+        $(document).on('change', '#numberOfCompanions', updateTotalParticipants);
 
-        // 確認報名
         $(document).on('click', '#confirmRegistration', function () {
             const numberOfCompanions = parseInt($('#numberOfCompanions').val()) || 0;
-
             $(this).prop('disabled', true).text('報名中...');
 
             $.post('/Activity/RegisterWithCompanions', {
@@ -362,36 +362,24 @@
                     showErrorToast('報名失敗', data.message);
                 }
             })
-            .fail(function () {
-                showErrorToast('連線錯誤', '報名時發生網路錯誤，請稍後再試');
-            })
-            .always(function () {
-                $('#confirmRegistration').prop('disabled', false).text('確認報名');
-            });
+            .fail(function () { showErrorToast('連線錯誤', '報名時發生網路錯誤，請稍後再試'); })
+            .always(function () { $('#confirmRegistration').prop('disabled', false).text('確認報名'); });
         });
 
-        // 顯示成功 Toast
         function showSuccessToast(message, details) {
             $('#successMessage').text(message);
             $('#successDetails').text(details);
-
-            var toast = new bootstrap.Toast(document.getElementById('successToast'), { delay: 4000 });
-            toast.show();
+            new bootstrap.Toast(document.getElementById('successToast'), { delay: 4000 }).show();
         }
 
-        // 顯示錯誤 Toast
         function showErrorToast(message, details) {
             $('#errorMessage').text(message);
             $('#errorDetails').text(details);
-
-            var toast = new bootstrap.Toast(document.getElementById('errorToast'), { delay: 5000 });
-            toast.show();
+            new bootstrap.Toast(document.getElementById('errorToast'), { delay: 5000 }).show();
         }
 
-        // 顯示報名 Modal
         function showRegistrationModal(activityId, activityName) {
             currentActivityId = activityId;
-
             $.get('/Activity/GetActivityInfo/' + activityId)
                 .done(function (data) {
                     if (data.success) {
@@ -400,22 +388,16 @@
                         $('#maxParticipants').text(data.maxParticipants);
                         $('#availableSlots').text(data.availableSlots);
                         generateCompanionOptions(data.maxCompanions);
-
-                        var modal = new bootstrap.Modal(document.getElementById('registrationModal'));
-                        modal.show();
+                        new bootstrap.Modal(document.getElementById('registrationModal')).show();
                     } else {
                         showErrorToast('無法載入活動', data.message);
                     }
                 })
-                .fail(function () {
-                    showErrorToast('連線錯誤', '無法取得活動資訊，請檢查網路連線');
-                });
+                .fail(function () { showErrorToast('連線錯誤', '無法取得活動資訊，請檢查網路連線'); });
         }
 
-        // 取消報名
         function cancelRegistration(activityId, activityName) {
             $('#cancelActivityName').text(activityName);
-
             $('#confirmCancelBtn').off('click').on('click', function () {
                 $('#cancelConfirmModal').modal('hide');
                 $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>取消中...');
@@ -430,69 +412,40 @@
                             showErrorToast('取消報名失敗', data.message);
                         }
                     })
-                    .fail(function () {
-                        showErrorToast('連線錯誤', '取消報名時發生網路錯誤，請稍後再試');
-                    })
+                    .fail(function () { showErrorToast('連線錯誤', '取消報名時發生網路錯誤，請稍後再試'); })
                     .always(function () {
                         $('#confirmCancelBtn').prop('disabled', false).html('<i class="fas fa-check me-1"></i>確定取消');
                     });
             });
-
-            var modal = new bootstrap.Modal(document.getElementById('cancelConfirmModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('cancelConfirmModal')).show();
         }
 
-        // 更新按鈕狀態
         function updateButtonState(activityId, isRegistered) {
             const button = $(`button[data-activity-id="${activityId}"]`);
-            if (button.length > 0) {
-                const activityName = button.data('activity-name') || '';
+            if (!button.length) return;
+            const activityName = button.data('activity-name') || '';
 
-                if (isRegistered) {
-                    button.removeClass('btn-join').addClass('btn-join btn-cancel');
-                    button.text('取消報名');
-                    button.attr('onclick', `cancelRegistration(${activityId}, '${activityName}')`);
-                } else {
-                    button.removeClass('btn-cancel').addClass('btn-join');
-                    button.text('立即參與');
-
-                    const otherJoinButtons = $('.btn-join').not(button);
-                    let isCase = false;
-
-                    otherJoinButtons.each(function () {
-                        const onclick = $(this).attr('onclick') || '';
-                        if (onclick.includes('showCaseRegistrationModal')) {
-                            isCase = true;
-                            return false;
-                        }
-                    });
-
-                    if (isCase) {
-                        button.attr('onclick', `showCaseRegistrationModal(${activityId}, '${activityName}')`);
-                    } else {
-                        button.attr('onclick', `showRegistrationModal(${activityId}, '${activityName}')`);
-                    }
-                }
+            if (isRegistered) {
+                button.addClass('btn-cancel').text('取消報名');
+                button.attr('onclick', `cancelRegistration(${activityId}, '${activityName}')`);
+            } else {
+                button.removeClass('btn-cancel').text('立即參與');
+                const isCase = $('.btn-join').not(button).filter(function () {
+                    return ($(this).attr('onclick') || '').includes('showCaseRegistrationModal');
+                }).length > 0;
+                button.attr('onclick', isCase
+                    ? `showCaseRegistrationModal(${activityId}, '${activityName}')`
+                    : `showRegistrationModal(${activityId}, '${activityName}')`);
             }
         }
 
-        // 更新人數顯示
         function updateParticipantCount(activityId, currentParticipants, maxParticipants) {
-            const participantElement = $(`.activity-card__participants[data-activity-id="${activityId}"] span.current`);
-            const maxElement = $(`.activity-card__participants[data-activity-id="${activityId}"] span.max`);
-
-            if (participantElement.length > 0) {
-                participantElement.text(currentParticipants);
-            }
-            if (maxElement.length > 0) {
-                maxElement.text(maxParticipants);
-            }
+            $(`.activity-card__participants[data-activity-id="${activityId}"] span.current`).text(currentParticipants);
+            $(`.activity-card__participants[data-activity-id="${activityId}"] span.max`).text(maxParticipants);
         }
 
-        // 個案報名 Modal
         function showCaseRegistrationModal(activityId, activityName) {
             currentCaseActivityId = activityId;
-
             $.get('/Activity/GetActivityInfo/' + activityId)
                 .done(function (data) {
                     if (data.success) {
@@ -500,22 +453,16 @@
                         $('#caseCurrentParticipants').text(data.currentParticipants);
                         $('#caseMaxParticipants').text(data.maxParticipants);
                         $('#caseAvailableSlots').text(data.availableSlots);
-
-                        var modal = new bootstrap.Modal(document.getElementById('caseRegistrationModal'));
-                        modal.show();
+                        new bootstrap.Modal(document.getElementById('caseRegistrationModal')).show();
                     } else {
                         showErrorToast('無法載入活動', data.message);
                     }
                 })
-                .fail(function () {
-                    showErrorToast('連線錯誤', '無法取得活動資訊，請檢查網路連線');
-                });
+                .fail(function () { showErrorToast('連線錯誤', '無法取得活動資訊，請檢查網路連線'); });
         }
 
-        // 個案確認報名
         $(document).on('click', '#confirmCaseRegistration', function () {
             $(this).prop('disabled', true).text('報名中...');
-
             $.post('/Activity/RegisterCase', { activityId: currentCaseActivityId })
                 .done(function (data) {
                     if (data.success) {
@@ -527,12 +474,8 @@
                         showErrorToast('報名失敗', data.message);
                     }
                 })
-                .fail(function () {
-                    showErrorToast('連線錯誤', '報名時發生網路錯誤，請稍後再試');
-                })
-                .always(function () {
-                    $('#confirmCaseRegistration').prop('disabled', false).text('確認報名');
-                });
+                .fail(function () { showErrorToast('連線錯誤', '報名時發生網路錯誤，請稍後再試'); })
+                .always(function () { $('#confirmCaseRegistration').prop('disabled', false).text('確認報名'); });
         });
     </script>
 }

@@ -9,7 +9,8 @@ using NGOPlatformWeb.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Service registration
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromHours(2); // 與認證 Cookie 一致
@@ -24,7 +25,6 @@ builder.Services.AddDataProtection();
 // Add Service Dependent Injection
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<PasswordService>();
-builder.Services.AddScoped<PasswordMigrationService>();
 builder.Services.AddScoped<ImageUploadService>();
 builder.Services.AddScoped<EcpayService>();
 builder.Services.AddScoped<AchievementService>();
@@ -69,10 +69,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseExceptionHandler("/Home/Error");
+app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

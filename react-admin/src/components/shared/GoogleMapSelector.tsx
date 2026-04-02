@@ -517,12 +517,11 @@ const GoogleMapSelector: React.FC<GoogleMapSelectorProps> = React.memo(({
               // 同時更新建議
               handleAddressChange(newPlaceName);
               
-              // 如果有現有值，更新地點名稱
-              if (onChange && value) {
-                onChange({
-                  ...value,
-                  placeName: newPlaceName
-                });
+              if (onChange) {
+                onChange(value
+                  ? { ...value, placeName: newPlaceName, address: newPlaceName }
+                  : { address: newPlaceName, placeName: newPlaceName, latitude: 0, longitude: 0, formattedAddress: newPlaceName }
+                );
               }
             }}
             onKeyDown={handleKeyDown}
@@ -616,13 +615,12 @@ const GoogleMapSelector: React.FC<GoogleMapSelectorProps> = React.memo(({
           label="詳細地址"
           value={value?.formattedAddress || ''}
           onChange={(e) => {
-            // 允許用戶編輯詳細地址
             const newFormattedAddress = e.target.value;
-            if (onChange && value) {
-              onChange({
-                ...value,
-                formattedAddress: newFormattedAddress
-              });
+            if (onChange) {
+              onChange(value
+                ? { ...value, formattedAddress: newFormattedAddress }
+                : { address: newFormattedAddress, placeName: '', latitude: 0, longitude: 0, formattedAddress: newFormattedAddress }
+              );
             }
           }}
           fullWidth

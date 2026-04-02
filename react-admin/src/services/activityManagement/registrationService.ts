@@ -31,8 +31,8 @@ class RegistrationService {
    */
   async getCaseRegistrations(): Promise<CaseRegistration[]> {
     try {
-      const response = await api.get('/RegistrationReview/case');
-      return response;
+      const response = await api.get<{ data: CaseRegistration[] }>('/RegistrationReview/case');
+      return response.data;
     } catch (error) {
       console.error('取得個案報名列表失敗:', error);
       throw error;
@@ -44,8 +44,8 @@ class RegistrationService {
    */
   async getPublicRegistrations(): Promise<PublicRegistration[]> {
     try {
-      const response = await api.get('/RegistrationReview/user');
-      return response;
+      const response = await api.get<{ data: PublicRegistration[] }>('/RegistrationReview/user');
+      return response.data;
     } catch (error) {
       console.error('取得民眾報名列表失敗:', error);
       throw error;

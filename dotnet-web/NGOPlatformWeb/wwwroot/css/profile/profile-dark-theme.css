@@ -163,10 +163,16 @@ body.profile-page .container {
     margin-bottom: var(--spacing-xs);
 }
 
+/* 禁用 profile-enhanced.css 的 ::before 動畫（透明背景會讓 gradient 滲出蓋字） */
+.profile-nav .nav-item::before {
+    display: none;
+}
+
 .profile-nav .nav-item:hover {
-    background: rgba(184, 92, 56, 0.08);
-    color: var(--primary-color);
+    background: rgba(184, 92, 56, 0.82);
+    color: white;
     transform: translateX(3px);
+    border-color: transparent;
 }
 
 .profile-nav .nav-item.active {

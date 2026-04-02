@@ -42,14 +42,14 @@ export const authService = {
    */
   async verifyEmail(email: string): Promise<EmailVerificationResponse> {
     try {
-      const response = await api.get(`/Worker/by-email/${encodeURIComponent(email)}`);
-      
-      if (response) {
+      const response = await api.get<{ data: WorkerInfo }>(`/Worker/by-email/${encodeURIComponent(email)}`);
+
+      if (response.data) {
         return {
           success: true,
           message: "帳號驗證成功",
           worker: {
-            ...response,
+            ...response.data,
             loginSource: 'database' as const
           } as WorkerInfo
         };
@@ -205,10 +205,10 @@ export const authService = {
    */
   async getWorkerByEmail(email: string): Promise<WorkerInfo | null> {
     try {
-      const response = await api.get(`/Worker/by-email/${encodeURIComponent(email)}`);
-      if (response) {
+      const response = await api.get<{ data: WorkerInfo }>(`/Worker/by-email/${encodeURIComponent(email)}`);
+      if (response.data) {
         return {
-          ...response,
+          ...response.data,
           loginSource: 'database' as const
         } as WorkerInfo;
       }
@@ -276,9 +276,9 @@ export const authService = {
    */
   async getWorkers(): Promise<WorkerInfo[]> {
     try {
-      const workers = await api.get<WorkerInfo[]>('/Worker');
+      const workers = await api.get<{ data: WorkerInfo[] }>('/Worker');
       // 為每個 worker 加入 loginSource 屬性
-      return workers.map(worker => ({
+      return (workers.data || []).map(worker => ({
         ...worker,
         loginSource: 'database' as const
       })) as WorkerInfo[];

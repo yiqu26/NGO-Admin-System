@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 using System.Linq;
 
 namespace NGO_WebAPI_Backend.Controllers.ScheduleManagement
@@ -52,10 +53,10 @@ namespace NGO_WebAPI_Backend.Controllers.ScheduleManagement
 
             if (!schedules.Any())
             {
-                return NotFound("查無資料");
+                return NotFound(ApiResponse<object>.ErrorResponse("查無資料"));
             }
 
-            return Ok(schedules);
+            return Ok(ApiResponse<IEnumerable<object>>.SuccessResponse(schedules, "查詢成功"));
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace NGO_WebAPI_Backend.Controllers.ScheduleManagement
                 })
                 .ToListAsync();
 
-            return Ok(schedules);
+            return Ok(ApiResponse<IEnumerable<object>>.SuccessResponse(schedules, "查詢成功"));
         }
 
 
@@ -108,8 +109,7 @@ namespace NGO_WebAPI_Backend.Controllers.ScheduleManagement
             _context.Schedules.Add(schedule);
             await _context.SaveChangesAsync();
 
-            // 回傳成功新增的資料
-            return Ok(schedule); // ✅ 最穩
+            return Ok(ApiResponse<object>.SuccessResponse(schedule, "行事曆活動新增成功"));
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace NGO_WebAPI_Backend.Controllers.ScheduleManagement
             var schedule = await _context.Schedules.FindAsync(id);
             if (schedule == null)
             {
-                return NotFound();
+                return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的行事曆活動"));
             }
 
             // 將 DTO 中的欄位值套用到實體上
@@ -182,34 +182,6 @@ namespace NGO_WebAPI_Backend.Controllers.ScheduleManagement
 
 
         // ==================== API 請求/回應模型 ====================
-
-        /// <summary>
-        /// 建立行事曆活動的請求模型
-        /// </summary>
-        public class CreateScheduleRequest
-        {
-            public int WorkerId { get; set; }                     // 所屬社工 ID（必填）
-            public int? CaseId { get; set; }                      // 關聯個案 ID（可選）
-            public string Description { get; set; } = string.Empty; // 活動描述（必填）
-            public DateTime StartTime { get; set; }               // 開始時間（必填）
-            public DateTime EndTime { get; set; }                 // 結束時間（必填）
-            public string EventType { get; set; } = "中";
-            public string Priority { get; set; } = "中";          // 優先順序（預設中）
-            public string Status { get; set; } = "進行中";        // 狀態（預設進行中）
-        }
-
-        /// <summary>
-        /// 更新行事曆活動的請求模型（所有欄位可選）
-        /// </summary>
-        public class UpdateScheduleRequest
-        {
-            public int? CaseId { get; set; }
-            public string? Description { get; set; }
-            public DateTime? StartTime { get; set; }
-            public DateTime? EndTime { get; set; }
-            public string? Priority { get; set; }
-            public string? Status { get; set; }
-        }
 
         /// <summary>
         /// 行事曆活動的回應模型

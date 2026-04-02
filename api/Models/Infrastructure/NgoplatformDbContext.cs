@@ -53,10 +53,6 @@ public partial class NgoplatformDbContext : DbContext
 
     public virtual DbSet<UserOrderDetail> UserOrderDetails { get; set; }
 
-    public virtual DbSet<VwActivitiesFrontend> VwActivitiesFrontends { get; set; }
-
-    public virtual DbSet<VwActivitiesStatus> VwActivitiesStatuses { get; set; }
-
     public virtual DbSet<Worker> Workers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -452,58 +448,6 @@ public partial class NgoplatformDbContext : DbContext
             entity.HasOne(d => d.UserOrder).WithMany(p => p.UserOrderDetails)
                 .HasForeignKey(d => d.UserOrderId)
                 .HasConstraintName("FK__UserOrder__UserO__17F790F9");
-        });
-
-        modelBuilder.Entity<VwActivitiesFrontend>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("vw_Activities_Frontend");
-
-            entity.Property(e => e.ActivityId).ValueGeneratedOnAdd();
-            entity.Property(e => e.ActivityName)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.DisplayStatus)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.Location)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-        });
-
-        modelBuilder.Entity<VwActivitiesStatus>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("vw_Activities_Status");
-
-            entity.Property(e => e.ActivityId).ValueGeneratedOnAdd();
-            entity.Property(e => e.ActivityName)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Category).HasMaxLength(10);
-            entity.Property(e => e.Location)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.TargetAudience)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.TimeBasedStatus)
-                .HasMaxLength(8)
-                .IsUnicode(false);
-            entity.Property(e => e.中文狀態)
-                .HasMaxLength(10)
-                .IsUnicode(false);
-            entity.Property(e => e.原始狀態)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.狀態檢查)
-                .HasMaxLength(14)
-                .IsUnicode(false);
-            entity.Property(e => e.系統建議狀態)
-                .HasMaxLength(9)
-                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Worker>(entity =>

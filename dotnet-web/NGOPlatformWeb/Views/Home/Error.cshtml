@@ -1,0 +1,34 @@
+@model NGOPlatformWeb.Models.ErrorViewModel
+@{
+    ViewData["Title"] = Model.Is404 ? "頁面不存在" : "發生錯誤";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="max-width: 600px; margin: 80px auto; text-align: center;">
+    <div style="font-size: 4rem; color: var(--primary-color, #b85c38); font-weight: 700; line-height: 1;">
+        @Model.StatusCode
+    </div>
+    <h1 style="font-size: 1.5rem; color: var(--text-primary, #333); margin: 1rem 0 0.5rem;">
+        @(Model.Is404 ? "找不到此頁面" : "系統發生錯誤")
+    </h1>
+    <p style="color: var(--text-secondary, #666); margin: 0.5rem 0 1.5rem;">
+        @(Model.Is404
+            ? "您所尋找的頁面不存在，可能已被移除或網址有誤。"
+            : "很抱歉，處理您的請求時發生了問題。請稍後再試，或聯繫管理員。")
+    </p>
+    @if (Model.ShowRequestId)
+    {
+        <p style="font-size: 0.85rem; color: #999;">
+            請求編號：<code>@Model.RequestId</code>
+        </p>
+    }
+    <a href="/" style="
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.6rem 1.5rem;
+        background: var(--primary-color, #b85c38);
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+    ">返回首頁</a>
+</div>

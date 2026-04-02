@@ -151,16 +151,12 @@ class SupplyService {
    */
   async getSupplyCategories(): Promise<SupplyCategory[]> {
     try {
-      const response = await api.get<SupplyCategory[]>('/Supply/categories');
-      return response || [];
+      const response = await api.get<{ data: SupplyCategory[] }>('/Supply/categories');
+      return response.data || [];
     } catch (error: any) {
-      // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
-        // 404 Not Found 或 204 No Content 表示沒有資料，返回空陣列
-        console.log('沒有找到物資分類資料，返回空陣列');
         return [];
       }
-      // 其他錯誤（網路錯誤、500錯誤等）才拋出異常
       console.error('取得物資分類失敗:', error);
       throw error;
     }
@@ -171,16 +167,12 @@ class SupplyService {
    */
   async getSupplies(): Promise<Supply[]> {
     try {
-      const response = await api.get<Supply[]>('/Supply');
-      return response || [];
+      const response = await api.get<{ data: Supply[] }>('/Supply');
+      return response.data || [];
     } catch (error: any) {
-      // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
-        // 404 Not Found 或 204 No Content 表示沒有資料，返回空陣列
-        console.log('沒有找到物資資料，返回空陣列');
         return [];
       }
-      // 其他錯誤（網路錯誤、500錯誤等）才拋出異常
       console.error('取得物資列表失敗:', error);
       throw error;
     }
@@ -191,8 +183,8 @@ class SupplyService {
    */
   async getSupplyById(id: number): Promise<Supply> {
     try {
-      const response = await api.get<Supply>(`/Supply/${id}`);
-      return response;
+      const response = await api.get<{ data: Supply }>(`/Supply/${id}`);
+      return response.data;
     } catch (error) {
       console.error(`取得物資 ${id} 失敗:`, error);
       throw error;
@@ -204,8 +196,8 @@ class SupplyService {
    */
   async createSupply(supplyData: Partial<Supply>): Promise<Supply> {
     try {
-      const response = await api.post<Supply>('/Supply', supplyData);
-      return response;
+      const response = await api.post<{ data: Supply }>('/Supply', supplyData);
+      return response.data;
     } catch (error) {
       console.error('新增物資失敗:', error);
       throw error;
@@ -256,12 +248,8 @@ class SupplyService {
     totalValue: number;
   }> {
     try {
-      const response = await api.get<{
-        totalItems: number;
-        lowStockItems: number;
-        totalValue: number;
-      }>('/Supply/stats');
-      return response;
+      const response = await api.get<{ data: { totalItems: number; lowStockItems: number; totalValue: number } }>('/Supply/stats');
+      return response.data;
     } catch (error) {
       console.error('取得物資統計失敗:', error);
       throw error;
@@ -276,8 +264,8 @@ class SupplyService {
       const url = workerId 
         ? `/RegularSuppliesNeed?workerId=${workerId}`
         : '/RegularSuppliesNeed';
-      const response = await api.get<RegularSuppliesNeed[]>(url);
-      return response || [];
+      const response = await api.get<{ data: RegularSuppliesNeed[] }>(url);
+      return response.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -305,14 +293,14 @@ class SupplyService {
       const url = workerId 
         ? `/RegularSuppliesNeed/stats?workerId=${workerId}`
         : '/RegularSuppliesNeed/stats';
-      const response = await api.get<{
+      const response = await api.get<{ data: {
         totalRequests: number;
         pendingRequests: number;
         approvedRequests: number;
         rejectedRequests: number;
         totalEstimatedCost: number;
-      }>(url);
-      return response;
+      } }>(url);
+      return response.data;
     } catch (error) {
       console.error('取得常駐物資需求統計失敗:', error);
       throw error;
@@ -398,9 +386,9 @@ class SupplyService {
   async getBatchDistributionDetails(batchId: number): Promise<any[]> {
     try {
       console.log(`正在請求批次 ${batchId} 的分發詳情...`);
-      const data = await api.get<any[]>(`/RegularSuppliesNeed/batch/${batchId}/details`);
+      const data = await api.get<{ data: any[] }>(`/RegularSuppliesNeed/batch/${batchId}/details`);
       console.log('API 回應資料:', data);
-      return data || [];
+      return data.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -432,17 +420,17 @@ class SupplyService {
   async getEmergencySupplyNeeds(): Promise<EmergencySupplyNeed[]> {
     try {
       console.log('正在請求緊急物資需求資料...');
-      const response = await api.get<EmergencySupplyNeed[]>('/EmergencySupplyNeed');
+      const response = await api.get<{ data: EmergencySupplyNeed[] }>('/EmergencySupplyNeed');
       console.log('緊急物資需求 API 回應:', response);
-      
+
       // 處理空回應
-      if (!response || response.length === 0) {
+      if (!response.data || response.data.length === 0) {
         console.log('沒有緊急物資需求資料，返回空陣列');
         return [];
       }
-      
+
       // 處理日期格式轉換
-      const processedResponse = response.map(item => ({
+      const processedResponse = response.data.map(item => ({
         ...item,
         requestDate: typeof item.requestDate === 'string' 
           ? item.requestDate 
@@ -478,9 +466,9 @@ class SupplyService {
   }> {
     try {
       console.log('正在請求緊急物資需求統計...');
-      const response = await api.get('/EmergencySupplyNeed/statistics');
+      const response = await api.get<{ data: any }>('/EmergencySupplyNeed/statistics');
       console.log('緊急物資需求統計 API 回應:', response);
-      return response;
+      return response.data;
     } catch (error) {
       console.error('取得緊急物資需求統計失敗:', error);
       // 返回預設值，匹配後端結構
@@ -538,8 +526,8 @@ class SupplyService {
    */
   async createEmergencySupplyNeed(needData: Partial<EmergencySupplyNeed>): Promise<EmergencySupplyNeed> {
     try {
-      const response = await api.post<EmergencySupplyNeed>('/EmergencySupplyNeed', needData);
-      return response;
+      const response = await api.post<{ data: EmergencySupplyNeed }>('/EmergencySupplyNeed', needData);
+      return response.data;
     } catch (error) {
       console.error('新增緊急物資需求失敗:', error);
       throw error;
@@ -551,8 +539,8 @@ class SupplyService {
    */
   async createRegularSupplyNeed(needData: Partial<RegularSuppliesNeed>): Promise<RegularSuppliesNeed> {
     try {
-      const response = await api.post<RegularSuppliesNeed>('/RegularSuppliesNeed', needData);
-      return response;
+      const response = await api.post<{ data: RegularSuppliesNeed }>('/RegularSuppliesNeed', needData);
+      return response.data;
     } catch (error) {
       console.error('新增常駐物資需求失敗:', error);
       throw error;
@@ -564,8 +552,8 @@ class SupplyService {
    */
   async getRegularSupplyMatches(): Promise<RegularSupplyMatch[]> {
     try {
-      const response = await api.get<RegularSupplyMatch[]>('/RegularSupplyMatch');
-      return response || [];
+      const response = await api.get<{ data: RegularSupplyMatch[] }>('/RegularSupplyMatch');
+      return response.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -584,8 +572,8 @@ class SupplyService {
    */
   async getEmergencySupplyMatches(): Promise<EmergencySupplyMatch[]> {
     try {
-      const response = await api.get<EmergencySupplyMatch[]>('/EmergencySupplyMatch');
-      return response || [];
+      const response = await api.get<{ data: EmergencySupplyMatch[] }>('/EmergencySupplyMatch');
+      return response.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -604,8 +592,8 @@ class SupplyService {
    */
   async createRegularSupplyMatch(matchData: Partial<RegularSupplyMatch>): Promise<RegularSupplyMatch> {
     try {
-      const response = await api.post<RegularSupplyMatch>('/RegularSupplyMatch', matchData);
-      return response;
+      const response = await api.post<{ data: RegularSupplyMatch }>('/RegularSupplyMatch', matchData);
+      return response.data;
     } catch (error) {
       console.error('新增常駐物資配對失敗:', error);
       throw error;
@@ -617,8 +605,8 @@ class SupplyService {
    */
   async createEmergencySupplyMatch(matchData: Partial<EmergencySupplyMatch>): Promise<EmergencySupplyMatch> {
     try {
-      const response = await api.post<EmergencySupplyMatch>('/EmergencySupplyMatch', matchData);
-      return response;
+      const response = await api.post<{ data: EmergencySupplyMatch }>('/EmergencySupplyMatch', matchData);
+      return response.data;
     } catch (error) {
       console.error('新增緊急物資配對失敗:', error);
       throw error;
@@ -650,8 +638,8 @@ class SupplyService {
    */
   async getUserOrders(): Promise<UserOrder[]> {
     try {
-      const response = await api.get<UserOrder[]>('/UserOrder');
-      return response || [];
+      const response = await api.get<{ data: UserOrder[] }>('/UserOrder');
+      return response.data || [];
     } catch (error: any) {
       // 區分真正的錯誤和空結果
       if (error.response?.status === 404 || error.response?.status === 204) {
@@ -670,8 +658,8 @@ class SupplyService {
    */
   async getUserOrderDetails(orderId: number): Promise<UserOrderDetail[]> {
     try {
-      const response = await api.get<UserOrderDetail[]>(`/UserOrderDetail/${orderId}`);
-      return response;
+      const response = await api.get<{ data: UserOrderDetail[] }>(`/UserOrderDetail/${orderId}`);
+      return response.data;
     } catch (error) {
       console.error(`取得用戶訂單詳情 ${orderId} 失敗:`, error);
       throw error;

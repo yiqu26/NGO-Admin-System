@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
+using NGO_WebAPI_Backend.Models.Shared;
 
 namespace NGO_WebAPI_Backend.Controllers.AccountManagement
 {
@@ -16,39 +17,32 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
         }
 
         // GET: api/UserOrder
-        /// <summary>
-        /// 取得所有用戶訂單
-        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetUserOrders()
         {
             try
             {
-                // Note: 由於沒有 Users 表，這裡使用 Worker 作為替代
                 var orders = await _context.UserOrders
                     .Select(o => new
                     {
                         userOrderId = o.UserOrderId,
                         userId = o.UserId ?? 0,
-                        userName = "用戶", // 暫時固定，後續可關聯 Worker 或其他用戶表
+                        userName = "用戶",
                         orderDate = o.OrderDate != null ? o.OrderDate.Value.ToString("yyyy-MM-dd") : "",
                         status = o.PaymentStatus ?? "pending",
                         totalAmount = o.TotalPrice ?? 0
                     })
                     .ToListAsync();
 
-                return Ok(orders);
+                return Ok(ApiResponse<IEnumerable<object>>.SuccessResponse(orders, "查詢成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "取得用戶訂單失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得用戶訂單失敗", ex.Message));
             }
         }
 
         // GET: api/UserOrder/5
-        /// <summary>
-        /// 取得單一用戶訂單
-        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetUserOrder(int id)
         {
@@ -68,22 +62,17 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                     .FirstOrDefaultAsync();
 
                 if (order == null)
-                {
-                    return NotFound(new { message = "找不到指定的用戶訂單" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的用戶訂單"));
 
-                return Ok(order);
+                return Ok(ApiResponse<object>.SuccessResponse(order, "查詢成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "取得用戶訂單失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("取得用戶訂單失敗", ex.Message));
             }
         }
 
         // POST: api/UserOrder
-        /// <summary>
-        /// 新增用戶訂單
-        /// </summary>
         [HttpPost]
         public async Task<ActionResult<object>> PostUserOrder([FromBody] CreateUserOrderRequest request)
         {
@@ -101,19 +90,16 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 _context.UserOrders.Add(order);
                 await _context.SaveChangesAsync();
 
-                return CreatedAtAction(nameof(GetUserOrder), new { id = order.UserOrderId }, 
-                    new { message = "用戶訂單新增成功", orderId = order.UserOrderId });
+                return CreatedAtAction(nameof(GetUserOrder), new { id = order.UserOrderId },
+                    ApiResponse<object>.SuccessResponse(new { orderId = order.UserOrderId }, "用戶訂單新增成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "新增用戶訂單失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("新增用戶訂單失敗", ex.Message));
             }
         }
 
         // PUT: api/UserOrder/5
-        /// <summary>
-        /// 更新用戶訂單
-        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUserOrder(int id, [FromBody] UpdateUserOrderRequest request)
         {
@@ -121,9 +107,7 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
             {
                 var order = await _context.UserOrders.FindAsync(id);
                 if (order == null)
-                {
-                    return NotFound(new { message = "找不到指定的用戶訂單" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的用戶訂單"));
 
                 order.UserId = request.UserId ?? order.UserId;
                 order.PaymentStatus = request.Status ?? order.PaymentStatus;
@@ -132,18 +116,15 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
                 _context.Entry(order).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "用戶訂單更新成功" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "用戶訂單更新成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "更新用戶訂單失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("更新用戶訂單失敗", ex.Message));
             }
         }
 
         // DELETE: api/UserOrder/5
-        /// <summary>
-        /// 刪除用戶訂單
-        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserOrder(int id)
         {
@@ -151,18 +132,16 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
             {
                 var order = await _context.UserOrders.FindAsync(id);
                 if (order == null)
-                {
-                    return NotFound(new { message = "找不到指定的用戶訂單" });
-                }
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的用戶訂單"));
 
                 _context.UserOrders.Remove(order);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "用戶訂單刪除成功" });
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "用戶訂單刪除成功"));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "刪除用戶訂單失敗", error = ex.Message });
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("刪除用戶訂單失敗", ex.Message));
             }
         }
     }

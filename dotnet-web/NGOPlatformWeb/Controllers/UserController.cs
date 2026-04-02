@@ -38,7 +38,6 @@ namespace NGOPlatformWeb.Controllers
                 Email = user.Email ?? "",
                 Phone = user.Phone ?? "",
                 IdentityNumber = user.IdentityNumber ?? "",
-                Password = user.Password,
                 ProfileImage = user.ProfileImage ?? _imageUploadService.GetDefaultProfileImage("user"),
                 
                 TotalActivitiesRegistered = activityStats.Total,
