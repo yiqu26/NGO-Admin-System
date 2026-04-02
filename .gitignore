@@ -161,22 +161,8 @@ GITHUB-SETUP-GUIDE.md
 FILE-INDEX.md
 README-PROFESSIONAL.md
 
-# docs/ 個人筆記與敏感文檔
-docs/工作總結與下次啟動指南.md
-docs/本地開發環境啟動指南.md
-docs/README-本地開發環境.md
-docs/展示系統使用說明.md
-docs/測試帳號列表.md
-docs/測試帳號與登入指南.md
-docs/NGROK-問題排查指南.md
-docs/部署指南-免費方案.md
-docs/CLOUDFLARE-TUNNEL-GUIDE.md
-docs/QUICK-DEMO-REFERENCE.md
-docs/interview-prep-mitong.md
-docs/interview-review-2026-02-10.md
-docs/image-generation-prompts.md
-docs/05-GitHub推送指南.md
-docs/06-部署指南-免費方案.md
+# docs/ 整個目錄本機保留，不進版控
+docs/
 
 # 舊備份資料夾
 scripts/old-ngrok-backup/
@@ -210,7 +196,6 @@ docs/06-深度問答練習.md
 # ============================================
 # 安全性考量（帳號、測試資料）
 # ============================================
-docs/03-測試帳號.md
 config/create-staff-account.json
 config/create-supervisor-account.json
 config/create-test-account.json
