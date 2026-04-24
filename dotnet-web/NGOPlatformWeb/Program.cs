@@ -31,6 +31,10 @@ builder.Services.AddScoped<AchievementService>();
 // Activity Service Layer
 builder.Services.AddScoped<NGOPlatformWeb.Repositories.IActivityRepository, NGOPlatformWeb.Repositories.ActivityRepository>();
 builder.Services.AddScoped<NGOPlatformWeb.Services.IActivityService, NGOPlatformWeb.Services.ActivityService>();
+// Case / User / Purchase Service Layer
+builder.Services.AddScoped<NGOPlatformWeb.Services.ICaseService, NGOPlatformWeb.Services.CaseService>();
+builder.Services.AddScoped<NGOPlatformWeb.Services.IUserService, NGOPlatformWeb.Services.UserService>();
+builder.Services.AddScoped<NGOPlatformWeb.Services.IPurchaseService, NGOPlatformWeb.Services.PurchaseService>();
 // Add Background Service
 builder.Services.AddHostedService<TokenCleanupService>();
 // DbContext
