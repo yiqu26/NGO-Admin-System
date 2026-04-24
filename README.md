@@ -1,11 +1,15 @@
 # NGO 案件管理系統
 
-> 非營利組織的完整數位化平台——從個案追蹤、活動報名到物資購買與 AI 輔助作業，涵蓋員工後台與公眾前台兩套系統。
+非營利組織的後台管理平台，涵蓋個案追蹤、活動報名、物資管理與 AI 輔助功能，分為員工後台與公眾前台兩套系統。
 
 [![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?logo=.net)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://reactjs.org/)
 [![MVC](https://img.shields.io/badge/ASP.NET_MVC-.NET_8-512BD4?logo=.net)](https://dotnet.microsoft.com/)
 [![SQL Server](https://img.shields.io/badge/SQL_Server-2019+-CC2927?logo=microsoft-sql-server)](https://www.microsoft.com/sql-server)
+
+> 個人作品集專案。
+
+---
 
 ## Live Demo
 
@@ -19,19 +23,13 @@
 
 ---
 
-## 這個專案在做什麼
-
-讓 NGO 工作人員統一管理個案、活動與物資，同時提供公眾前台讓一般民眾報名活動、購買物資。涵蓋 AI 功能整合、ECPay 金流串接，並通過 OWASP 安全審查。
-
----
-
 ## 功能概覽
 
 ### 員工管理後台（React）
 
 - **Dashboard** — 個案數、活動狀態、物資庫存的即時統計圖表（Recharts）
-- **個案管理** — 新增/編輯個案，支援圖片上傳與**語音轉文字**（OpenAI Whisper）快速記錄案況
-- **活動管理** — 建立活動、審核報名、用 **GPT-4o-mini 優化活動文案**、**DALL-E 3 生成活動封面圖**
+- **個案管理** — 新增/編輯個案，支援圖片上傳與語音轉文字（OpenAI Whisper）快速記錄案況
+- **活動管理** — 建立活動、審核報名、GPT-4o-mini 文案改寫建議、DALL-E 3 生成封面圖
 - **物資管理** — 庫存追蹤、低庫存警示、常駐物資配對與緊急需求管理
 - **帳號管理** — 三層角色權限（管理員 / 督導 / 員工），JWT 驗證
 
@@ -39,10 +37,10 @@
 
 - **Google OAuth** 第三方登入（自動建立帳號、頭像同步）
 - **活動瀏覽與報名** — 即時名額檢查（DB Trigger 控制上限）
-- **物資購物** — 加入購物車、結帳流程
-- **ECPay 綠界金流** — 信用卡付款，SHA-256 CheckMacValue 雙重驗證
+- **物資購物** — 瀏覽、選購、結帳流程
+- **ECPay 綠界金流** — 信用卡付款，SHA-256 CheckMacValue 雙向驗證
 - **購買紀錄** — 訂單歷史查詢
-- **成就系統** — 累積參與解鎖徽章，多表 LINQ 即時計算
+- **成就系統** — 累積參與解鎖徽章
 
 ---
 
@@ -71,97 +69,83 @@
 
 ### 為什麼前端做兩套？
 
-- **React SPA**：員工後台需要大量互動操作（表格編輯、即時搜尋、圖表），SPA 體驗更好
-- **MVC SSR**：用戶前台重視頁面載入速度與 SEO，Server-Side Rendering 更適合
+- **React SPA**：員工後台操作密集（表格編輯、即時搜尋、圖表），SPA 互動體驗較好
+- **MVC SSR**：用戶前台以瀏覽為主，Server-Side Rendering 首屏速度較快且對 SEO 友善
 - 兩套前端共用同一個 API，避免重複邏輯
 
 ---
 
-## 技術設計亮點
+## 技術實作說明
 
-### 1. 統一 API 回應格式
+### 統一 API 回應格式
 
-全站 API 統一使用 `ApiResponse<T>` wrapper：
+全站 API 使用 `ApiResponse<T>` 統一包裝回應，前端不需各自處理不同的回應結構：
 
 ```csharp
-// 所有端點統一格式
 return Ok(ApiResponse<IEnumerable<CaseDto>>.SuccessResponse(data, "查詢成功"));
 return NotFound(ApiResponse<object>.ErrorResponse("找不到指定個案"));
 ```
 
-前端 TypeScript service 層統一解包：
 ```typescript
 const response = await api.get<{ data: Case[] }>('/Case');
 return response.data;
 ```
 
-### 2. 設計模式應用
+### 設計模式
 
 | 模式 | 應用場景 | 說明 |
 |------|---------|------|
 | **Repository Pattern** | 個案資料存取 | `ICaseRepository` 分離 DB 操作與商業邏輯 |
-| **Factory Pattern** | AI Client 建立 | `OpenAIClientFactory`（Singleton）依設定建立 OpenAI 或 Azure 的 Client |
-| **Strategy Pattern** | 檔案儲存 | `IFileStorageService` 介面，Local / Azure Blob 兩種實作 |
-| **三層架構** | 全系統 | Controller → Service → Repository，職責分離 |
+| **Factory Pattern** | AI Client 建立 | `OpenAIClientFactory`（Singleton）依設定建立 OpenAI 或 Azure Client |
+| **Strategy Pattern** | 檔案儲存 | `IFileStorageService` 介面，Local / Azure Blob 兩種實作可切換 |
 
-### 3. AI 雙 Provider 設計
+### AI 雙 Provider
 
-AI 服務同時支援 **OpenAI Direct** 和 **Azure OpenAI**，透過設定檔切換，不改程式碼：
+同時支援 OpenAI Direct 和 Azure OpenAI，透過設定檔切換，不需修改程式碼：
 
 ```json
-// appsettings.json
-"AI": { "Provider": "OpenAI" }  // 改成 "Azure" 即切換
+"AI": { "Provider": "OpenAI" }
 ```
 
-| 功能 | 模型 | 說明 |
-|------|------|------|
-| 文案優化 | GPT-4o-mini | 活動描述的 AI 改寫建議 |
-| 封面圖生成 | DALL-E 3 | 根據活動內容生成圖片 |
-| 語音轉文字 | Whisper-1 | 個案訪談記錄快速輸入 |
+| 功能 | 模型 |
+|------|------|
+| 文案改寫建議 | GPT-4o-mini |
+| 封面圖生成 | DALL-E 3 |
+| 語音轉文字 | Whisper-1 |
 
-### 4. ECPay 金流安全設計
+### ECPay 金流
 
-- **CheckMacValue 雙重驗證**：送出付款前產生 SHA-256 簽章，收到回調時再次驗證，防止偽造與重放攻擊
-- **庫存扣減用 Transaction**：避免併發下的 Race Condition，確保不超賣
-- 完整交易狀態機：Pending → Paid → Failed
+- 送出付款前產生 SHA-256 CheckMacValue，收到回調時再次驗證，防止偽造
+- 庫存扣減在 ECPay 回調確認後才執行，避免付款失敗仍扣庫存
+- 交易狀態：Pending → Paid / Failed
 
-### 5. 資安主動審查
+### 安全性
 
-專案做過一次 OWASP 風格的安全審查，修復的主要問題：
+對照 OWASP Top 10 自行進行安全檢視，主要修正項目：
 
-- 未授權的敏感端點（補上 `[Authorize(Roles)]`）
-- `ViewBag` 的 Stack Trace 外洩（移除，改通用訊息）
-- Hardcoded ID（改從 JWT Claims 取得）
-- 密碼系統升級：明文 → BCrypt hash，零停機漸進式遷移
-- ECPay 回調的 `Console.WriteLine` 印付款資料（移除）
+- 補上缺漏的 `[Authorize(Roles)]`，限制未授權存取敏感端點
+- 移除 `ViewBag` 的 Stack Trace 輸出，改回通用錯誤訊息
+- 識別碼改從 JWT Claims 取得，移除 Hardcoded ID
+- 密碼從明文升級為 BCrypt hash，採漸進式遷移不中斷服務
+- 移除 ECPay 回調中的付款資料 log
 
 ---
 
 ## 本地啟動
 
-### 需要的環境
-
-- Node.js 18+
-- .NET SDK 8 & 9
-- SQL Server（本地或遠端）
-
-### 啟動步驟
+**環境需求**：Node.js 18+、.NET SDK 8 & 9、SQL Server
 
 ```bash
 # 後端 API
-cd api
-dotnet run
+cd api && dotnet run
 # http://localhost:5264
 
 # React 管理後台
-cd react-admin
-npm install
-npm run dev
+cd react-admin && npm install && npm run dev
 # http://localhost:5173
 
 # MVC 用戶前台
-cd dotnet-web/NGOPlatformWeb
-dotnet run
+cd dotnet-web/NGOPlatformWeb && dotnet run
 # http://localhost:5066
 ```
 
@@ -171,7 +155,7 @@ dotnet run
 
 ## 測試帳號
 
-員工後台、用戶前台各有預設測試帳號（管理員、督導、員工、一般用戶、個案），本地啟動後即可登入。ECPay 使用綠界官方測試卡號。
+員工後台與用戶前台各有預設測試帳號（管理員、督導、員工、一般用戶、個案），本地啟動後即可登入。ECPay 使用綠界官方測試卡號。
 
 ---
 
@@ -182,7 +166,7 @@ NGO-Management-System/
 ├── api/                         # ASP.NET Core 9 WebAPI
 │   ├── Controllers/
 │   │   ├── AccountManagement/   # 登入、帳號、工作人員
-│   │   ├── ActivityManagement/  # 活動 CRUD、報名審核、AI 優化
+│   │   ├── ActivityManagement/  # 活動 CRUD、報名審核、AI 功能
 │   │   ├── CaseManagement/      # 個案 CRUD、語音轉文字
 │   │   ├── Dashboard/           # 統計數據
 │   │   ├── ScheduleManagement/  # 行程管理
@@ -192,15 +176,15 @@ NGO-Management-System/
 │   │   ├── Infrastructure/      # NgoplatformDbContext
 │   │   └── Shared/              # ApiResponse<T>
 │   ├── Services/                # AI、語音、檔案儲存服務
-│   ├── Repositories/            # CaseRepository（Repository Pattern）
+│   ├── Repositories/            # CaseRepository
 │   ├── Validators/              # FluentValidation（個案 CRUD）
-│   └── appsettings.example.json # 設定檔範本
+│   └── appsettings.example.json
 │
 ├── react-admin/                 # React 18 員工後台
 │   └── src/
 │       ├── components/          # 各功能模組頁面
-│       ├── services/            # API 服務層（統一 .data 解包）
-│       └── hooks/               # useAuth 等
+│       ├── services/            # API 服務層
+│       └── hooks/
 │
 ├── dotnet-web/NGOPlatformWeb/   # ASP.NET MVC 用戶前台
 │   ├── Controllers/
@@ -208,9 +192,5 @@ NGO-Management-System/
 │   └── Services/                # ECPay、Email、成就系統
 │
 ├── database/                    # SQL 建表腳本
-├── docs/                        # 技術文件
 └── scripts/                     # 一鍵啟動腳本
 ```
-
----
-
