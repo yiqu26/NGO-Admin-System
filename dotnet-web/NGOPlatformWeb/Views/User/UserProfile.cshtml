@@ -32,7 +32,7 @@
                         <i class="fas fa-camera"></i>
                         <span>更換頭像</span>
                     </div>
-                    <input type="file" id="profileImageInput" accept=".jpg,.jpeg,.png" style="display:none" onchange="uploadUserProfileImage(this)" />
+                    <input type="file" id="profileImageInput" accept=".jpg,.jpeg,.png" style="display:none" onchange="uploadProfileImage(this, '/User/UploadProfileImage', 'profileImageDisplay', '.avatar-overlay')" />
                 </div>
                 
                 <!-- 基本資訊顯示 -->

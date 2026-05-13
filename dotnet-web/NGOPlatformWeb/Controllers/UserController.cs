@@ -129,7 +129,6 @@ namespace NGOPlatformWeb.Controllers
 
         [Authorize(Roles = "User")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadProfileImage(IFormFile profileImage)
         {
             var user = await GetCurrentUserAsync();

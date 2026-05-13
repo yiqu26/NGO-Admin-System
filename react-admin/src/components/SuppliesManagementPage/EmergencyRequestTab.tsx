@@ -27,7 +27,7 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import { 
+import {
   Search,
   ExpandMore,
   ExpandLess,
@@ -37,14 +37,16 @@ import {
   Delete,
   Warning,
   Add,
+  PhotoCamera,
 } from '@mui/icons-material';
 import { THEME_COLORS } from '../../styles/theme';
-import { 
+import {
   getStatusStyle,
   getResponsiveSpacing
 } from '../../styles/commonStyles';
 import { supplyService, EmergencySupplyNeed, authService, caseService } from '../../services';
 import { WorkerInfo } from '../../services/accountManagement/authService';
+import { emergencySupplyNeedService } from '../../services/supplyManagement/emergencySupplyNeedService';
 
 const EmergencyRequestTab: React.FC = () => {
   const [searchType, setSearchType] = useState('物品名稱');
@@ -143,7 +145,12 @@ const EmergencyRequestTab: React.FC = () => {
       // 主管和管理員可以看到所有資料
       
       setRequestData(filteredRequests);
-      setStats(requestStats);
+      setStats({
+        ...requestStats,
+        approvedRequests: filteredRequests.filter(r => r.status === 'Fundraising' || r.status === 'approved').length,
+        pendingRequests: filteredRequests.filter(r => r.status === 'pending').length,
+        rejectedRequests: filteredRequests.filter(r => r.status === 'rejected').length,
+      });
       
       console.log(`載入緊急物資需求: ${filteredRequests.length} 筆資料 (角色: ${userRole})`);
     } catch (err) {
@@ -185,9 +192,12 @@ const EmergencyRequestTab: React.FC = () => {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'pending': return '待媒合';
-      case 'completed': return '已完成媒合';
-      default: return '未知';
+      case 'pending': return '待審核';
+      case 'Fundraising': return '募集中';
+      case 'approved': return '已批准';
+      case 'rejected': return '已拒絕';
+      case 'completed': return '已完成';
+      default: return status || '未知';
     }
   };
 
@@ -205,6 +215,22 @@ const EmergencyRequestTab: React.FC = () => {
       type: 'reject',
       item: item
     });
+  };
+
+  const [uploadingImageId, setUploadingImageId] = useState<number | null>(null);
+
+  const handleImageUpdate = async (id: number, file: File) => {
+    try {
+      setUploadingImageId(id);
+      const imageUrl = await emergencySupplyNeedService.uploadImage(file);
+      await emergencySupplyNeedService.update(id, { imageUrl });
+      await loadData();
+    } catch (err) {
+      console.error('圖片更新失敗:', err);
+      setError('圖片更新失敗，請稍後再試');
+    } finally {
+      setUploadingImageId(null);
+    }
   };
 
   const handleDelete = (item: EmergencySupplyNeed) => {
@@ -358,7 +384,7 @@ const EmergencyRequestTab: React.FC = () => {
           </Box>
           <Box>
             <Typography variant="body2" sx={{ color: THEME_COLORS.TEXT_SECONDARY }}>
-              已批准
+              募集中
             </Typography>
             <Typography variant="h4" sx={{ color: THEME_COLORS.SUCCESS }}>
               {stats.approvedRequests}
@@ -694,25 +720,43 @@ const EmergencyRequestTab: React.FC = () => {
                                 已領取: {row.collectedQuantity || 0} / {row.quantity || 0}
                               </Typography>
                             </Box>
-                            {row.imageUrl && (
-                              <Box>
-                                <Typography variant="subtitle2" sx={{ color: THEME_COLORS.TEXT_SECONDARY, fontWeight: 600 }}>
-                                  相關圖片
-                                </Typography>
-                                <Box sx={{ mt: 1 }}>
-                                  <img 
-                                    src={row.imageUrl} 
-                                    alt="緊急物資需求圖片" 
-                                    style={{ 
-                                      maxWidth: '200px', 
-                                      maxHeight: '150px', 
-                                      objectFit: 'cover',
-                                      borderRadius: '8px'
+                            <Box>
+                              <Typography variant="subtitle2" sx={{ color: THEME_COLORS.TEXT_SECONDARY, fontWeight: 600 }}>
+                                相關圖片
+                              </Typography>
+                              <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                {row.imageUrl && (
+                                  <img
+                                    src={row.imageUrl}
+                                    alt="緊急物資需求圖片"
+                                    style={{ maxWidth: '150px', maxHeight: '120px', objectFit: 'cover', borderRadius: '8px' }}
+                                  />
+                                )}
+                                <Box>
+                                  <input
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    id={`img-upload-${row.emergencyNeedId}`}
+                                    type="file"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) handleImageUpdate(row.emergencyNeedId, file);
+                                      e.target.value = '';
                                     }}
                                   />
+                                  <Button
+                                    size="small"
+                                    variant="outlined"
+                                    startIcon={uploadingImageId === row.emergencyNeedId ? <CircularProgress size={14} /> : <PhotoCamera />}
+                                    disabled={uploadingImageId === row.emergencyNeedId}
+                                    onClick={() => document.getElementById(`img-upload-${row.emergencyNeedId}`)?.click()}
+                                    sx={{ fontSize: '0.75rem' }}
+                                  >
+                                    {row.imageUrl ? '更換圖片' : '上傳圖片'}
+                                  </Button>
                                 </Box>
                               </Box>
-                            )}
+                            </Box>
                             <Box>
                               <Typography variant="subtitle2" sx={{ color: THEME_COLORS.TEXT_SECONDARY, fontWeight: 600 }}>
                                 需求數量

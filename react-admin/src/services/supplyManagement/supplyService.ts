@@ -490,7 +490,7 @@ class SupplyService {
    */
   async approveEmergencySupplyNeed(id: number): Promise<void> {
     try {
-      await api.put<void>(`/EmergencySupplyNeed/${id}/approve`);
+      await api.put<void>(`/EmergencySupplyNeed/${id}/approve`, {});
     } catch (error) {
       console.error(`批准緊急物資需求 ${id} 失敗:`, error);
       throw error;
@@ -502,7 +502,7 @@ class SupplyService {
    */
   async rejectEmergencySupplyNeed(id: number): Promise<void> {
     try {
-      await api.put<void>(`/EmergencySupplyNeed/${id}/reject`);
+      await api.put<void>(`/EmergencySupplyNeed/${id}/reject`, {});
     } catch (error) {
       console.error(`拒絕緊急物資需求 ${id} 失敗:`, error);
       throw error;

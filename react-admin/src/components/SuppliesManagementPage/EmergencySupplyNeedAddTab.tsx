@@ -66,7 +66,8 @@ const EmergencySupplyNeedAddTab: React.FC = () => {
     try {
       setCasesLoading(true);
       const casesData = await caseService.getAllCases();
-      const caseOptions = casesData.data.map(caseItem => ({
+      const caseArray = Array.isArray(casesData) ? casesData : (casesData.data || []);
+      const caseOptions = caseArray.map((caseItem: any) => ({
         caseId: caseItem.caseId,
         name: caseItem.name,
         identityNumber: caseItem.identityNumber,
@@ -349,20 +350,18 @@ const EmergencySupplyNeedAddTab: React.FC = () => {
                     <input
                       accept="image/*"
                       style={{ display: 'none' }}
-                      id="image-upload"
+                      id="emergency-image-upload"
                       type="file"
                       onChange={handleImageSelect}
                     />
-                    <label htmlFor="image-upload">
-                      <Button
-                        variant="outlined"
-                        component="span"
-                        startIcon={<PhotoCamera />}
-                        disabled={isUploading}
-                      >
-                        選擇圖片
-                      </Button>
-                    </label>
+                    <Button
+                      variant="outlined"
+                      startIcon={<PhotoCamera />}
+                      disabled={isUploading}
+                      onClick={() => document.getElementById('emergency-image-upload')?.click()}
+                    >
+                      選擇圖片
+                    </Button>
                   </Box>
                 )}
               </Box>

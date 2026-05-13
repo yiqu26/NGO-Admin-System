@@ -33,7 +33,7 @@ export const config = {
   
   // Google Maps API 設定
   googleMaps: {
-    apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyDVg1dKKWpQDri4sQW0oSsXZYPRltzQV-A',
+    apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
     libraries: ['places', 'geometry'],
     defaultCenter: { lat: 25.0330, lng: 121.5654 }, // 台北市中心
     defaultZoom: 12,

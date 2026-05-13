@@ -263,10 +263,10 @@ export const authService = {
    * 資料庫登出
    */
   logoutDatabase(): void {
-    // 清除資料庫登入相關的本地儲存
     localStorage.removeItem('workerInfo');
     localStorage.removeItem('isAuthenticated');
-    
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('loginMethod');
     console.log('資料庫登出完成');
   },
 

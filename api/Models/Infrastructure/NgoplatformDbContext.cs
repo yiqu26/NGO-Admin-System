@@ -210,6 +210,8 @@ public partial class NgoplatformDbContext : DbContext
         {
             entity.HasKey(e => e.EmergencyNeedId).HasName("PK__Emergenc__D9A4C6FA1D1F8990");
 
+            entity.ToTable(tb => tb.HasTrigger("tr_EmergencySupplyNeed"));
+
             entity.Property(e => e.SupplyName)
                 .HasMaxLength(200)
                 .IsUnicode(true);

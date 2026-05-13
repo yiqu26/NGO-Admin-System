@@ -54,7 +54,11 @@ namespace NGO_WebAPI_Backend.Services
         {
             var request = _httpContextAccessor.HttpContext?.Request;
             if (request != null)
-                return $"{request.Scheme}://{request.Host}{_baseUrl}";
+            {
+                var scheme = request.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? request.Scheme;
+                var host = request.Headers["X-Forwarded-Host"].FirstOrDefault() ?? request.Host.ToString();
+                return $"{scheme}://{host}{_baseUrl}";
+            }
             return _baseUrl;
         }
 

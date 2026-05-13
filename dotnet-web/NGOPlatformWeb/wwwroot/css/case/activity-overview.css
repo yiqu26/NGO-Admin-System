@@ -375,6 +375,29 @@
     box-shadow: none;
 }
 
+/* 查看詳情 按鈕 */
+.btn-detail {
+    display: inline-block;
+    background: transparent;
+    border: 1.5px solid var(--border-light);
+    border-radius: 6px;
+    padding: 0.4rem 1.1rem;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: border-color 0.2s, color 0.2s;
+    margin-right: 0.5rem;
+}
+
+.btn-detail:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
 /* ── Skeleton 骨架 ───────────────────────────── */
 @keyframes shimmer {
     0%   { background-position: -600px 0; }

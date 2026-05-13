@@ -2,9 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
 using NGO_WebAPI_Backend.Models.Shared;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Authorization;
+using NGO_WebAPI_Backend.Services;
 
 namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
 {
@@ -15,12 +14,14 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         private readonly NgoplatformDbContext _context;
         private readonly ILogger<EmergencySupplyNeedController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IFileStorageService _fileStorageService;
 
-        public EmergencySupplyNeedController(NgoplatformDbContext context, ILogger<EmergencySupplyNeedController> logger, IConfiguration configuration)
+        public EmergencySupplyNeedController(NgoplatformDbContext context, ILogger<EmergencySupplyNeedController> logger, IConfiguration configuration, IFileStorageService fileStorageService)
         {
             _context = context;
             _logger = logger;
             _configuration = configuration;
+            _fileStorageService = fileStorageService;
         }
 
         /// <summary>
@@ -263,39 +264,8 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                 if (file.Length > 5 * 1024 * 1024)
                     return BadRequest(ApiResponse<object>.ErrorResponse("圖片檔案大小不能超過 5MB"));
 
-                var connectionString = _configuration.GetConnectionString("AzureStorage");
-                var containerName = _configuration.GetValue<string>("AzureStorage:ContainerName");
-                var emergencySupplyFolder = _configuration.GetValue<string>("AzureStorage:EmergencySupplyFolder") ?? "emergency-supply/";
-
-                if (string.IsNullOrEmpty(connectionString))
-                    return StatusCode(500, ApiResponse<object>.ErrorResponse("Azure Storage 連接字串未配置"));
-
-                var blobServiceClient = new BlobServiceClient(connectionString);
-                var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
-                await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
-
-                var fileExtension = Path.GetExtension(file.FileName).ToLower();
-                var fileName = $"{Guid.NewGuid()}{fileExtension}";
-                var blobName = $"{emergencySupplyFolder}{fileName}";
-
-                var blobClient = containerClient.GetBlobClient(blobName);
-
-                var blobHttpHeaders = new BlobHttpHeaders
-                {
-                    ContentType = file.ContentType
-                };
-
-                using (var stream = file.OpenReadStream())
-                {
-                    await blobClient.UploadAsync(stream, new BlobUploadOptions
-                    {
-                        HttpHeaders = blobHttpHeaders
-                    });
-                }
-
-                var imageUrl = blobClient.Uri.ToString();
-                _logger.LogInformation($"緊急物資需求圖片上傳成功: {fileName}, URL: {imageUrl}");
+                var imageUrl = await _fileStorageService.UploadImageAsync(file);
+                _logger.LogInformation($"緊急物資需求圖片上傳成功: {imageUrl}");
 
                 return Ok(new { imageUrl = imageUrl });
             }
@@ -399,11 +369,11 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
                     return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的緊急物資需求"));
                 }
 
-                emergencyNeed.Status = "approved";
+                emergencyNeed.Status = "Fundraising";
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation($"成功批准緊急物資需求 ID: {id}");
-                return Ok(ApiResponse<object>.SuccessResponse(null!, "緊急物資需求已批准"));
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "緊急物資需求已批准，開始對外募集"));
             }
             catch (Exception ex)
             {
@@ -439,6 +409,35 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
             {
                 _logger.LogError(ex, $"拒絕緊急物資需求 ID: {id} 失敗");
                 return StatusCode(500, ApiResponse<object>.ErrorResponse("拒絕緊急物資需求失敗", ex.Message));
+            }
+        }
+
+        /// <summary>
+        /// 更新緊急物資需求（含圖片）
+        /// </summary>
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateEmergencySupplyNeed(int id, [FromBody] UpdateEmergencyNeedRequest request)
+        {
+            try
+            {
+                var emergencyNeed = await _context.EmergencySupplyNeeds.FindAsync(id);
+                if (emergencyNeed == null)
+                    return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的緊急物資需求"));
+
+                if (request.ImageUrl != null) emergencyNeed.ImageUrl = request.ImageUrl;
+                if (request.SupplyName != null) emergencyNeed.SupplyName = request.SupplyName;
+                if (request.Description != null) emergencyNeed.Description = request.Description;
+                if (request.Quantity.HasValue) emergencyNeed.Quantity = request.Quantity;
+                if (request.Priority != null) emergencyNeed.Priority = request.Priority;
+                emergencyNeed.UpdatedDate = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+                return Ok(ApiResponse<object>.SuccessResponse(null!, "更新成功"));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"更新緊急物資需求 ID: {id} 失敗");
+                return StatusCode(500, ApiResponse<object>.ErrorResponse("更新失敗", ex.Message));
             }
         }
 
@@ -516,5 +515,14 @@ namespace NGO_WebAPI_Backend.Controllers.SupplyManagement
         public int HighPriorityRequests { get; set; }
         public int TotalQuantity { get; set; }
         public int CollectedQuantity { get; set; }
+    }
+
+    public class UpdateEmergencyNeedRequest
+    {
+        public string? ImageUrl { get; set; }
+        public string? SupplyName { get; set; }
+        public string? Description { get; set; }
+        public int? Quantity { get; set; }
+        public string? Priority { get; set; }
     }
 }

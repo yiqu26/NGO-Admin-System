@@ -1,0 +1,384 @@
+/* ================================================
+   活動詳情頁 — Warm Editorial
+   ================================================ */
+
+/* ── 返回列 ──────────────────────────────────── */
+.detail-back-bar {
+    background: var(--bg-white);
+    border-bottom: 1px solid var(--border-light);
+    padding: 0.9rem 0;
+}
+
+.detail-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.detail-back-link:hover { color: var(--primary-color); }
+
+.detail-back-link i { font-size: 0.75rem; }
+
+/* ── Hero ────────────────────────────────────── */
+.detail-hero {
+    position: relative;
+    height: 420px;
+    overflow: hidden;
+    background: var(--bg-muted);
+}
+
+.detail-hero__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.detail-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(44,31,20,0.72) 0%, rgba(44,31,20,0.2) 50%, transparent 100%);
+}
+
+.detail-hero__content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2.5rem;
+}
+
+.detail-hero__category {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.detail-hero__title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 400;
+    color: #fff;
+    line-height: 1.15;
+    margin: 0;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+/* ── 無圖 placeholder ────────────────────────── */
+.detail-hero--no-image {
+    display: flex;
+    align-items: flex-end;
+    background: linear-gradient(135deg, var(--bg-muted) 0%, var(--bg-light) 100%);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.detail-hero--no-image .detail-hero__category {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.detail-hero--no-image .detail-hero__title {
+    color: var(--text-primary);
+    text-shadow: none;
+}
+
+/* ── 主體佈局 ────────────────────────────────── */
+.detail-body {
+    background: var(--bg-white);
+    padding: 3rem 0 5rem;
+}
+
+/* ── 主要內容 ────────────────────────────────── */
+.detail-main { }
+
+.detail-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.detail-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.detail-section__label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.detail-section__title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+}
+
+.detail-desc {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.85;
+    margin: 0;
+    white-space: pre-line;
+}
+
+/* ── 資訊列表 ────────────────────────────────── */
+.detail-info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.detail-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.detail-info-item__icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-light);
+    border-radius: 50%;
+    color: var(--primary-color);
+    font-size: 0.85rem;
+}
+
+.detail-info-item__content { flex: 1; }
+
+.detail-info-item__key {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.2rem;
+}
+
+.detail-info-item__value {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* ── Sidebar 報名卡 ──────────────────────────── */
+.detail-sidebar {
+    position: sticky;
+    top: 1.5rem;
+}
+
+.detail-signup-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    padding: 1.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.detail-signup-card__header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.detail-signup-card__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.detail-signup-card__status--open {
+    color: var(--success-color);
+    background: rgba(61, 122, 69, 0.08);
+    border: 1px solid rgba(61, 122, 69, 0.25);
+}
+
+.detail-signup-card__status--full {
+    color: var(--warning-color);
+    background: rgba(196, 124, 42, 0.08);
+    border: 1px solid rgba(196, 124, 42, 0.25);
+}
+
+.detail-signup-card__status--closed {
+    color: var(--text-muted);
+    background: var(--bg-muted);
+    border: 1px solid var(--border-light);
+}
+
+.detail-signup-card__spots {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.detail-signup-card__spots span {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    vertical-align: middle;
+    margin-left: 0.35rem;
+}
+
+.detail-signup-card__meta {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.detail-signup-card__meta li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+}
+
+.detail-signup-card__meta-key {
+    color: var(--text-muted);
+}
+
+.detail-signup-card__meta-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* ── 報名按鈕 ────────────────────────────────── */
+.btn-detail-signup {
+    display: block;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-detail-signup--primary {
+    background: var(--gradient-primary);
+    color: #fff;
+}
+
+.btn-detail-signup--primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+.btn-detail-signup--cancel {
+    background: transparent;
+    color: var(--primary-color);
+    border: 1.5px solid var(--primary-color);
+}
+
+.btn-detail-signup--cancel:hover {
+    background: var(--primary-light);
+}
+
+.btn-detail-signup--disabled {
+    background: var(--bg-muted);
+    color: var(--text-muted);
+    cursor: default;
+}
+
+.btn-detail-signup--login {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border-light);
+    text-decoration: none;
+    display: block;
+    text-align: center;
+}
+
+.btn-detail-signup--login:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.detail-signup-hint {
+    margin-top: 0.75rem;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ── 進度條 ──────────────────────────────────── */
+.detail-progress {
+    height: 4px;
+    background: var(--border-light);
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.detail-progress__bar {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+    transition: width 0.6s ease;
+}
+
+/* ── RWD ─────────────────────────────────────── */
+@@media (max-width: 991px) {
+    .detail-hero { height: 300px; }
+    .detail-hero__content { padding: 1.75rem; }
+    .detail-sidebar { position: static; margin-top: 2rem; }
+    .detail-body { padding: 2rem 0 3rem; }
+}
+
+@@media (max-width: 575px) {
+    .detail-hero { height: 240px; }
+    .detail-hero__title { font-size: 1.5rem; }
+}

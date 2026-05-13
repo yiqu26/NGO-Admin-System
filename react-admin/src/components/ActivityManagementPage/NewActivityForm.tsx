@@ -962,8 +962,11 @@ const NewActivityForm: React.FC<NewActivityFormProps> = ({ onSubmit, onCancel })
             <TextField
               label="需求活動人數 *"
               type="number"
-              value={formData.maxParticipants}
-              onChange={(e) => handleInputChange('maxParticipants', parseInt(e.target.value) || 0)}
+              value={formData.maxParticipants === 0 ? '' : formData.maxParticipants}
+              onChange={(e) => {
+                const val = e.target.value;
+                handleInputChange('maxParticipants', val === '' ? 0 : (parseInt(val) || 0));
+              }}
               onBlur={(e) => handleFieldBlur('maxParticipants', parseInt(e.target.value) || 0)}
               sx={{ 
                 ...dynamicInputStyles,

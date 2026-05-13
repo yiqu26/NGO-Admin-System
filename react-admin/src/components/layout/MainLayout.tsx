@@ -31,7 +31,7 @@ import Sidebar from './Sidebar';
  */
 const MainLayout: React.FC = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   // 控制行動版側邊欄開關
   const [sidebarOpen, setSidebarOpen] = useState(false);

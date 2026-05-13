@@ -72,6 +72,9 @@
                                     var userType = Model.UserType;
                                     var isRegistered = Model.RegisteredActivityIds.Contains(item.ActivityId);
                                 }
+                                <a class="btn-detail" href="@Url.Action("Detail", "Activity", new { id = item.ActivityId })">
+                                    查看詳情
+                                </a>
                                 @if (userType == "Case")
                                 {
                                     @if (isRegistered)

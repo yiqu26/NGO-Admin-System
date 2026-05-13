@@ -113,7 +113,7 @@ const getLoginSourceText = (loginMethod?: LoginMethod): string => {
  */
 const Sidebar: React.FC<SidebarProps> = ({ open = true, onClose }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const location = useLocation();
   const { user, logout, loginMethod } = useAuth();
   const { counts, hasSupplyNotifications, hasDistributionNotifications } = useNotificationContext();

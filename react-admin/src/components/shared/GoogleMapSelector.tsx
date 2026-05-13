@@ -532,9 +532,9 @@ const GoogleMapSelector: React.FC<GoogleMapSelectorProps> = React.memo(({
             }}
             placeholder={placeholder}
             fullWidth
-            disabled={disabled || !mapLoaded}
+            disabled={disabled}
             error={!!error}
-            helperText={error}
+            helperText={!mapLoaded && !error ? '地圖載入中，仍可手動輸入地點名稱' : error}
             sx={{
               ...commonStyles.formInput,
               '& .MuiOutlinedInput-root': {

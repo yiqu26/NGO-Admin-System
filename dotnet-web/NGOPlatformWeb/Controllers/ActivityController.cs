@@ -75,6 +75,37 @@ public class ActivityController : Controller
         };
     }
 
+    // 活動詳情頁
+    [HttpGet]
+    public async Task<IActionResult> Detail(int id)
+    {
+        var activity = await _activityService.GetActivityByIdAsync(id);
+        if (activity == null) return NotFound();
+
+        var userRole = _activityService.DetermineUserRole(User);
+        var isAuthenticated = User.Identity?.IsAuthenticated == true;
+        var actualParticipants = await _activityService.GetActualParticipantsCountAsync(id);
+
+        bool isRegistered = false;
+        if (isAuthenticated)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+            var registeredIds = await _activityService.GetUserRegisteredActivityIdsAsync(userId, userRole);
+            isRegistered = registeredIds.Contains(id);
+        }
+
+        var vm = new ActivityDetailViewModel
+        {
+            Activity = activity,
+            IsRegistered = isRegistered,
+            UserType = userRole,
+            IsAuthenticated = isAuthenticated,
+            AvailableSlots = Math.Max(0, (activity.MaxParticipants) - actualParticipants),
+        };
+
+        return View(vm);
+    }
+
     // 取消報名功能 (使用分層架構)
     [HttpGet]
     [Authorize]

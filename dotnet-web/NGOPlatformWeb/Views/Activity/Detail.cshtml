@@ -1,0 +1,297 @@
+@model NGOPlatformWeb.Models.ViewModels.ActivityDetailViewModel
+@{
+    var a = Model.Activity;
+    var hasImage = !string.IsNullOrEmpty(a.ImageUrl);
+    var participantPercent = a.MaxParticipants > 0
+        ? Math.Min(100, (int)((a.CurrentParticipants / (double)a.MaxParticipants) * 100))
+        : 0;
+
+    var statusText = Model.IsFull ? "名額已滿" : (Model.IsOpen ? "報名開放中" : "已結束");
+    var statusClass = Model.IsFull ? "full" : (Model.IsOpen ? "open" : "closed");
+
+    var returnUrl = Model.UserType switch {
+        "User" => Url.Action("UserIndex", "Activity"),
+        "Case" => Url.Action("CaseIndex", "Activity"),
+        _ => Url.Action("PublicIndex", "Activity")
+    };
+}
+
+<link rel="stylesheet" href="~/css/case/activity-detail.css" asp-append-version="true" />
+
+<!-- 返回列 -->
+<div class="detail-back-bar">
+    <div class="container">
+        <a href="@returnUrl" class="detail-back-link">
+            <i class="fas fa-arrow-left"></i> 返回活動列表
+        </a>
+    </div>
+</div>
+
+<!-- Hero -->
+<div class="detail-hero @(!hasImage ? "detail-hero--no-image" : "")">
+    @if (hasImage)
+    {
+        <img class="detail-hero__img" src="@a.ImageUrl" alt="@a.ActivityName" />
+        <div class="detail-hero__overlay"></div>
+    }
+    <div class="detail-hero__content">
+        @if (!string.IsNullOrEmpty(a.Category))
+        {
+            <span class="detail-hero__category">@a.Category</span>
+        }
+        <h1 class="detail-hero__title">@a.ActivityName</h1>
+    </div>
+</div>
+
+<!-- 主體 -->
+<div class="detail-body">
+    <div class="container">
+        <div class="row">
+
+            <!-- 主要內容 -->
+            <div class="col-lg-8 detail-main">
+
+                <!-- 活動介紹 -->
+                @if (!string.IsNullOrEmpty(a.Description))
+                {
+                    <div class="detail-section">
+                        <span class="detail-section__label">About</span>
+                        <p class="detail-desc">@a.Description</p>
+                    </div>
+                }
+
+                <!-- 時間 & 地點 -->
+                <div class="detail-section">
+                    <span class="detail-section__label">Details</span>
+                    <ul class="detail-info-list">
+                        <li class="detail-info-item">
+                            <div class="detail-info-item__icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="detail-info-item__content">
+                                <span class="detail-info-item__key">活動時間</span>
+                                <span class="detail-info-item__value">
+                                    @a.StartDate.ToString("yyyy 年 M 月 d 日 HH:mm")
+                                    &mdash;
+                                    @a.EndDate.ToString("M 月 d 日 HH:mm")
+                                </span>
+                            </div>
+                        </li>
+                        @if (!string.IsNullOrEmpty(a.Location))
+                        {
+                            <li class="detail-info-item">
+                                <div class="detail-info-item__icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="detail-info-item__content">
+                                    <span class="detail-info-item__key">活動地點</span>
+                                    <span class="detail-info-item__value">@a.Location</span>
+                                </div>
+                            </li>
+                        }
+                        <li class="detail-info-item">
+                            <div class="detail-info-item__icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="detail-info-item__content">
+                                <span class="detail-info-item__key">參與人數</span>
+                                <span class="detail-info-item__value">
+                                    @a.CurrentParticipants / @a.MaxParticipants 人
+                                </span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Sidebar 報名卡 -->
+            <div class="col-lg-4">
+                <div class="detail-sidebar">
+                    <div class="detail-signup-card">
+
+                        <div class="detail-signup-card__header">
+                            <span class="detail-signup-card__status detail-signup-card__status--@statusClass">
+                                <i class="fas fa-circle" style="font-size:0.5rem"></i>
+                                @statusText
+                            </span>
+                            <div class="detail-signup-card__spots">
+                                @Model.AvailableSlots
+                                <span>個名額剩餘</span>
+                            </div>
+                            <div class="detail-progress">
+                                <div class="detail-progress__bar" style="width: @participantPercent%"></div>
+                            </div>
+                        </div>
+
+                        <ul class="detail-signup-card__meta">
+                            <li>
+                                <span class="detail-signup-card__meta-key">已報名</span>
+                                <span class="detail-signup-card__meta-value">@a.CurrentParticipants 人</span>
+                            </li>
+                            <li>
+                                <span class="detail-signup-card__meta-key">總名額</span>
+                                <span class="detail-signup-card__meta-value">@a.MaxParticipants 人</span>
+                            </li>
+                        </ul>
+
+                        @if (!Model.IsAuthenticated)
+                        {
+                            <a href="/Auth/Login?returnUrl=@Url.Action("Detail", "Activity", new { id = a.ActivityId })"
+                               class="btn-detail-signup btn-detail-signup--login">
+                                登入以報名
+                            </a>
+                            <p class="detail-signup-hint">需要帳號才能報名活動</p>
+                        }
+                        else if (Model.IsRegistered)
+                        {
+                            <button class="btn-detail-signup btn-detail-signup--cancel"
+                                    onclick="cancelFromDetail(@a.ActivityId, '@a.ActivityName')">
+                                取消報名
+                            </button>
+                            <p class="detail-signup-hint">您已報名此活動</p>
+                        }
+                        else if (!Model.IsOpen)
+                        {
+                            <button class="btn-detail-signup btn-detail-signup--disabled" disabled>
+                                活動已結束
+                            </button>
+                        }
+                        else if (Model.IsFull)
+                        {
+                            <button class="btn-detail-signup btn-detail-signup--disabled" disabled>
+                                名額已滿
+                            </button>
+                        }
+                        else if (Model.UserType == "User")
+                        {
+                            <button class="btn-detail-signup btn-detail-signup--primary"
+                                    onclick="showRegistrationModal(@a.ActivityId, '@a.ActivityName')">
+                                立即報名
+                            </button>
+                        }
+                        else if (Model.UserType == "Case")
+                        {
+                            <button class="btn-detail-signup btn-detail-signup--primary"
+                                    onclick="showCaseRegistrationModal(@a.ActivityId, '@a.ActivityName')">
+                                立即報名
+                            </button>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@* 報名 Modal（沿用列表頁邏輯）*@
+@if (Model.IsAuthenticated && Model.UserType == "User")
+{
+    <div class="modal fade" id="registrationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title" style="font-family: var(--font-display); font-weight: 400;">報名活動</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <p id="modal-activity-name" style="font-weight: 600; color: var(--text-primary);"></p>
+                    <div class="mb-3">
+                        <label class="form-label" style="font-size: 0.85rem; color: var(--text-muted);">攜伴人數（不含本人）</label>
+                        <input type="number" id="companions-count" class="form-control" min="0" max="5" value="0" />
+                    </div>
+                    <div id="modal-slots-info" style="font-size: 0.85rem; color: var(--text-muted);"></div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="submitRegistration()" style="background: var(--primary-color); border-color: var(--primary-color);">確認報名</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.IsAuthenticated && Model.UserType == "Case")
+{
+    <div class="modal fade" id="caseRegistrationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title" style="font-family: var(--font-display); font-weight: 400;">報名確認</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <p>確定要報名「<span id="case-modal-activity-name" style="font-weight: 600;"></span>」嗎？</p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="submitCaseRegistration()" style="background: var(--primary-color); border-color: var(--primary-color);">確認報名</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    var currentActivityId = @a.ActivityId;
+
+    function showRegistrationModal(activityId, activityName) {
+        currentActivityId = activityId;
+        document.getElementById('modal-activity-name').textContent = activityName;
+        $.get('/Activity/GetActivityInfo/' + activityId, function (data) {
+            if (data.success) {
+                document.getElementById('modal-slots-info').textContent =
+                    '剩餘名額：' + data.availableSlots + ' 人（含攜伴）';
+            }
+        });
+        var modal = new bootstrap.Modal(document.getElementById('registrationModal'));
+        modal.show();
+    }
+
+    function submitRegistration() {
+        var companions = parseInt(document.getElementById('companions-count').value) || 0;
+        $.post('/Activity/RegisterWithCompanions', {
+            activityId: currentActivityId,
+            numberOfCompanions: companions
+        }, function (data) {
+            if (data.success) {
+                alert('報名成功！');
+                location.reload();
+            } else {
+                alert(data.message || '報名失敗，請稍後再試');
+            }
+        });
+    }
+
+    function showCaseRegistrationModal(activityId, activityName) {
+        currentActivityId = activityId;
+        document.getElementById('case-modal-activity-name').textContent = activityName;
+        var modal = new bootstrap.Modal(document.getElementById('caseRegistrationModal'));
+        modal.show();
+    }
+
+    function submitCaseRegistration() {
+        $.post('/Activity/RegisterCase', { activityId: currentActivityId }, function (data) {
+            if (data.success) {
+                alert('報名成功！');
+                location.reload();
+            } else {
+                alert(data.message || '報名失敗，請稍後再試');
+            }
+        });
+    }
+
+    function cancelFromDetail(activityId, activityName) {
+        if (!confirm('確定要取消「' + activityName + '」的報名嗎？')) return;
+        $.post('/Activity/CancelRegistrationAjax', { activityId: activityId }, function (data) {
+            if (data.success) {
+                alert('已取消報名');
+                location.reload();
+            } else {
+                alert(data.message || '取消失敗，請稍後再試');
+            }
+        });
+    }
+</script>

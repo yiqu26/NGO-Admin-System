@@ -183,15 +183,17 @@
 }
 
 .field-label {
-    color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     margin-bottom: 0.25rem;
 }
 
 .field-value {
     color: var(--text-primary);
-    font-weight: 500;
+    font-weight: 600;
     font-size: 0.95rem;
 }
 
