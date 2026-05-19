@@ -237,6 +237,7 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
         /// 更新活動資料
         /// </summary>
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<ActionResult> UpdateActivity(int id, [FromBody] UpdateActivityRequest request)
         {
             try
@@ -287,6 +288,7 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
         /// 刪除活動
         /// </summary>
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult> DeleteActivity(int id)
         {
             try

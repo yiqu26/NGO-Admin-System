@@ -152,50 +152,15 @@ export const authService = {
     }
   },
 
-  /**
-   * 資料庫登入 (與 login 方法相同，提供向後兼容)
-   * @param email 電子郵件
-   * @param password 密碼
-   * @returns 登入結果
-   */
+  // loginWithDatabase 轉換 login() 的回傳格式以符合 useAuth 的 LoginResult 介面
   async loginWithDatabase(email: string, password: string): Promise<any> {
-    try {
-      const result = await this.login(email, password);
-      
-      // 轉換格式以符合 LoginResult 介面
-      if (result.success && result.worker) {
-        // 確保 loginMethod 已正確設置
-        localStorage.setItem('loginMethod', 'database');
-        
-        const user = {
-          ...result.worker,
-          loginSource: 'database'
-        } as any;
-        
-        console.log('loginWithDatabase 成功，用戶資訊:', user);
-        console.log('用戶角色:', user.role);
-        
-        return {
-          success: true,
-          message: result.message,
-          user: user,
-          method: 'database'
-        };
-      } else {
-        return {
-          success: false,
-          message: result.message,
-          method: 'database'
-        };
-      }
-    } catch (error) {
-      console.error('資料庫登入失敗:', error);
-      return {
-        success: false,
-        message: '登入失敗，請稍後再試',
-        method: 'database'
-      };
-    }
+    const result = await this.login(email, password);
+    return {
+      success: result.success,
+      message: result.message,
+      user: result.worker ? { ...result.worker, loginSource: 'database' } : undefined,
+      method: 'database'
+    };
   },
 
   /**
@@ -249,14 +214,28 @@ export const authService = {
     return localStorage.getItem('isAuthenticated') === 'true';
   },
 
-  /**
-   * 檢查資料庫登入狀態
-   * @returns 是否已透過資料庫登入
-   */
+  isTokenExpired(): boolean {
+    const token = localStorage.getItem('authToken');
+    if (!token) return true;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      // exp 是 Unix 秒，乘 1000 轉成毫秒
+      return Date.now() >= payload.exp * 1000;
+    } catch {
+      return true;
+    }
+  },
+
   isDatabaseAuthenticated(): boolean {
     const workerInfo = localStorage.getItem('workerInfo');
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    return isAuthenticated && workerInfo !== null;
+    if (!isAuthenticated || !workerInfo) return false;
+    if (this.isTokenExpired()) {
+      // token 已過期，清除狀態避免顯示錯誤的登入畫面
+      this.logout();
+      return false;
+    }
+    return true;
   },
 
   /**

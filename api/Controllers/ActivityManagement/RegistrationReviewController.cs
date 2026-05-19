@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
 using NGO_WebAPI_Backend.Models.Shared;
@@ -7,6 +8,7 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class RegistrationReviewController : ControllerBase
     {
         private readonly NgoplatformDbContext _context;
@@ -83,47 +85,35 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
         [HttpPut("case/{id}/status")]
         public async Task<IActionResult> UpdateCaseRegistrationStatus(int id, [FromBody] UpdateStatusRequest req)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                _logger.LogInformation($"開始更新個案報名狀態，ID: {id}, 新狀態: {req.Status}");
-
                 var reg = await _context.CaseActivityRegistrations.FindAsync(id);
                 if (reg == null)
-                {
-                    _logger.LogWarning($"找不到個案報名 ID: {id}");
                     return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的個案報名"));
-                }
 
-                var activity = await _context.Activities.FindAsync(reg.ActivityId);
-                if (activity == null)
-                {
-                    _logger.LogWarning($"找不到活動 ID: {reg.ActivityId}");
+                if (await _context.Activities.FindAsync(reg.ActivityId) == null)
                     return NotFound(ApiResponse<object>.ErrorResponse("找不到相關的活動"));
-                }
 
                 string oldStatus = reg.Status ?? string.Empty;
-
                 reg.Status = req.Status;
                 await _context.SaveChangesAsync();
 
                 if (oldStatus == "Approved" && req.Status == "cancelled")
-                {
                     await _context.Database.ExecuteSqlRawAsync(
                         "UPDATE Activities SET CurrentParticipants = CASE WHEN CurrentParticipants >= 1 THEN CurrentParticipants - 1 ELSE 0 END WHERE ActivityId = {0}",
                         reg.ActivityId ?? 0);
-                }
                 else if (oldStatus != "Approved" && req.Status == "Approved")
-                {
                     await _context.Database.ExecuteSqlRawAsync(
                         "UPDATE Activities SET CurrentParticipants = ISNULL(CurrentParticipants, 0) + 1 WHERE ActivityId = {0}",
                         reg.ActivityId ?? 0);
-                }
 
-                _logger.LogInformation($"成功更新個案報名狀態，ID: {id}");
+                await transaction.CommitAsync();
                 return Ok(ApiResponse<object>.SuccessResponse(null!, "狀態更新成功"));
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, $"更新個案報名狀態時發生錯誤，ID: {id}");
                 return StatusCode(500, ApiResponse<object>.ErrorResponse("更新狀態失敗", ex.Message));
             }
@@ -133,48 +123,36 @@ namespace NGO_WebAPI_Backend.Controllers.ActivityManagement
         [HttpPut("user/{id}/status")]
         public async Task<IActionResult> UpdateUserRegistrationStatus(int id, [FromBody] UpdateStatusRequest req)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                _logger.LogInformation($"開始更新民眾報名狀態，ID: {id}, 新狀態: {req.Status}");
-
                 var reg = await _context.UserActivityRegistrations.FindAsync(id);
                 if (reg == null)
-                {
-                    _logger.LogWarning($"找不到民眾報名 ID: {id}");
                     return NotFound(ApiResponse<object>.ErrorResponse("找不到指定的民眾報名"));
-                }
 
-                var activity = await _context.Activities.FindAsync(reg.ActivityId);
-                if (activity == null)
-                {
-                    _logger.LogWarning($"找不到活動 ID: {reg.ActivityId}");
+                if (await _context.Activities.FindAsync(reg.ActivityId) == null)
                     return NotFound(ApiResponse<object>.ErrorResponse("找不到相關的活動"));
-                }
 
                 int delta = 1 + (reg.NumberOfCompanions ?? 0);
                 string oldStatus = reg.Status ?? string.Empty;
-
                 reg.Status = req.Status;
                 await _context.SaveChangesAsync();
 
                 if (oldStatus == "Approved" && req.Status == "cancelled")
-                {
                     await _context.Database.ExecuteSqlRawAsync(
                         "UPDATE Activities SET CurrentParticipants = CASE WHEN CurrentParticipants >= {0} THEN CurrentParticipants - {0} ELSE 0 END WHERE ActivityId = {1}",
                         delta, reg.ActivityId ?? 0);
-                }
                 else if (oldStatus != "Approved" && req.Status == "Approved")
-                {
                     await _context.Database.ExecuteSqlRawAsync(
                         "UPDATE Activities SET CurrentParticipants = ISNULL(CurrentParticipants, 0) + {0} WHERE ActivityId = {1}",
                         delta, reg.ActivityId ?? 0);
-                }
 
-                _logger.LogInformation($"成功更新民眾報名狀態，ID: {id}");
+                await transaction.CommitAsync();
                 return Ok(ApiResponse<object>.SuccessResponse(null!, "狀態更新成功"));
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, $"更新民眾報名狀態時發生錯誤，ID: {id}");
                 return StatusCode(500, ApiResponse<object>.ErrorResponse("更新狀態失敗", ex.Message));
             }

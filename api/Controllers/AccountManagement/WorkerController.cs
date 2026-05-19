@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
 using NGO_WebAPI_Backend.Models.Shared;
@@ -8,6 +9,7 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class WorkerController : ControllerBase
     {
         private readonly NgoplatformDbContext _context;
@@ -25,6 +27,7 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
         /// <param name="email">工作人員 Email</param>
         /// <returns>工作人員資訊</returns>
         [HttpGet("by-email/{email}")]
+        [AllowAnonymous]
         public async Task<ActionResult<object>> GetWorkerByEmail(string email)
         {
             try

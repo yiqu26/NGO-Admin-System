@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGO_WebAPI_Backend.Models.Infrastructure;
@@ -190,6 +191,7 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
         /// <param name="request">Azure用戶註冊請求</param>
         /// <returns>註冊結果</returns>
         [HttpPost("azure-user-sync")]
+        [Authorize]
         public async Task<ActionResult<AzureUserSyncResponse>> SyncAzureUser([FromBody] AzureUserSyncRequest request)
         {
             try
@@ -289,7 +291,8 @@ namespace NGO_WebAPI_Backend.Controllers.AccountManagement
         private string GenerateJwtToken(Worker worker)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["SecretKey"] ?? "NGO_Platform_Super_Secret_Key_For_Development_Only_2024";
+            var secretKey = jwtSettings["SecretKey"]
+                ?? throw new InvalidOperationException("JwtSettings:SecretKey is not configured");
             var key = Encoding.ASCII.GetBytes(secretKey);
 
             var tokenDescriptor = new SecurityTokenDescriptor

@@ -70,7 +70,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateCaseDtoValidator>();
 
 // 配置 JWT 驗證
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["SecretKey"] ?? "NGO_Platform_Super_Secret_Key_For_Development_Only_2024";
+var secretKey = jwtSettings["SecretKey"]
+    ?? throw new InvalidOperationException("JwtSettings:SecretKey is not configured in appsettings.json");
 var key = Encoding.ASCII.GetBytes(secretKey);
 
 builder.Services.AddAuthentication(options =>
