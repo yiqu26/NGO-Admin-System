@@ -46,7 +46,7 @@ namespace NGOPlatformWeb.Services
 
         public async Task<User?> GetUserByIdAsync(int id)
         {
-            return await Task.FromResult(_context.Users.FirstOrDefault(u => u.UserId == id));
+            return await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
         }
 
         public async Task<Case?> GetCaseByIdAsync(int id)
@@ -123,20 +123,16 @@ namespace NGOPlatformWeb.Services
                 {
                     if (model.PaymentMethod != "ecpay")
                     {
-                        await _context.Database.ExecuteSqlRawAsync(
-                            "UPDATE EmergencySupplyNeeds SET CollectedQuantity = CollectedQuantity + {0}, UpdatedDate = {1} WHERE EmergencyNeedId = {2}",
-                            model.Quantity, DateTime.Now, model.EmergencyNeedId.Value);
-
                         var emergencyNeed = await _context.EmergencySupplyNeeds
                             .FirstOrDefaultAsync(e => e.EmergencyNeedId == model.EmergencyNeedId.Value);
 
-                        if (emergencyNeed != null &&
-                            emergencyNeed.CollectedQuantity >= emergencyNeed.Quantity &&
-                            emergencyNeed.Status == "Fundraising")
+                        if (emergencyNeed != null)
                         {
-                            await _context.Database.ExecuteSqlRawAsync(
-                                "UPDATE EmergencySupplyNeeds SET Status = 'Completed' WHERE EmergencyNeedId = {0}",
-                                model.EmergencyNeedId.Value);
+                            emergencyNeed.CollectedQuantity += model.Quantity;
+                            emergencyNeed.UpdatedDate = DateTime.Now;
+
+                            if (emergencyNeed.CollectedQuantity >= emergencyNeed.Quantity && emergencyNeed.Status == "Fundraising")
+                                emergencyNeed.Status = "Completed";
                         }
                     }
                 }

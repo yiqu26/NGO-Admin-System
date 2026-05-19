@@ -221,20 +221,18 @@ namespace NGOPlatformWeb.Services
                     
                     if (emergencyRecord != null)
                     {
-                        _context.Database.ExecuteSqlRaw(
-                            "UPDATE EmergencySupplyNeeds SET CollectedQuantity = CollectedQuantity + {0}, UpdatedDate = {1} WHERE EmergencyNeedId = {2}",
-                            emergencyRecord.Quantity, DateTime.Now, emergencyRecord.EmergencyNeedId);
-                        
-                        // AsNoTracking 確保從 DB 重新讀取，而非 EF Core 快取的舊值（raw SQL 不會更新 EF 追蹤物件）
                         var emergencyNeed = _context.EmergencySupplyNeeds
-                            .AsNoTracking()
                             .FirstOrDefault(e => e.EmergencyNeedId == emergencyRecord.EmergencyNeedId);
-                        
-                        if (emergencyNeed != null && emergencyNeed.CollectedQuantity >= emergencyNeed.Quantity && emergencyNeed.Status == "Fundraising")
+
+                        if (emergencyNeed != null)
                         {
-                            _context.Database.ExecuteSqlRaw(
-                                "UPDATE EmergencySupplyNeeds SET Status = 'Completed' WHERE EmergencyNeedId = {0}",
-                                emergencyRecord.EmergencyNeedId);
+                            emergencyNeed.CollectedQuantity += emergencyRecord.Quantity;
+                            emergencyNeed.UpdatedDate = DateTime.Now;
+
+                            if (emergencyNeed.CollectedQuantity >= emergencyNeed.Quantity && emergencyNeed.Status == "Fundraising")
+                                emergencyNeed.Status = "Completed";
+
+                            _context.SaveChanges();
                         }
                     }
                 }

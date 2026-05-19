@@ -194,16 +194,19 @@ namespace NGOPlatformWeb.Services
                 .Select(ua => ua.AchievementCode)
                 .ToListAsync();
 
-            // 檢查每個成就條件
+            // 檢查每個成就條件，收集後批次寫入，避免每筆都觸發 SaveChanges
             foreach (var achievement in ACHIEVEMENTS.Values)
             {
-                if (!existingAchievements.Contains(achievement.Code) && 
+                if (!existingAchievements.Contains(achievement.Code) &&
                     await MeetsAchievementCondition(userId, achievement.Code))
                 {
-                    await AwardAchievement(userId, achievement.Code);
+                    AwardAchievement(userId, achievement.Code);
                     newAchievements.Add(achievement.Code);
                 }
             }
+
+            if (newAchievements.Count > 0)
+                await _context.SaveChangesAsync();
 
             return newAchievements;
         }
@@ -314,17 +317,14 @@ namespace NGOPlatformWeb.Services
         /// <summary>
         /// 獎勵成就
         /// </summary>
-        private async Task AwardAchievement(int userId, string achievementCode)
+        private void AwardAchievement(int userId, string achievementCode)
         {
-            var userAchievement = new UserAchievement
+            _context.UserAchievements.Add(new UserAchievement
             {
                 UserId = userId,
                 AchievementCode = achievementCode,
                 EarnedAt = DateTime.Now
-            };
-
-            _context.UserAchievements.Add(userAchievement);
-            await _context.SaveChangesAsync();
+            });
         }
 
         // === 活動相關成就檢查方法 ===

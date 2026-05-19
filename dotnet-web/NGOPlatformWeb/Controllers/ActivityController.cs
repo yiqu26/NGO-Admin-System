@@ -5,14 +5,14 @@ using NGOPlatformWeb.Models.ViewModels;
 using NGOPlatformWeb.Services;
 using System.Security.Claims;
 
+namespace NGOPlatformWeb.Controllers
+{
 public class ActivityController : Controller
 {
-    private readonly NGODbContext _context;
     private readonly IActivityService _activityService;
 
-    public ActivityController(NGODbContext context, IActivityService activityService)
+    public ActivityController(IActivityService activityService)
     {
-        _context = context;
         _activityService = activityService;
     }
 
@@ -145,9 +145,9 @@ public class ActivityController : Controller
 
     [HttpGet]
     [Authorize(Roles = "Case")]
-    public IActionResult CaseSignup(int id)
+    public async Task<IActionResult> CaseSignup(int id)
     {
-        var activity = _context.Activities.FirstOrDefault(a => a.ActivityId == id);
+        var activity = await _activityService.GetActivityByIdAsync(id);
         if (activity == null) return NotFound();
 
         var caseIdClaim = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
@@ -180,21 +180,21 @@ public class ActivityController : Controller
         if (!int.TryParse(caseIdClaim, out int caseId))
             return RedirectToAction("Login", "Auth");
 
-        // 強制使用 Claims 的 CaseId，防止前端偽造
-        vm.Registration.CaseId = caseId;
-        vm.Registration.RegisterTime = DateTime.Now;
-
         try
         {
-            _context.CaseActivityRegistrations.Add(vm.Registration);
-            await _context.SaveChangesAsync();
-            TempData["SignupSuccess"] = true;
-            return RedirectToAction("CaseActivityIndex");
+            var success = await _activityService.RegisterCaseAsync(caseId, vm.Registration.ActivityId);
+            if (success)
+            {
+                TempData["SignupSuccess"] = true;
+                return RedirectToAction("CaseActivityIndex");
+            }
+            vm.Activity = await _activityService.GetActivityByIdAsync(vm.Registration.ActivityId);
+            ViewBag.Error = "報名失敗，請稍後再試";
+            return View(vm);
         }
         catch (Exception ex)
         {
-            vm.Activity = _context.Activities!
-                .FirstOrDefault(a => a.ActivityId == vm.Registration!.ActivityId);
+            vm.Activity = await _activityService.GetActivityByIdAsync(vm.Registration.ActivityId);
             ViewBag.Error = ex.Message;
             return View(vm);
         }
@@ -339,4 +339,5 @@ public class ActivityController : Controller
             return Json(new { success = false, message = "報名時發生錯誤：" + ex.Message });
         }
     }
+}
 }

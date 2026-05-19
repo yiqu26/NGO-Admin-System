@@ -128,24 +128,7 @@ namespace NGOPlatformWeb.Controllers
                         IsLoggedIn = User.Identity?.IsAuthenticated ?? false
                     };
 
-                    if (paymentModel.IsLoggedIn)
-                    {
-                        var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                        var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-
-                        if (userRole == "User" && int.TryParse(userIdStr, out int userId))
-                        {
-                            var user = await _purchaseService.GetUserByIdAsync(userId);
-                            if (user != null)
-                            {
-                                paymentModel.UserId = userId;
-                                paymentModel.DonorName = user.Name ?? "";
-                                paymentModel.DonorEmail = user.Email ?? "";
-                                paymentModel.DonorPhone = user.Phone ?? "";
-                            }
-                        }
-                    }
-
+                    await FillDonorInfoAsync(paymentModel);
                     return View("Payment", paymentModel);
                 }
 
@@ -178,24 +161,7 @@ namespace NGOPlatformWeb.Controllers
                     IsLoggedIn = User.Identity?.IsAuthenticated ?? false
                 };
 
-                if (regularPaymentModel.IsLoggedIn)
-                {
-                    var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                    var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-
-                    if (userRole == "User" && int.TryParse(userIdStr, out int userId))
-                    {
-                        var user = await _purchaseService.GetUserByIdAsync(userId);
-                        if (user != null)
-                        {
-                            regularPaymentModel.UserId = userId;
-                            regularPaymentModel.DonorName = user.Name ?? "";
-                            regularPaymentModel.DonorEmail = user.Email ?? "";
-                            regularPaymentModel.DonorPhone = user.Phone ?? "";
-                        }
-                    }
-                }
-
+                await FillDonorInfoAsync(regularPaymentModel);
                 return View("Payment", regularPaymentModel);
             }
             catch (Exception ex)
@@ -244,23 +210,7 @@ namespace NGOPlatformWeb.Controllers
                 IsLoggedIn = User.Identity?.IsAuthenticated ?? false
             };
 
-            if (paymentModel.IsLoggedIn)
-            {
-                var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-
-                if (userRole == "User" && int.TryParse(userIdStr, out int userId))
-                {
-                    var user = await _purchaseService.GetUserByIdAsync(userId);
-                    if (user != null)
-                    {
-                        paymentModel.UserId = userId;
-                        paymentModel.DonorName = user.Name ?? "";
-                        paymentModel.DonorEmail = user.Email ?? "";
-                        paymentModel.DonorPhone = user.Phone ?? "";
-                    }
-                }
-            }
+            await FillDonorInfoAsync(paymentModel);
 
             TempData["PackageType"] = packageType;
             return View("Payment", paymentModel);
@@ -487,6 +437,24 @@ namespace NGOPlatformWeb.Controllers
             {
                 TempData["Error"] = "重新付款時發生錯誤: " + ex.Message;
                 return RedirectToAction("PurchaseRecords", "User");
+            }
+        }
+
+        private async Task FillDonorInfoAsync(PaymentViewModel model)
+        {
+            if (!model.IsLoggedIn) return;
+            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            if (userRole == "User" && int.TryParse(userIdStr, out int userId))
+            {
+                var user = await _purchaseService.GetUserByIdAsync(userId);
+                if (user != null)
+                {
+                    model.UserId = userId;
+                    model.DonorName = user.Name ?? "";
+                    model.DonorEmail = user.Email ?? "";
+                    model.DonorPhone = user.Phone ?? "";
+                }
             }
         }
 

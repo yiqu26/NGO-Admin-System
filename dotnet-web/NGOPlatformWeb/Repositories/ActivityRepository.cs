@@ -70,6 +70,8 @@ namespace NGOPlatformWeb.Repositories
 
         public async Task<bool> CancelUserRegistrationAsync(int userId, int activityId, string userType)
         {
+            // 用 Transaction 確保狀態更新和人數更新是原子操作，避免其中一步失敗造成資料不一致
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 if (userType == "Case")
@@ -79,18 +81,13 @@ namespace NGOPlatformWeb.Repositories
 
                     if (registration != null)
                     {
-                        // 更新報名狀態
                         registration.Status = "cancelled";
-                        await _context.SaveChangesAsync(); // 先儲存狀態更新
-                        
-                        // 再更新活動參與人數 (Case 固定 -1)
                         var activity = await _context.Activities.FindAsync(activityId);
                         if (activity != null)
-                        {
                             activity.CurrentParticipants = Math.Max(0, activity.CurrentParticipants - 1);
-                            await _context.SaveChangesAsync(); // 再儲存活動更新
-                        }
-                        
+
+                        await _context.SaveChangesAsync();
+                        await transaction.CommitAsync();
                         return true;
                     }
                 }
@@ -101,22 +98,15 @@ namespace NGOPlatformWeb.Repositories
 
                     if (registration != null)
                     {
-                        // 計算要減少的總人數 (自己 + 同伴)
                         var totalParticipants = 1 + (registration.NumberOfCompanions ?? 0);
-                        
-                        // 更新報名狀態並重設攜帶人數為0
                         registration.Status = "cancelled";
-                        registration.NumberOfCompanions = 0; // 重設攜帶人數避免影響其他人報名
-                        await _context.SaveChangesAsync(); // 先儲存狀態更新
-                        
-                        // 再更新活動參與人數 (分開執行避免觸發器衝突)
+                        registration.NumberOfCompanions = 0;
                         var activity = await _context.Activities.FindAsync(activityId);
                         if (activity != null)
-                        {
                             activity.CurrentParticipants = Math.Max(0, activity.CurrentParticipants - totalParticipants);
-                            await _context.SaveChangesAsync(); // 再儲存活動更新
-                        }
-                        
+
+                        await _context.SaveChangesAsync();
+                        await transaction.CommitAsync();
                         return true;
                     }
                 }
@@ -125,69 +115,62 @@ namespace NGOPlatformWeb.Repositories
             }
             catch
             {
+                await transaction.RollbackAsync();
                 return false;
             }
         }
 
         public async Task<bool> RegisterUserWithCompanionsAsync(int userId, int activityId, int numberOfCompanions)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // 檢查是否有已存在的報名記錄（包括已取消的）
                 var existingRegistration = await _context.UserActivityRegistrations
                     .FirstOrDefaultAsync(r => r.UserId == userId && r.ActivityId == activityId);
 
-                UserActivityRegistration registration;
-                
                 bool isNewRegistration = false;
-                
+
                 if (existingRegistration != null)
                 {
-                    // 如果有已存在的記錄，檢查是否為取消狀態
                     if (existingRegistration.Status == "cancelled")
-                    {
-                        isNewRegistration = true; // 重新報名算作新報名
-                    }
-                    
-                    // 更新已存在的記錄
-                    registration = existingRegistration;
-                    registration.NumberOfCompanions = numberOfCompanions;
-                    registration.Status = "registered";
-                    registration.RegisterTime = DateTime.Now;
+                        isNewRegistration = true;
+
+                    existingRegistration.NumberOfCompanions = numberOfCompanions;
+                    existingRegistration.Status = "registered";
+                    existingRegistration.RegisterTime = DateTime.Now;
                 }
                 else
                 {
-                    // 如果沒有，創建新記錄
-                    registration = new UserActivityRegistration
+                    _context.UserActivityRegistrations.Add(new UserActivityRegistration
                     {
                         UserId = userId,
                         ActivityId = activityId,
                         NumberOfCompanions = numberOfCompanions,
                         Status = "registered",
                         RegisterTime = DateTime.Now
-                    };
-                    _context.UserActivityRegistrations.Add(registration);
+                    });
                     isNewRegistration = true;
                 }
 
-                await _context.SaveChangesAsync(); // 先儲存報名記錄
-
-                // 只有新報名或重新報名才需要增加 CurrentParticipants
                 if (isNewRegistration)
                 {
                     var activity = await _context.Activities.FindAsync(activityId);
                     if (activity != null)
                     {
-                        var totalParticipants = 1 + numberOfCompanions;
-                        activity.CurrentParticipants += totalParticipants;
-                        await _context.SaveChangesAsync(); // 再儲存活動更新
+                        activity.CurrentParticipants += 1 + numberOfCompanions;
+                        // 報名後檢查是否額滿，取代 DB Trigger tr_CheckFullOnRegistration
+                        if (activity.CurrentParticipants >= activity.MaxParticipants && activity.Status == "open")
+                            activity.Status = "full";
                     }
                 }
 
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
                 return true;
             }
             catch
             {
+                await transaction.RollbackAsync();
                 return false;
             }
         }
@@ -209,60 +192,53 @@ namespace NGOPlatformWeb.Repositories
 
         public async Task<bool> RegisterCaseAsync(int caseId, int activityId)
         {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // 檢查是否有已存在的報名記錄（包括已取消的）
                 var existingRegistration = await _context.CaseActivityRegistrations
                     .FirstOrDefaultAsync(r => r.CaseId == caseId && r.ActivityId == activityId);
 
-                CaseActivityRegistrations registration;
-                
                 bool isNewRegistration = false;
-                
+
                 if (existingRegistration != null)
                 {
-                    // 如果有已存在的記錄，檢查是否為取消狀態
                     if (existingRegistration.Status == "cancelled")
-                    {
-                        isNewRegistration = true; // 重新報名算作新報名
-                    }
-                    
-                    // 更新已存在的記錄
-                    registration = existingRegistration;
-                    registration.Status = "registered";
-                    registration.RegisterTime = DateTime.Now;
+                        isNewRegistration = true;
+
+                    existingRegistration.Status = "registered";
+                    existingRegistration.RegisterTime = DateTime.Now;
                 }
                 else
                 {
-                    // 如果沒有，創建新記錄
-                    registration = new CaseActivityRegistrations
+                    _context.CaseActivityRegistrations.Add(new CaseActivityRegistrations
                     {
                         CaseId = caseId,
                         ActivityId = activityId,
                         Status = "registered",
                         RegisterTime = DateTime.Now
-                    };
-                    _context.CaseActivityRegistrations.Add(registration);
+                    });
                     isNewRegistration = true;
                 }
 
-                await _context.SaveChangesAsync(); // 先儲存報名記錄
-
-                // 只有新報名或重新報名才需要增加 CurrentParticipants (Case 固定 +1)
                 if (isNewRegistration)
                 {
                     var activity = await _context.Activities.FindAsync(activityId);
                     if (activity != null)
                     {
-                        activity.CurrentParticipants += 1; // Case 固定 +1
-                        await _context.SaveChangesAsync(); // 再儲存活動更新
+                        activity.CurrentParticipants += 1;
+                        // 報名後檢查是否額滿，取代 DB Trigger tr_CheckFullOnRegistration
+                        if (activity.CurrentParticipants >= activity.MaxParticipants && activity.Status == "open")
+                            activity.Status = "full";
                     }
                 }
 
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
                 return true;
             }
             catch
             {
+                await transaction.RollbackAsync();
                 return false;
             }
         }

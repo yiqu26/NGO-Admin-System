@@ -72,7 +72,6 @@ public partial class NgoplatformDbContext : DbContext
         {
             entity.HasKey(e => e.ActivityId).HasName("PK__Activiti__45F4A7914643EE44");
 
-            entity.ToTable(tb => tb.HasTrigger("tr_CheckFullOnRegistration"));
 
             entity.Property(e => e.ActivityName)
                 .HasMaxLength(100)
@@ -210,7 +209,6 @@ public partial class NgoplatformDbContext : DbContext
         {
             entity.HasKey(e => e.EmergencyNeedId).HasName("PK__Emergenc__D9A4C6FA1D1F8990");
 
-            entity.ToTable(tb => tb.HasTrigger("tr_EmergencySupplyNeed"));
 
             entity.Property(e => e.SupplyName)
                 .HasMaxLength(200)
